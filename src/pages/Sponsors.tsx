@@ -1,58 +1,111 @@
+import React from "react";
 
-import React from 'react';
-
-interface SponsorLogoProps {
-  src: string;
-  alt: string;
+interface Brand {
+  imageSrc: string;
+  lightImageSrc: string;
+  altText: string;
+  link: string;
 }
 
-const Sponsors: React.FC = () => {
-  const sponsorLogos: SponsorLogoProps[] = [
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 1' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 2' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 3' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 4' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 5' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 6' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 7' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 8' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 9' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 10' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 11' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 12' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 13' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 14' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 15' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 16' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 17' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 18' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 19' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 20' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 21' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 22' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 23' },
-    { src: 'https://via.placeholder.com/150', alt: 'Sponsor 24' },
-    // ... more logos
-  ];
+const brandsData: Brand[] = [
+  {
+    imageSrc: "https://placehold.co/300x300",
+    lightImageSrc:
+      "https://placehold.co/300x300",
+    altText: "graygrids",
+    link: "#",
+  },
+  {
+    imageSrc: "https://placehold.co/300x300",
+    lightImageSrc:
+      "https://placehold.co/300x300",
+    altText: "graygrids",
+    link: "#",
+  },
+  {
+    imageSrc: "https://placehold.co/300x300",
+    lightImageSrc:
+      "https://placehold.co/300x300",
+    altText: "graygrids",
+    link: "#",
+  },
+  {
+    imageSrc: "https://placehold.co/300x300",
+    lightImageSrc:
+      "https://placehold.co/300x300",
+    altText: "graygrids",
+    link: "#",
+  },
+  {
+    imageSrc: "https://placehold.co/300x300",
+    lightImageSrc:
+      "https://placehold.co/300x300",
+    altText: "graygrids",
+    link: "#",
+  },
+  {
+    imageSrc: "https://placehold.co/300x300",
+    lightImageSrc:
+      "https://placehold.co/300x300",
+    altText: "graygrids",
+    link: "#",
+  },
+  {
+    imageSrc: "https://placehold.co/300x300",
+    lightImageSrc:
+      "https://placehold.co/300x300",
+    altText: "graygrids",
+    link: "#",
+  },
+  {
+    imageSrc: "https://placehold.co/300x300",
+    lightImageSrc:
+      "https://placehold.co/300x300",
+    altText: "graygrids",
+    link: "#",
+  },{
+    imageSrc: "https://placehold.co/300x300",
+    lightImageSrc:
+      "https://placehold.co/300x300",
+    altText: "graygrids",
+    link: "#",
+  },
+  // ... other brands
+];
 
+const Sponsors: React.FC = () => {
   return (
-    <section
-      className='flex flex-col items-center h-screen p-10'
-      style={{
-      }}
-    >
-      <h2 className='text-6xl text-center'>Sponsors</h2>
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 py-5'>
-        {sponsorLogos.map((logo) => (
-          <img
-            key={logo.alt}
-            src={logo.src}
-            alt={logo.alt}
-            className='w-48 h-48 object-cover'
-          />
-        ))}
+    <section className="bg-white py-20 lg:py-[120px] dark:bg-dark">
+      <div className="container mx-auto">
+      <h2 className="text-5xl font-bold text-center mb-8 font-manrope text-gradient">Sponsors</h2> 
+        <div className="-mx-4 flex flex-wrap">
+          <div className="w-full px-4">
+            <div className="flex flex-wrap items-center justify-center">
+              {brandsData.map((brand, i) => (
+                <SingleImage key={i} brand={brand} />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
+  );
+};
+
+const SingleImage: React.FC<{ brand: Brand }> = ({ brand }) => {
+  const { link, imageSrc, lightImageSrc, altText } = brand;
+  return (
+    <a
+      href={link}
+      className="mx-4 flex w-[150px] items-center justify-center py-5 2xl:w-[180px]"
+    >
+      <img src={imageSrc} alt={altText} className="h-10 w-full dark:hidden" />
+      <img
+        src={lightImageSrc}
+        alt={altText}
+        className="hidden h-10 w-full dark:block"
+      />
+    </a>
   );
 };
 
