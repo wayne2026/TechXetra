@@ -1,3 +1,30 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: 'originTech';
+    src: url('/OriginTech personal use.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'techno';
+    src: url('/techno_hideo.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'autoTechno';
+    src: url('/auto-techno.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'lemonMilk';
+    src: url('/LEMONMILK-Regular.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
