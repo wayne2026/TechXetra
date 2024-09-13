@@ -79,7 +79,7 @@ const Hero = () => {
             </button>
           </div>
         </div>
-        <div id="words-animation" className="mt-44 mb-14 text-6xl font-autoTechno">
+        <div id="words-animation" className="mt-44 mb-14 text-[3.4rem] font-autoTechno">
           <h1 className="bg-gradient-to-r from-[#5162ce] via-[#E12198]/[77%] to-[#F3AC80] bg-clip-text text-transparent text-center leading-[100px]">
           {['R','E','V','I','V','I','N','G'].map((text, index) => (
             <span className="" key={index}>
@@ -96,7 +96,7 @@ const Hero = () => {
               {text}
             </span>
           ))}
-           <br /><span className="text-5xl">INSPIRING INNOVATION</span> </h1>
+           <br /><span className="text-[2.7rem]">INSPIRING INNOVATION</span> </h1>
         </div>
         <RotatingPlanet/>
       </div>
