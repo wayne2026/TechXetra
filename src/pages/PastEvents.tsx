@@ -1,3 +1,5 @@
+import { ShootingStars } from "../../components/ShootingStars";
+
 function PastEvents() {
 
     const events = [
@@ -11,6 +13,7 @@ function PastEvents() {
 
     return (
       <div className="bg-gradient-to-b from-[#1f021c] to-[#11021A]">
+        <ShootingStars />
       <div className="text-5xl font-bold">
     <h1 className="bg-gradient-to-b from-orange-500 to-purple-600 text-transparent bg-clip-text text-center">
         Past Events
