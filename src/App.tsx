@@ -1,12 +1,19 @@
-import React from 'react';
-import Sponsors from './pages/Sponsors';
-
-const App: React.FC = () => {
+import { Route, Routes } from 'react-router-dom'
+import Landing from './pages/Landing'
+import Login from './pages/auth/Login'
+import About from './pages/About'
+import Sponsors from './pages/Sponsors'
+function App() {
   return (
-    <div className='sponsor-section'>
+    <>
+    <Routes>
+      <Route path='/' element={<Landing />} />
+      <Route path='/login' element={<Login />} />
+    </Routes>
+      <About/>
       <Sponsors />
-    </div>
-  );
-};
+    </>
+  )
+}
 
 export default App;

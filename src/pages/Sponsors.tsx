@@ -1,4 +1,6 @@
 import React from "react";
+import { StarsBackground } from '../../components/StarBackground';
+import { ShootingStars } from '../../components/shootingStars';
 
 interface Brand {
   imageSrc: string;
@@ -75,9 +77,10 @@ const brandsData: Brand[] = [
 
 const Sponsors: React.FC = () => {
   return (
-    <section className="bg-white py-20 lg:py-[120px] dark:bg-dark">
+    <section className="bg-gradient-to-b from-[#1f021c]  to-[#1f021c] relative ">
+      <ShootingStars />
       <div className="container mx-auto">
-      <h2 className="text-5xl font-bold text-center mb-8 font-manrope text-gradient">Sponsors</h2> 
+      <h2 className="text-5xl font-bold text-center mb-8 font-manrope text-red-400">Sponsors</h2> 
         <div className="-mx-4 flex flex-wrap">
           <div className="w-full px-4">
             <div className="flex flex-wrap items-center justify-center">
@@ -88,6 +91,7 @@ const Sponsors: React.FC = () => {
           </div>
         </div>
       </div>
+      <StarsBackground />
     </section>
   );
 };
