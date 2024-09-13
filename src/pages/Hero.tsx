@@ -2,7 +2,7 @@
 import { useGSAP } from "@gsap/react";
 import { useNavigate } from "react-router-dom";
 import { StarsBackground } from "../../components/StarBackground";
-import {ShootingStars} from '../../components/shootingStars'
+import {ShootingStars} from '../../components/ShootingStars'
 import RotatingPlanet from "../../components/Planet"
 import gsap from "gsap";
 import { useRef } from "react";
