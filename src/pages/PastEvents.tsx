@@ -11,7 +11,7 @@ function PastEvents() {
 
     return (
       <div className="bg-gradient-to-b from-[#1f021c] to-[#11021A]">
-      <div className="my-10 text-5xl font-bold">
+      <div className="text-5xl font-bold">
     <h1 className="bg-gradient-to-b from-orange-500 to-purple-600 text-transparent bg-clip-text text-center">
         Past Events
     </h1>
@@ -24,7 +24,7 @@ function PastEvents() {
 
     return (
         <div 
-            className={`mx-auto w-[80%] my-12 grid grid-cols-2`}
+            className={`mx-auto w-[80%] py-12 grid grid-cols-2`}
             key={index}
         >
             {!isEven && (
