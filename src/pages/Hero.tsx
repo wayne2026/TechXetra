@@ -75,7 +75,7 @@ const Hero = () => {
                 navigate("/login");
               }}
             >
-              <h1 className="font-originTech text-4xl pt-9 pr-10 bg-gradient-to-t from-[#84165e] via-[#ad9481]  to-[#A98164] bg-clip-text text-transparent">Login</h1>
+              <h1 className="font-originTech text-4xl pt-9 pr-10">Login</h1>
             </button>
           </div>
         </div>
@@ -105,3 +105,4 @@ const Hero = () => {
 };
 
 export default Hero;
+// bg-gradient-to-t from-[#84165e] via-[#ad9481]  to-[#A98164] bg-clip-text text-transparent

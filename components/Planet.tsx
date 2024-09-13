@@ -15,7 +15,7 @@ const Planet: React.FC = () => {
         }
     });
 
-    return <primitive object={scene} ref={planetRef} scale={[3.5, 3.5, 3.5]} position={[0, 0, 0]} />;
+    return <primitive object={scene} ref={planetRef} scale={[1.3, 1.3, 1.3]} position={[0, 0, 0]} />;
 };
 
 const RotatingPlanet: React.FC = () => {
@@ -23,7 +23,7 @@ const RotatingPlanet: React.FC = () => {
 
         <div style={{ height: "100%", width: "100%", position: 'relative' }}> {/* Ensure div is sized */}
             <Canvas
-                camera={{ position: [0, 25, 10], fov: 15 }}
+                camera={{ position: [0, 0, 10], fov: 15 }}
                 style={{ height: "100%", width: "100%", position: 'absolute', top: 0, left: 0 }} // Ensure canvas fills parent
                 gl={{ alpha: true }} // Transparent background
             >
