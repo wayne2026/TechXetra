@@ -12,8 +12,8 @@ function App() {
       <Route path='/login' element={<Login />} />      
     </Routes>
       <About/>
-      <PastEvents />
       <Events/>
+      <PastEvents />
     </>
   )
 }

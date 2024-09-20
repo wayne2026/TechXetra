@@ -1,4 +1,5 @@
 import { ShootingStars } from "../../components/ShootingStars";
+import { StarsBackground } from "../../components/StarBackground";
 
 function PastEvents() {
 
@@ -12,10 +13,12 @@ function PastEvents() {
     ]
 
     return (
-      <div className="bg-gradient-to-b from-[#1f021c] to-[#11021A]">
-        <ShootingStars />
+      <div className="bg-gradient-to-b from-[#22071b] via-[#190341] to-[#1f021c] relative overflow-x-hidden">
+            <StarsBackground className='absolute '
+                starDensity={0.0002} />
+            <ShootingStars />
       <div className="text-5xl font-bold">
-    <h1 className="bg-gradient-to-b from-orange-500 to-purple-600 text-transparent bg-clip-text text-center">
+    <h1 className="bg-gradient-to-b my-10 from-orange-500 to-purple-600 text-transparent bg-clip-text text-center">
         Past Events
     </h1>
 </div>
