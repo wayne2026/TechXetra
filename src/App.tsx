@@ -4,6 +4,7 @@ import Login from './pages/auth/Login'
 import About from './pages/About'
 import PastEvents from './pages/PastEvents'
 import Events from './pages/Events'
+import FooterBar from './pages/Footer'
 function App() {
   return (
     <>
@@ -14,6 +15,7 @@ function App() {
       <About/>
       <Events/>
       <PastEvents />
+      <FooterBar />
     </>
   )
 }
