@@ -1,6 +1,6 @@
 import React from 'react';
 import { StarsBackground } from '../../components/StarBackground';
-import { ShootingStars } from '../../components/shootingStars';
+import { ShootingStars } from '../../components/ShootingStars';
 const About: React.FC = () => {
   return (
     <div className='bg-gradient-to-b from-[#11021a]  to-[#1f021c] relative '>
@@ -16,3 +16,5 @@ const About: React.FC = () => {
 };
 
 export default About;
+
+
