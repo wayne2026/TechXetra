@@ -1,73 +1,101 @@
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ShootingStars } from "../../components/ShootingStars";
 import { StarsBackground } from "../../components/StarBackground";
 
-function PastEvents() {
+gsap.registerPlugin(ScrollTrigger);
 
-    const events = [
-        {EventName: "Hackathon", Description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo minus aperiam nisi officia, impedit fugiat nemo architecto ullam.", Image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6cI51LvrxoqISHcYbGs7aVaWKswEcs8BU0g&s"},
-        {EventName: "Hackathon", Description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo minus aperiam nisi officia, impedit fugiat nemo architecto ullam.", Image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6cI51LvrxoqISHcYbGs7aVaWKswEcs8BU0g&s"},
-        {EventName: "Hackathon", Description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo minus aperiam nisi officia, impedit fugiat nemo architecto ullam.", Image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6cI51LvrxoqISHcYbGs7aVaWKswEcs8BU0g&s"},
-        {EventName: "Hackathon", Description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo minus aperiam nisi officia, impedit fugiat nemo architecto ullam.", Image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6cI51LvrxoqISHcYbGs7aVaWKswEcs8BU0g&s"},
-        {EventName: "Hackathon", Description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo minus aperiam nisi officia, impedit fugiat nemo architecto ullam.", Image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6cI51LvrxoqISHcYbGs7aVaWKswEcs8BU0g&s"},
-        {EventName: "Hackathon", Description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo minus aperiam nisi officia, impedit fugiat nemo architecto ullam.", Image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6cI51LvrxoqISHcYbGs7aVaWKswEcs8BU0g&s"},
-    ]
+interface Event {
+  EventName: string;
+  Description: string;
+  Image: string;
+}
 
-    return (
-      <div className="bg-gradient-to-b from-[#22071b] via-[#190341] to-[#1f021c] relative overflow-x-hidden">
-            <StarsBackground className='absolute '
-                starDensity={0.0002} />
-            <ShootingStars />
+const PastEvents: React.FC = () => {
+  const eventRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const events: Event[] = [
+    {EventName: "Hackathon", Description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo minus aperiam nisi officia, impedit fugiat nemo architecto ullam.", Image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6cI51LvrxoqISHcYbGs7aVaWKswEcs8BU0g&s"},
+    {EventName: "Hackathon", Description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo minus aperiam nisi officia, impedit fugiat nemo architecto ullam.", Image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6cI51LvrxoqISHcYbGs7aVaWKswEcs8BU0g&s"},
+    {EventName: "Hackathon", Description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo minus aperiam nisi officia, impedit fugiat nemo architecto ullam.", Image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6cI51LvrxoqISHcYbGs7aVaWKswEcs8BU0g&s"},
+    {EventName: "Hackathon", Description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo minus aperiam nisi officia, impedit fugiat nemo architecto ullam.", Image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6cI51LvrxoqISHcYbGs7aVaWKswEcs8BU0g&s"},
+    {EventName: "Hackathon", Description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo minus aperiam nisi officia, impedit fugiat nemo architecto ullam.", Image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6cI51LvrxoqISHcYbGs7aVaWKswEcs8BU0g&s"},
+    {EventName: "Hackathon", Description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo minus aperiam nisi officia, impedit fugiat nemo architecto ullam.", Image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6cI51LvrxoqISHcYbGs7aVaWKswEcs8BU0g&s"},
+  ];
+
+  useEffect(() => {
+    eventRefs.current.forEach((ref, index) => {
+      if (ref) {
+        const isEven = index % 2 === 0;
+        gsap.from(ref, {
+          x: isEven ? "-100vw" : "100vw", // Move from left or right
+          opacity: 0,
+          scrollTrigger: {
+            trigger: ref,
+            start: "top 80%",
+            end: "top 50%",
+            scrub: true,
+          },
+        });
+      }
+    });
+  }, []);
+
+  return (
+    <div className="bg-gradient-to-b from-[#22071b] via-[#190341] to-[#1f021c] relative overflow-x-hidden">
+      <StarsBackground className="absolute" starDensity={0.0002} />
+      <ShootingStars />
       <div className="text-5xl font-bold">
-    <h1 className="bg-gradient-to-b my-10 from-orange-500 to-purple-600 text-transparent bg-clip-text text-center">
-        Past Events
-    </h1>
-</div>
-
-        <div>
-        {events.map((event, index) => {
-    const eventNumber = String(index + 1).padStart(2, '0');
-    const isEven = (index + 1) % 2 === 0;
-
-    return (
-        <div 
-            className={`mx-auto w-[80%] py-12 grid grid-cols-2`}
-            key={index}
-        >
-            {!isEven && (
-                <div className="px-10 my-auto">
-                    <div className="px-5 py-1 my-1 bg-gradient-to-r from-red-500 to-orange-600 inline-block text-2xl font-bold rounded-[25px]">
-                        {eventNumber}
-                    </div>
-                    <div className="bg-gradient-to-r my-1 from-red-500 to-orange-600 text-transparent bg-clip-text text-2xl font-bold">
-                        {event.EventName}
-                    </div>
-                    <div className="w-[300px] my-1 text-white">{event.Description}</div>
-                </div>
-            )}
-            <div className="flex justify-center">
-                <img className="h-[260px] w-[260px]" src={event.Image} alt="Sample" />
-            </div>
-            {isEven && (
-                <div className="px-10 my-auto">
-                    <div className="float-right">
-                    <div className="px-5 py-1 my-1 bg-gradient-to-r from-red-500 to-orange-600 inline-block text-2xl font-bold rounded-[25px]">
-                        {eventNumber}
-                    </div>
-                    <div className="bg-gradient-to-r my-1 from-red-500 to-orange-600 text-transparent bg-clip-text text-2xl font-bold">
-                        {event.EventName}
-                    </div>
-                    <div className="w-[300px] my-1 text-white">{event.Description}</div>
-                </div>
-                </div>
-            )}
-        </div>
-    );
-})}
-
-        </div>
+        <h1 className="bg-gradient-to-b my-10 from-orange-500 to-purple-600 text-transparent bg-clip-text text-center">
+          Past Events
+        </h1>
       </div>
-    )
-  }
-  
-  export default PastEvents
-  
+
+      <div>
+        {events.map((event, index) => {
+          const eventNumber = String(index + 1).padStart(2, "0");
+          const isEven = (index + 1) % 2 === 0;
+
+          return (
+            <div
+              ref={(el) => (eventRefs.current[index] = el)}
+              className={`mx-auto w-[80%] py-12 grid grid-cols-2`}
+              key={index}
+            >
+              {!isEven && (
+                <div className="px-10 my-auto">
+                  <div className="px-5 py-1 my-1 bg-gradient-to-r from-red-500 to-orange-600 inline-block text-2xl font-bold rounded-[25px]">
+                    {eventNumber}
+                  </div>
+                  <div className="bg-gradient-to-r my-1 from-red-500 to-orange-600 text-transparent bg-clip-text text-2xl font-bold">
+                    {event.EventName}
+                  </div>
+                  <div className="w-[300px] my-1 text-white">{event.Description}</div>
+                </div>
+              )}
+              <div className="flex justify-center">
+                <img className="h-[260px] w-[260px]" src={event.Image} alt="Event" />
+              </div>
+              {isEven && (
+                <div className="px-10 my-auto">
+                  <div className="float-right">
+                    <div className="px-5 py-1 my-1 bg-gradient-to-r from-red-500 to-orange-600 inline-block text-2xl font-bold rounded-[25px]">
+                      {eventNumber}
+                    </div>
+                    <div className="bg-gradient-to-r my-1 from-red-500 to-orange-600 text-transparent bg-clip-text text-2xl font-bold">
+                      {event.EventName}
+                    </div>
+                    <div className="w-[300px] my-1 text-white">{event.Description}</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+export default PastEvents;
