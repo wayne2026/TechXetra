@@ -1,9 +1,10 @@
 import express from 'express';
-import { dummyJSON } from '../controllers/adminController';
+import { dummyJSON, login, getAllUsers } from '../controllers/adminController';
 
 const router = express.Router();
-router.route('/login').get(dummyJSON);
-router.route('/users/all').get(dummyJSON);
+
+router.route('/login').post(login);
+router.route('/users/all').get(getAllUsers);
 router.route('/users/byID/:id').put(dummyJSON);
 router.route('/events/new').post(dummyJSON);
 router.route('/events/user/:id').get(dummyJSON);
