@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import catchAsyncErrors from '../middlewares/catchAsyncErrors';
+import userModel from '../models/user'
+import connectDB from '../config/db';
 
 export const dummyJSON = catchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
     res.status(200).json({
@@ -7,10 +9,16 @@ export const dummyJSON = catchAsyncErrors(async (req: Request, res: Response, ne
     });
 });
 export const login = catchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
-    // const {username, password} = req.body
-    const username = req.body.username;
-    const password = req.body.password;
-    const actual_password = "dummy_password" //Will be fetched from database which is stored in hashed form
+    const {email, password} = req.body
+    await connectDB()
+    const doesUserExist = await userModel.countDocuments({email: email})
+    if(doesUserExist == 0){
+        res.status(401).json({
+            message: 'User does not exist'
+        });
+    } else {
+    const userDetails = await userModel.find({email: email})
+    const actual_password = userDetails[0].password
    // Compare function will be used later , now using this only for testing purpose
     if(password === actual_password){
         res.status(200).json({
@@ -18,32 +26,40 @@ export const login = catchAsyncErrors(async (req: Request, res: Response, next: 
         });
     } else {
         res.status(401).json({
-            message: 'Login Failed'
+            message: 'Login Failed',
         });
     }
+}
 });
 
 export const getAllUsers = catchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
-    // Will be fetched from db , this is just for testing only
-    const users = 
-        [
-            {
-                name: "Dhritiman Saikia",
-        email: "ex@gmail.com",
-        role: "dummy"
-            },
-            {
-                name: "Nayanjyoti Saikia",
-        email: "ex@gmail.com",
-        role: "dummy"
-            },
-            {
-                name: "Amartya Saikia",
-        email: "ex@gmail.com",
-        role: "dummy"
-            },
-    ]
-    
-    res.status(200).json(users);
+    await connectDB()
+    const userDetails = await userModel.find()
+    let userDetailsToSend: { username: string; email: string; role: string; avatar: string; }[] = []
+    userDetails.forEach(user => {
+        userDetailsToSend.push({
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar
+        })
+    })
+    res.status(200).json(userDetailsToSend);
 });
 
+export const changeRoll = catchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params
+    const { role } = req.body
+    await connectDB();
+    try {
+        const updatedUser = await userModel.findByIdAndUpdate(
+            id, 
+            { role: role },
+            { new: true }
+        );
+        res.status(200).json({ message: 'Role updated successfully', updatedUser });
+    } catch (error) {
+        res.status(200).json({ message: 'User does not exist'});
+    }
+    
+});
