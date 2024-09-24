@@ -35,17 +35,14 @@ export const login = catchAsyncErrors(async (req: Request, res: Response, next: 
 
 export const getAllUsers = catchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
     await connectDB()
-    const userDetails = await userModel.find()
-    let userDetailsToSend: { username: string; email: string; role: string; avatar: string; }[] = []
-    userDetails.forEach(user => {
-        userDetailsToSend.push({
-            username: user.username,
-            email: user.email,
-            role: user.role,
-            avatar: user.avatar
-        })
-    })
-    res.status(200).json(userDetailsToSend);
+    try {
+        const userDetails = await userModel.find();
+        res.status(200).json(userDetails);
+    } catch (error) {
+        res.status(404).json({
+            message: 'Users not found'
+        });
+    }
 });
 
 export const changeRoll = catchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
@@ -72,21 +69,28 @@ export const newEvent = catchAsyncErrors(async (req: Request, res: Response, nex
     }
 
     await connectDB();
-    const new_event = await EventModel.create({
-        title,
-        description,
-        price,
-        info: {
-            date: info.date,
-            location: info.location
-        },
-        images, // This should be an array
-        createdAt: new Date()
-    });
+    try {
+        const new_event = await EventModel.create({
+            title,
+            description,
+            price,
+            info: {
+                date: info.date,
+                location: info.location
+            },
+            images, // This should be an array
+            createdAt: new Date()
+        });
 
-    res.status(201).json({
-        success: true,
-        message: "Event created successfully",
-        new_event,
-    });
+        res.status(201).json({
+            success: true,
+            message: "Event created successfully",
+            new_event,
+        });
+    }
+    catch (error) {
+        res.status(400).json({
+            message: 'Event creation failed'
+        });
+    }
 });

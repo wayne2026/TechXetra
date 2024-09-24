@@ -16,7 +16,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/admin", adminRoutes);
-app.use("/event", eventRoutes);
+app.use("/events", eventRoutes);
 
 app.listen(port, () => {
 	console.log(`App listening at http://localhost:${port}`);
