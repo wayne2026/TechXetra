@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import catchAsyncErrors from '../middlewares/catchAsyncErrors';
 import userModel from '../models/user'
+import EventModel from '../models/events';
 import connectDB from '../config/db';
 
 export const dummyJSON = catchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
@@ -61,5 +62,31 @@ export const changeRoll = catchAsyncErrors(async (req: Request, res: Response, n
     } catch (error) {
         res.status(200).json({ message: 'User does not exist'});
     }
-    
+});
+
+export const newEvent = catchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
+    const { title, description, price, info, images } = req.body;
+     // Validations
+     if (!title || !description || !price || !info?.date || !info?.location || !images) {
+        return res.status(400).json({ message: "Please provide all required fields" });
+    }
+
+    await connectDB();
+    const new_event = await EventModel.create({
+        title,
+        description,
+        price,
+        info: {
+            date: info.date,
+            location: info.location
+        },
+        images, // This should be an array
+        createdAt: new Date()
+    });
+
+    res.status(201).json({
+        success: true,
+        message: "Event created successfully",
+        new_event,
+    });
 });
