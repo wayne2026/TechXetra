@@ -108,3 +108,24 @@ export const getEventsEnrolledByUser = catchAsyncErrors(async (req: Request, res
     }
 }
 )
+export const isUserEnrolled = catchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
+    const { event_id, user_id  } = req.params
+    await connectDB()
+    try {
+        const getUser = await userModel.findById(user_id)
+        if (getUser?.events.includes(event_id)) {
+            res.status(200).json({
+                message: 'User is enrolled'
+            });
+        } else {
+            res.status(404).json({
+                message: 'User is not enrolled'
+            });
+        }
+    } catch (error) {
+        res.status(404).json({
+            message: 'User not found'
+        });
+    }
+}
+)

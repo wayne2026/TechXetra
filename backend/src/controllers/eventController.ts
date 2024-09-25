@@ -45,6 +45,10 @@ export const enrollEvent = catchAsyncErrors(async (req: Request, res: Response, 
                 message: 'User already enrolled in this event'
             });
             
+        } else if (await EventModel.countDocuments({ _id: eventID }) === 0) {
+            res.status(404).json({
+                message: 'Event not found'
+            });
         } else {
         getUser?.events.push(eventID)
         await getUser?.save()
@@ -54,7 +58,7 @@ export const enrollEvent = catchAsyncErrors(async (req: Request, res: Response, 
     }
     } catch (error) {
         res.status(404).json({
-            message: 'User not found'
+            message: 'User or event not found'
         });
     }
 }
