@@ -28,59 +28,79 @@ const PastEvents: React.FC = () => {
     eventRefs.current.forEach((ref, index) => {
       if (ref) {
         const isEven = index % 2 === 0;
-  
-        // Initial image animation
-        gsap.fromTo(
-          ref.querySelector("img"),
-          {
-            x: isEven ? "-150vw" : "150vw",
-            opacity: 0,
-            rotateZ: isEven ? 50 : -50,
-            y: -50,
-            scale: 0.6,
-          },
-          {
-            x: 0,
-            opacity: 1,
-            rotateZ: 0,
-            y: 0,
-            scale: 1,
-            duration: 2.5,
-            ease: "elastic.out(1, 0.7)",
+
+        // Image Animation: Smoother with optimized timings
+        const image = ref.querySelector("img");
+        if (image) {
+          gsap.fromTo(
+            image,
+            {
+              x: isEven ? "-150vw" : "150vw",
+              opacity: 0,
+              rotateZ: isEven ? 50 : -50,
+              y: -50,
+              scale: 0.6,
+            },
+            {
+              x: 0,
+              opacity: 1,
+              rotateZ: 0,
+              y: 0,
+              scale: 1,
+              duration: 2,
+              ease: "elastic.out(1, 0.7)",
+              scrollTrigger: {
+                trigger: ref,
+                start: "top 85%",
+                end: "top 50%",
+                scrub: 0.3, // Reduce scrub for smoother animation
+                toggleActions: "play none none none",
+              },
+              onComplete: () => {
+                gsap.to(image, {
+                  y: '+=10',
+                  rotationZ: isEven ? 3 : -3,
+                  repeat: -1,
+                  yoyo: true,
+                  duration: 4,
+                  ease: "sine.inOut",
+                });
+              },
+            }
+          );
+
+          // Parallax effect with reduced range
+          gsap.to(image, {
+            y: isEven ? "-=20" : "+=20", // Reduce movement for smoother parallax
+            ease: "power1.out",
             scrollTrigger: {
               trigger: ref,
-              start: "top 85%",
-              end: "top 50%",
-              scrub: true,
-              toggleActions: "play none none none",
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 0.3, // Lower scrub for smooth effect
             },
-            onComplete: () => {
-              // Continuous floating
-              gsap.to(ref.querySelector("img"), {
-                y: '+=15',
-                rotationZ: isEven ? 5 : -5,
-                repeat: -1,
-                yoyo: true,
-                duration: 5,
-                ease: "sine.inOut",
-              });
-            },
-          }
-        );
-  
-        // Parallax effect on image
-        gsap.to(ref.querySelector("img"), {
-          y: isEven ? "-=30" : "+=30",  // Move up/down while scrolling
-          ease: "power1.out",
-          scrollTrigger: {
-            trigger: ref,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1,
-          },
-        });
-  
-        // Text animations: Stagger fade-in
+          });
+
+          // Zoom in and blur effect
+          gsap.fromTo(
+            image,
+            { filter: "blur(4px)", scale: 0.95 },
+            {
+              filter: "blur(0px)",
+              scale: 1,
+              duration: 1.2,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: ref,
+                start: "top 70%",
+                end: "top 30%",
+                scrub: 0.3, // Reduce scrub for smoother zoom
+              },
+            }
+          );
+        }
+
+        // Text Animation: Smoother stagger
         const textBlocks = ref.querySelectorAll(".text-block");
         gsap.fromTo(
           textBlocks,
@@ -90,7 +110,7 @@ const PastEvents: React.FC = () => {
             y: 0,
             duration: 1.5,
             ease: "power2.out",
-            stagger: 0.2,
+            stagger: 0.15, // Reduced stagger for smoother transitions
             scrollTrigger: {
               trigger: ref,
               start: "top 80%",
@@ -98,31 +118,9 @@ const PastEvents: React.FC = () => {
             },
           }
         );
-  
-        // Zoom in and blur effect when out of view
-        gsap.fromTo(
-          ref.querySelector("img"),
-          { filter: "blur(5px)", scale: 0.9 },
-          {
-            filter: "blur(0px)",
-            scale: 1,
-            duration: 1.5,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: ref,
-              start: "top 70%",
-              end: "top 30%",
-              scrub: true,
-            },
-          }
-        );
       }
     });
   }, []);
-  
-  
-  
-  
 
   return (
     <div className="bg-gradient-to-b from-[#22071b] via-[#190341] to-[#1f021c] relative overflow-x-hidden">
