@@ -94,3 +94,17 @@ export const newEvent = catchAsyncErrors(async (req: Request, res: Response, nex
         });
     }
 });
+export const getEventsEnrolledByUser = catchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params
+    await connectDB()
+    try {
+        const getUser = await userModel.findById(id)
+        const events = await EventModel.find({ _id: { $in: getUser?.events } });
+        res.status(200).json(events);
+    } catch (error) {
+        res.status(404).json({
+            message: 'User not found'
+        });
+    }
+}
+)
