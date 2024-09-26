@@ -2,7 +2,9 @@ import { Route, Routes } from 'react-router-dom'
 import Landing from './pages/Landing'
 import Login from './pages/auth/Login'
 import About from './pages/About'
+import PastEvents from './pages/PastEvents'
 import Events from './pages/Events'
+import FooterBar from './pages/Footer'
 function App() {
   return (
     <>
@@ -12,6 +14,8 @@ function App() {
     </Routes>
       <About/>
       <Events/>
+      <PastEvents />
+      <FooterBar />
     </>
   )
 }

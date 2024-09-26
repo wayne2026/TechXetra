@@ -137,7 +137,7 @@ const Events: React.FC = () => {
 
     return (
         <div className='overflow-x-hidden relative '>
-            <div className="w-full  h-screen z-50  mx-auto bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b]">
+            <div className="w-full z-50  mx-auto bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b]">
             <StarsBackground className='absolute '
                 starDensity={0.0002}
             />
@@ -154,7 +154,7 @@ const Events: React.FC = () => {
                 </div>
                 
                 
-                <div className='p-8 pt-20 m-8 '>
+                <div className='p-8 pt-20'>
                     <Slider {...settings}>
                         {filteredData.map((d) => (
                             <div
