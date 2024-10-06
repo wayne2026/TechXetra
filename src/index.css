@@ -28,3 +28,14 @@
     font-weight: normal;
     font-style: normal;
   }
+
+  .brands-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Adjust the number of columns */
+    gap: 2rem; /* Add space between items */
+    justify-items: center;
+    align-items: center;
+    margin: 0 auto;
+    padding: 2rem;
+    max-width: 1200px;
+  }

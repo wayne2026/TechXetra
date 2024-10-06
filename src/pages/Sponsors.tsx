@@ -1,94 +1,220 @@
-import React from "react";
+import React, { useState } from "react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../../components/avatar";
+import { ShootingStars } from "../../components/shootingStars";
 import { StarsBackground } from '../../components/StarBackground';
-import { ShootingStars } from '../../components/shootingStars';
 
 interface Brand {
   imageSrc: string;
   lightImageSrc: string;
   altText: string;
   link: string;
+  heading: string;
+  description: string;
+  footertext: string;
 }
 
 const brandsData: Brand[] = [
   {
-    imageSrc: "https://placehold.co/300x300",
-    lightImageSrc:
-      "https://placehold.co/300x300",
+    imageSrc: "../public/Asus_Logo.png",
+    lightImageSrc: "../public/Asus_Logo.png",
     altText: "graygrids",
     link: "#",
+    heading: "Asus",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
   },
   {
-    imageSrc: "https://placehold.co/300x300",
-    lightImageSrc:
-      "https://placehold.co/300x300",
+    imageSrc: "../public/Ktm_Logo.png",
+    lightImageSrc: "../public/Ktm_Logo.png",
     altText: "graygrids",
     link: "#",
+    heading: "KTM",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
   },
   {
-    imageSrc: "https://placehold.co/300x300",
-    lightImageSrc:
-      "https://placehold.co/300x300",
+    imageSrc: "../public/Tata_Logo.png",
+    lightImageSrc: "../public/Tata_Logo.png",
     altText: "graygrids",
     link: "#",
+    heading: "Tata",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
   },
   {
-    imageSrc: "https://placehold.co/300x300",
-    lightImageSrc:
-      "https://placehold.co/300x300",
+    imageSrc: "../public/AssamTribune_Logo.png",
+    lightImageSrc: "../public/AssamTribune_Logo.png",
     altText: "graygrids",
     link: "#",
+    heading: "Assam Tribune",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
   },
   {
-    imageSrc: "https://placehold.co/300x300",
-    lightImageSrc:
-      "https://placehold.co/300x300",
+    imageSrc: "../public/Gnrc_Logo.png",
+    lightImageSrc: "../public/Gnrc_Logo.png",
     altText: "graygrids",
     link: "#",
+    heading: "GNRC",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
   },
   {
-    imageSrc: "https://placehold.co/300x300",
-    lightImageSrc:
-      "https://placehold.co/300x300",
+    imageSrc: "../public/Lic_Logo.png",
+    lightImageSrc: "../public/Lic_Logo.png",
     altText: "graygrids",
     link: "#",
+    heading: "LIC",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
   },
   {
-    imageSrc: "https://placehold.co/300x300",
-    lightImageSrc:
-      "https://placehold.co/300x300",
+    imageSrc: "../public/Pnb_Logo.png",
+    lightImageSrc: "../public/Pnb_Logo.png",
     altText: "graygrids",
     link: "#",
+    heading: "PNB",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
   },
   {
-    imageSrc: "https://placehold.co/300x300",
-    lightImageSrc:
-      "https://placehold.co/300x300",
+    imageSrc: "../public/Sbi_Logo.png",
+    lightImageSrc: "../public/Sbi_Logo.png",
     altText: "graygrids",
     link: "#",
-  },{
-    imageSrc: "https://placehold.co/300x300",
-    lightImageSrc:
-      "https://placehold.co/300x300",
-    altText: "graygrids",
-    link: "#",
+    heading: "SBI",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
   },
-  // ... other brands
+  {
+    imageSrc: "../public/Sbi_Logo.png",
+    lightImageSrc: "../public/Sbi_Logo.png",
+    altText: "graygrids",
+    link: "#",
+    heading: "SBI",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
+  },
+  {
+    imageSrc: "../public/Tata_Logo.png",
+    lightImageSrc: "../public/Tata_Logo.png",
+    altText: "graygrids",
+    link: "#",
+    heading: "Tata",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
+  },
+  {
+    imageSrc: "../public/Tata_Logo.png",
+    lightImageSrc: "../public/Tata_Logo.png",
+    altText: "graygrids",
+    link: "#",
+    heading: "Tata",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
+  },
+  {
+    imageSrc: "../public/Tata_Logo.png",
+    lightImageSrc: "../public/Tata_Logo.png",
+    altText: "graygrids",
+    link: "#",
+    heading: "Tata",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
+  },
+  {
+    imageSrc: "../public/Tata_Logo.png",
+    lightImageSrc: "../public/Tata_Logo.png",
+    altText: "graygrids",
+    link: "#",
+    heading: "Tata",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
+  },
+  {
+    imageSrc: "../public/Tata_Logo.png",
+    lightImageSrc: "../public/Tata_Logo.png",
+    altText: "graygrids",
+    link: "#",
+    heading: "Tata",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
+  },
+  {
+    imageSrc: "../public/Tata_Logo.png",
+    lightImageSrc: "../public/Tata_Logo.png",
+    altText: "graygrids",
+    link: "#",
+    heading: "Tata",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
+  },
+  
+  // More logos can be added
 ];
 
 const Sponsors: React.FC = () => {
+  // Function to split brandsData into levels for pyramid
+  const createPyramidLevels = (data: Brand[]) => {
+    const levels: Brand[][] = [];
+    let level = 1;
+    let index = 0;
+
+    while (index < data.length) {
+      if (level <= 4) {
+        levels.push(data.slice(index, index + level));
+        index += level;
+        level++;
+      } else {
+        // For rows after the 4th row, limited the number of items to 4 per row
+        levels.push(data.slice(index, index + 4));
+        index += 4;
+      }
+    }
+
+    return levels;
+  };
+
+  const pyramidLevels = createPyramidLevels(brandsData);
+
   return (
-    <section className="bg-gradient-to-b from-[#1f021c]  to-[#1f021c] relative ">
+    <section className="bg-gradient-to-b from-[#1f021c] to-[#1f021c] relative overflow-x-hidden">
       <ShootingStars />
       <div className="container mx-auto">
-      <h2 className="text-5xl font-bold text-center mb-8 font-manrope text-red-400">Sponsors</h2> 
-        <div className="-mx-4 flex flex-wrap">
-          <div className="w-full px-4">
-            <div className="flex flex-wrap items-center justify-center">
-              {brandsData.map((brand, i) => (
-                <SingleImage key={i} brand={brand} />
+        {/* Sponsor heading */}
+        <h2 className="text-5xl font-bold text-center mb-8 font-manrope text-red-400">
+          Sponsors
+        </h2>
+        {/* Intro paragraph */}
+        <p className="text-red-400 px-10 text-justify">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim
+          dolores officia ipsum optio iste nemo quasi, adipisci sequi facere
+          molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto sunt
+          temporibus totam deleniti sequi impedit voluptatem atque ducimus
+          reprehenderit magni harum deserunt error necessitatibus tenetur,
+          soluta voluptate aspernatur dolor quis!
+        </p>
+        {/* Pyramid structure */}
+        <div className="flex flex-col justify-items-stretch space-y-3">
+          {pyramidLevels.map((level, levelIndex) => (
+            <div
+            key={levelIndex}
+            className="grid gap-36"
+            style={{
+              gridTemplateColumns: `repeat(${levelIndex < 4 ? level.length : 4}, minmax(100px, 1fr))`,
+              maxWidth: "100%", // Adjust this as needed
+            }}
+          >
+              {level.map((brand, i) => (
+                <HoverCard key={i} brand={brand} index={i} />
               ))}
             </div>
-          </div>
+          ))}
         </div>
       </div>
       <StarsBackground />
@@ -96,20 +222,61 @@ const Sponsors: React.FC = () => {
   );
 };
 
-const SingleImage: React.FC<{ brand: Brand }> = ({ brand }) => {
-  const { link, imageSrc, lightImageSrc, altText } = brand;
+
+
+
+const HoverCard: React.FC<{ brand: Brand; index: number }> = ({ brand, index }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  
+
   return (
-    <a
-      href={link}
-      className="mx-4 flex w-[150px] items-center justify-center py-5 2xl:w-[180px]"
+    <div
+      className="relative mx-auto my-6 flex w-[200px] items-center justify-center py-6 2xl:w-[220px] transition-transform duration-500 ease-in-out"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{ zIndex: isHovered ? 1000 : "auto" }}  
     >
-      <img src={imageSrc} alt={altText} className="h-10 w-full dark:hidden" />
-      <img
-        src={lightImageSrc}
-        alt={altText}
-        className="hidden h-10 w-full dark:block"
-      />
-    </a>
+      <a href={brand.link}>
+        <img
+          src={brand.imageSrc}
+          alt={brand.altText}
+          className="h-28 w-full dark:hidden"
+        />
+        <img
+          src={brand.lightImageSrc}
+          alt={brand.altText}
+          className="hidden h-28 w-full dark:block"
+        />
+      </a>
+      {isHovered && (
+        <div
+          className={`
+            absolute top-full mt-2 w-80 p-4 bg-[rgba(70,0,50,0.95)] shadow-lg rounded-lg z-10 hover-card-content
+            ${isHovered ? "animate-fadeIn" : "animate-fadeOut"}
+          `}
+        >
+          <div className="flex justify-between space-x-4">
+            {/* logo may look repetative if added to again the pop up box, so kept it optional with the below code */}
+            {/* <Avatar>
+              <AvatarImage src={brand.imageSrc} className="h-full w-full object-cover" />
+              <AvatarFallback>Logo</AvatarFallback>
+            </Avatar> */}
+            <div className="space-y-2">
+              <h4 className="text-md font-bold text-white text-center">{brand.heading}</h4>
+              <p className="text-sm text-red-400">
+                {brand.description}
+              </p>
+              <div className="flex items-center pt-2">
+                <span className="text-xs text-muted-foreground text-white">
+                  {brand.footertext}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
