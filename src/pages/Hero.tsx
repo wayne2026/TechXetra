@@ -2,7 +2,7 @@
 import { useGSAP } from "@gsap/react";
 import { useNavigate } from "react-router-dom";
 import { StarsBackground } from "../../components/StarBackground";
-import {ShootingStars} from '../../components/shootingStars'
+import {ShootingStars} from '../../components/ShootingStars'
 import RotatingPlanet from "../../components/Planet"
 import gsap from "gsap";
 import { useRef } from "react";
@@ -59,7 +59,7 @@ const Hero = () => {
           twinkleProbability={1}
           minTwinkleSpeed={0.6}
           maxTwinkleSpeed={1.2}
-          className="absolute"
+          className="absolute h-[150vh]"
         />
         <ShootingStars/>
         <div className="w-full h-[5rem] flex justify-between  text-white">

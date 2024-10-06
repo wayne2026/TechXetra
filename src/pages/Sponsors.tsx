@@ -4,7 +4,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "../../components/avatar";
-import { ShootingStars } from "../../components/shootingStars";
+import { ShootingStars } from "../../components/ShootingStars";
 import { StarsBackground } from '../../components/StarBackground';
 
 interface Brand {
@@ -186,7 +186,7 @@ const Sponsors: React.FC = () => {
       <ShootingStars />
       <div className="container mx-auto">
         {/* Sponsor heading */}
-        <h2 className="text-5xl font-bold text-center mb-8 font-manrope text-red-400">
+        <h2 className="text-5xl font-bold text-center mb-8 font-manrope text-red-400 my-28">
           Sponsors
         </h2>
         {/* Intro paragraph */}
