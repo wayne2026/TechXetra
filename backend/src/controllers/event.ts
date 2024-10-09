@@ -45,34 +45,61 @@ export const getEventsByID = async (
 }
 
 export const enrollEvent = async (
-        req: CustomRequest,
-        res: Response,
-        next: NextFunction
-    ) =>  {
-        const { userID } = req.params
-        const { eventID } = req.body
-        try {
-            const user = await User.findById(userID)
-            if (user?.events.includes(eventID)) {
-                res.status(StatusCodes.BAD_REQUEST).json({
-                    message: 'User already enrolled in this event'
-                });
-                return;
-            }
-            const getEvent = await EventModel.findById(eventID)
-            if (!getEvent) {
-                res.status(StatusCodes.NOT_FOUND).json({
-                    message: 'Event not found'
-                });
-                return;
-            }
-            user?.events.push(eventID)
-            await user?.save()
-            res.status(StatusCodes.OK).json({
-                message: 'Event enrolled successfully'
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+) => {
+    const { eventID } = req.body;
+    const userDetail = req?.user;
+    const email = userDetail?.email;
+
+    try {
+        // Fetch the user based on the authenticated user ID
+        const user = await User.findOne({email})
+        // Check if the user exists
+        if (!user) {
+            return res.status(StatusCodes.UNAUTHORIZED).json({
+                message: "User not found",
             });
-        } catch (error) {
-            next(error);
         }
-}
+
+        // Check if the user is already enrolled in the event
+        if (user.events.includes(eventID)) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                message: "User already enrolled in this event",
+            });
+        }
+
+        // Fetch the event by ID
+        const event = await EventModel.findById(eventID);
+
+        // Check if the event exists
+        if (!event) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                message: "Event not found",
+            });
+        }
+
+        // Push the eventID to the user's events array
+        user.events.push(eventID);
+
+        // Save the user document with the new event
+        const savedUser = await user.save();
+
+        // Check if the user was saved successfully
+        if (!savedUser) {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                message: "Failed to enroll in the event",
+            });
+        }
+
+        // Respond with success
+        return res.status(StatusCodes.OK).json({
+            message: "Event enrolled successfully",
+            enrolledEvents: savedUser.events, // Return the updated events array
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 

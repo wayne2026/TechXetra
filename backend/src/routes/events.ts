@@ -9,6 +9,6 @@ import { authMiddleware } from "../middleware/auth_middleware";
 
 router.get('/all',getAllEvents);
 router.get('/byID/:id',getEventsByID);
-router.post('/enroll/:userID',enrollEvent);
+router.post('/enroll',authMiddleware,enrollEvent);
 
 export default router;
