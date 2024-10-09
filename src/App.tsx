@@ -5,6 +5,7 @@ import About from './pages/About'
 import PastEvents from './pages/PastEvents'
 import Events from './pages/Events'
 import FooterBar from './pages/Footer'
+import Sponsors from './pages/Sponsors'
 function App() {
   return (
     <>
@@ -15,10 +16,10 @@ function App() {
       <About/>
       <Events/>
       <PastEvents />
+      <Sponsors />
       <FooterBar />
     </>
   )
 }
 
 export default App
-
