@@ -13,6 +13,9 @@ export interface IUser extends Document {
 	email: string;
 	avatar: string;
 	role: string;
+	"college/university": string;
+	phone_number: string;
+	physical_verification: boolean;
 	createdAt: Date;
 	updatedAt: Date;
 	events: String[];
@@ -46,6 +49,16 @@ const UserSchema: Schema<IUser> = new Schema(
 			enum: Object.values(roleEnum),
 			default: roleEnum.USER,
 		},
+		"college/university": {
+			type: String,
+			required: [true, "College/University is required."],
+		},
+		phone_number: {
+			type: String,
+			maxlength: [10, "Phone number must be less than 10 characters."],
+			minlength: [10, "Phone number must be more than 10 characters."],
+		},
+		physical_verification: { type: Boolean, default: false },
 		events: {
 			type: [String], // Array of strings for image paths or URLs
 			validate: {
