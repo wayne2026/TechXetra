@@ -18,6 +18,7 @@ export interface IUser extends Document {
 	physical_verification: boolean;
 	createdAt: Date;
 	updatedAt: Date;
+	events: String[];
 }
 
 const UserSchema: Schema<IUser> = new Schema(
@@ -58,6 +59,17 @@ const UserSchema: Schema<IUser> = new Schema(
 			minlength: [10, "Phone number must be more than 10 characters."],
 		},
 		physical_verification: { type: Boolean, default: false },
+		events: {
+			type: [String], // Array of strings for image paths or URLs
+			validate: {
+				validator: function(arr: string[]) {
+					// Validator to ensure images array length can be user-defined
+					const maxSize = 30; // Change this to any maximum size limit you need
+					return arr.length <= maxSize;
+				},
+				message: "Events array exceeds the maximum size allowed.",
+			},
+		},
 	},
 	{ timestamps: true }
 );
