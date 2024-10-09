@@ -52,6 +52,7 @@ const EventSchema: Schema = new Schema({
             message: "Images array exceeds the maximum size allowed.",
         },
     },
+    
 });
 
 // Create and export the Event model
