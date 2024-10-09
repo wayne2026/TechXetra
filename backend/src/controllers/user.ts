@@ -7,12 +7,17 @@ import User from "../models/user";
 
 import dotenv from "dotenv";
 dotenv.config();
+import { IUser } from "../models/user";
 
-const generateAccessToken = (user: { email: string; password: string }) => {
+const generateAccessToken = (user: IUser) => {
 	const secret = process.env.ACCESS_TOKEN_SECRET || "default-secret";
-	return jwt.sign({ email: user.email }, secret, {
-		expiresIn: "15s",
-	});
+	return jwt.sign(
+		{ id: user._id, email: user.email, role: user.role },
+		secret,
+		{
+			expiresIn: "15s",
+		}
+	);
 };
 
 const verifyRefreshToken = (refreshToken: string) => {
