@@ -1,15 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
-import userModel from '../models/user'
+import userModel, { IUser } from '../models/user'
 import EventModel from '../models/events';
 import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { CustomRequest } from '../middleware/auth_middleware';
 
-const generateAccessToken = (user: { email: string; password: string }) => {
+const generateAccessToken = (user: IUser) => {
 	const secret = process.env.ACCESS_TOKEN_SECRET || "default-secret";
-	return jwt.sign({ email: user.email }, secret, {
-		expiresIn: "15s",
-	});
+	return jwt.sign(
+		{ id: user._id, email: user.email, role: user.role },
+		secret,
+		{
+			expiresIn: "15m",
+		}
+	);
 };
 
 const verifyRefreshToken = (refreshToken: string) => {
@@ -80,7 +85,7 @@ export const login = async (
 };
 
 export const getAllUsers = async (
-	req: Request,
+	req: CustomRequest,
 	res: Response,
 	next: NextFunction
 ) => {
@@ -93,7 +98,7 @@ export const getAllUsers = async (
 };
 
 export const changeRoll = async (
-        req: Request,
+        req: CustomRequest,
         res: Response,
         next: NextFunction
     ) => {
@@ -112,7 +117,7 @@ export const changeRoll = async (
 };
 
 export const newEvent = async (
-        req: Request,
+        req: CustomRequest,
         res: Response,
         next: NextFunction
     ) => {
@@ -147,7 +152,7 @@ export const newEvent = async (
 };
 
 export const getEventsEnrolledByUser = async (
-        req: Request,
+        req: CustomRequest,
         res: Response,
         next: NextFunction
     ) => {
@@ -162,7 +167,7 @@ export const getEventsEnrolledByUser = async (
 }
 
 export const isUserEnrolled = async (
-        req: Request,
+        req: CustomRequest,
         res: Response,
         next: NextFunction
     ) => {
