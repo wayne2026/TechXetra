@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Avatar,
   AvatarFallback,
@@ -46,20 +46,20 @@ const brandsData: Brand[] = [
     footertext: "Visit Website",
   },
   {
-    imageSrc: "../public/AssamTribune_Logo.png",
-    lightImageSrc: "../public/AssamTribune_Logo.png",
-    altText: "graygrids",
-    link: "#",
-    heading: "Assam Tribune",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
-    footertext: "Visit Website",
-  },
-  {
     imageSrc: "../public/Gnrc_Logo.png",
     lightImageSrc: "../public/Gnrc_Logo.png",
     altText: "graygrids",
     link: "#",
     heading: "GNRC",
+    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
+    footertext: "Visit Website",
+  },
+  {
+    imageSrc: "../public/IndianOil_Logo.png",
+    lightImageSrc: "../public/IndianOil_Logo.png",
+    altText: "graygrids",
+    link: "#",
+    heading: "Indian Oil",
     description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
     footertext: "Visit Website",
   },
@@ -204,7 +204,7 @@ const Sponsors: React.FC = () => {
           {pyramidLevels.map((level, levelIndex) => (
             <div
             key={levelIndex}
-            className="grid gap-36"
+            className="grid gap-10"
             style={{
               gridTemplateColumns: `repeat(${levelIndex < 4 ? level.length : 4}, minmax(100px, 1fr))`,
               maxWidth: "100%", // Adjust this as needed
@@ -227,7 +227,7 @@ const Sponsors: React.FC = () => {
 
 const HoverCard: React.FC<{ brand: Brand; index: number }> = ({ brand, index }) => {
   const [isHovered, setIsHovered] = useState(false);
-
+  
   
 
   return (

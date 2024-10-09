@@ -39,3 +39,34 @@
     padding: 2rem;
     max-width: 1200px;
   }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(10px); 
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1); 
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(10px) scale(0.95); 
+    }
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn 0.35s ease-in-out forwards;
+  }
+  
+  .animate-fadeOut {
+    animation: fadeOut 0.5s ease-in-out forwards;
+  }
+  
