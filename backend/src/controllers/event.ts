@@ -49,30 +49,30 @@ export const enrollEvent = async (
         res: Response,
         next: NextFunction
     ) =>  {
-    const { userID } = req.params
-    const { eventID } = req.body
-    try {
-        const user = await User.findById(userID)
-        if (user?.events.includes(eventID)) {
-            res.status(StatusCodes.BAD_REQUEST).json({
-                message: 'User already enrolled in this event'
+        const { userID } = req.params
+        const { eventID } = req.body
+        try {
+            const user = await User.findById(userID)
+            if (user?.events.includes(eventID)) {
+                res.status(StatusCodes.BAD_REQUEST).json({
+                    message: 'User already enrolled in this event'
+                });
+                return;
+            }
+            const getEvent = await EventModel.findById(eventID)
+            if (!getEvent) {
+                res.status(StatusCodes.NOT_FOUND).json({
+                    message: 'Event not found'
+                });
+                return;
+            }
+            user?.events.push(eventID)
+            await user?.save()
+            res.status(StatusCodes.OK).json({
+                message: 'Event enrolled successfully'
             });
-            return;
+        } catch (error) {
+            next(error);
         }
-        const getEvent = await EventModel.findById(eventID)
-        if (!getEvent) {
-            res.status(StatusCodes.NOT_FOUND).json({
-                message: 'Event not found'
-            });
-            return;
-        }
-        user?.events.push(eventID)
-        await user?.save()
-        res.status(StatusCodes.OK).json({
-            message: 'Event enrolled successfully'
-        });
-    } catch (error) {
-        next(error);
-    }
 }
 
