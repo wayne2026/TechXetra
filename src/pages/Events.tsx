@@ -137,10 +137,10 @@ const Events: React.FC = () => {
 
     return (
         <div className='overflow-x-hidden relative '>
-            <div className="w-full  h-screen z-50  mx-auto bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b]">
-                <StarsBackground className='absolute '
-                    starDensity={0.0002}
-                />
+            <div className="w-full z-50  mx-auto bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b]">
+            <StarsBackground className='absolute '
+                starDensity={0.0002}
+            />
 
                 <ShootingStars />
 
@@ -152,9 +152,9 @@ const Events: React.FC = () => {
                     <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'games' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('games')}>Games</li>
                     <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'tech' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('tech')}>Tech</li>
                 </div>
-
-
-                <div className='p-8 pt-20 m-8  '>
+                
+                
+                <div className='p-8 pt-20'>
                     <Slider {...settings}>
                         {filteredData.map((d) => (
                             <div
