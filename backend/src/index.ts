@@ -1,5 +1,5 @@
 import express from "express";
-// import cors from "cors";
+import cors from "cors";
 import { Request, Response } from "express";
 
 import userRouter from "./routes/user";
@@ -16,7 +16,7 @@ const app = express();
 
 const port = process.env.PORT;
 const URI = process.env.MONGO_URI;
-// app.use(cors());
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
