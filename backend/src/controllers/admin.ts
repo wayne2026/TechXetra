@@ -187,3 +187,18 @@ export const isUserEnrolled = async (
         next(error);
     }
 }
+
+export const userVerification = async (
+        req: CustomRequest,
+        res: Response,
+        next: NextFunction
+    ) => {
+    const { id } = req.params
+    try {
+        const updatedUser = await userModel.findByIdAndUpdate
+        (id, { physical_verification: true }, { new: true });
+        res.status(StatusCodes.OK).json({ message: 'User verified successfully', updatedUser });
+    } catch (error) {
+        next(error);
+    }
+};
