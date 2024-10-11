@@ -1,7 +1,7 @@
-import React from 'react';
+import {useEffect, useRef} from 'react';
 import { StarsBackground } from '../../components/StarBackground';
 import { ShootingStars } from '../../components/ShootingStars';
-
+import gsap from 'gsap'
 const FooterBar: React.FC = () => {
   const Socials = [
     { name: "Instagram" },
@@ -10,6 +10,20 @@ const FooterBar: React.FC = () => {
     { name: "YouTube" },
     { name: "X" }
   ];
+  const imageRef = useRef<HTMLImageElement | null>(null);
+
+  useEffect(() => {
+    if (imageRef.current) {
+      gsap.to(imageRef.current, {
+        y: 'random(-20,20)',
+        x: 'random(-20,20)',
+        repeat: -1,
+        yoyo: true,
+        ease: 'power1.inOut',
+        duration: 2,
+      });
+    }
+  }, []);
 
   return (
     <div className="grid grid-cols-2 text-white py-10 bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b] relative overflow-x-hidden">
@@ -17,7 +31,8 @@ const FooterBar: React.FC = () => {
                 starDensity={0.0002} />
             <ShootingStars />
       <div>
-        <div className="h-[500px] w-[350px] mx-auto my-5 bg-blue-600">
+        <div className="h-fit w-fit mx-auto my-5 ">
+          <img ref={imageRef} src="/finalmc.png" alt="" width={400} />
         </div>
       </div>
 
