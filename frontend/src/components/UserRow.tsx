@@ -18,18 +18,21 @@ interface UserRowProps {
 	user: User;
 	hoveredUserId: string | null;
 	setHoveredUserId: React.Dispatch<React.SetStateAction<string | null>>;
+	openModal: (user: User) => void; // New prop to open the modal
 }
 
 const UserRow: React.FC<UserRowProps> = ({
 	user,
 	hoveredUserId,
 	setHoveredUserId,
+	openModal,
 }) => {
 	return (
 		<tr
 			onMouseEnter={() => setHoveredUserId(user._id)}
 			onMouseLeave={() => setHoveredUserId(null)}
-			className={`border-b border-gray-700 transition-all duration-300 ${
+			onClick={() => openModal(user)} // Open modal on row click
+			className={`border-b border-gray-700 transition-all duration-300 cursor-pointer ${
 				hoveredUserId === user._id ? "bg-gray-800" : ""
 			}`}
 		>

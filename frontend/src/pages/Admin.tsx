@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import UserRow from "../../components/UserRow";
+import UserRow from "../components/UserRow";
+import UserDetailsModal from "../components/UserDetailsModal";
 
 type User = {
 	_id: string;
@@ -19,6 +20,7 @@ type User = {
 const AdminPanel: React.FC = () => {
 	const [users, setUsers] = useState<User[]>([]);
 	const [hoveredUserId, setHoveredUserId] = useState<string | null>(null);
+	const [selectedUser, setSelectedUser] = useState<User | null>(null); // Modal state
 
 	useEffect(() => {
 		// Fetch all users from your API
@@ -28,7 +30,6 @@ const AdminPanel: React.FC = () => {
 					"http://localhost:3000/api/v1/user"
 				);
 				setUsers(response.data.users);
-				console.log(response.data);
 			} catch (error) {
 				console.error("Error fetching users:", error);
 			}
@@ -36,6 +37,14 @@ const AdminPanel: React.FC = () => {
 
 		fetchUsers();
 	}, []);
+
+	const openModal = (user: User) => {
+		setSelectedUser(user);
+	};
+
+	const closeModal = () => {
+		setSelectedUser(null);
+	};
 
 	return (
 		<div className="overflow-x-hidden relative">
@@ -67,11 +76,19 @@ const AdminPanel: React.FC = () => {
 									user={user}
 									hoveredUserId={hoveredUserId}
 									setHoveredUserId={setHoveredUserId}
+									openModal={openModal} // Pass openModal function
 								/>
 							))}
 						</tbody>
 					</table>
 				</div>
+
+				{selectedUser && (
+					<UserDetailsModal
+						user={selectedUser}
+						onClose={closeModal}
+					/>
+				)}
 			</div>
 		</div>
 	);
