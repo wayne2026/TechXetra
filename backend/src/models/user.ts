@@ -1,5 +1,4 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { IEvent } from "./Event"; // Assuming the Event interface is exported from the Event model
 
 export const roleEnum = {
 	USER: "user",
