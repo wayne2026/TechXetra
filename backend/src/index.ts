@@ -1,8 +1,14 @@
 import express from "express";
-import cors from "cors";
+const app = express();
+
+app.use(express.json());
+
+// import cors from "cors";
 import { Request, Response } from "express";
 
 import userRouter from "./routes/user";
+import adminRouter from "./routes/admin";
+import eventRouter from "./routes/events";
 
 import { connectDB } from "./db/connect";
 
@@ -12,18 +18,17 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const app = express();
-
 const port = process.env.PORT;
 const URI = process.env.MONGO_URI;
-app.use(cors());
-app.use(express.json());
+// app.use(cors());
 
 app.get("/", (req: Request, res: Response) => {
 	res.status(200).json({ msg: "Hello Worldssss!" });
 });
 
 app.use("/api/v1/user", userRouter);
+app.use("/admin", adminRouter);
+app.use("/events", eventRouter);
 
 app.use(errorHandlerMiddleware);
 

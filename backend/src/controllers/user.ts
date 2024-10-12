@@ -15,7 +15,7 @@ const generateAccessToken = (user: IUser) => {
 		{ id: user._id, email: user.email, role: user.role },
 		secret,
 		{
-			expiresIn: "15s",
+			expiresIn: "15m",
 		}
 	);
 };
