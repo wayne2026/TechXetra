@@ -5,6 +5,7 @@ import About from "./pages/About";
 import Events from "./pages/Events";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./pages/ProtectedRoute";
+import AdminPanel from "./pages/Admin";
 import { useState } from "react";
 function App() {
 	const [user, setUser] = useState(null);
@@ -25,6 +26,7 @@ function App() {
 						</ProtectedRoute>
 					}
 				/>
+				<Route path="/admin" element={<AdminPanel />} />
 			</Routes>
 			<About />
 			<Events />
