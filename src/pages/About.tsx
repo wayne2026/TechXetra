@@ -27,19 +27,17 @@ const About: React.FC = () => {
     <div className='max-sm:pt-28 max-sm:pb-14 bg-gradient-to-b from-[#11021a] via-[#030229] to-[#1f021c] relative flex max-sm:flex-col sm:items-center overflow-hidden  '>
       <StarsBackground className='absolute ' />
       <ShootingStars />
-      <div className=' sm:w-[800px]  sm:pt-20 '>
+      <div className=' sm:w-[800px]'>
         <div className='sm:hidden '>
           <img ref={imageRef} src="/mascot-bg.png" width={250} alt="" className='absolute left-[17rem] bottom-56 top-2 -rotate-[30deg] ' />
         </div>
         <h1 className='max-sm:text-4xl max-sm:pl-5 max-sm:text-left text-nowrap font-technoHideo text-red-400 sm:pt-20 text-7xl font-bold text-transparent bg-clip-text bg-gradient-radial from-[#FD8444] to-[#7527ED] sm:pl-20'>About Us</h1>
-        <p className=' text-red-400 font-lemonMilk max-sm:pl-5 max-sm:pr-20 sm:pl-20  pt-10 sm:text-[1.3rem] max-sm:text-xs leading-relaxed text-justify'>
-          TechXetra is Tezpur University's renowned annual techno-cultural festival, merging
-          technology and culture. Since its inception on October 17, 2008, it has become a major
-          event in North-East India, drawing participants nationwide. The festival showcases
-          technical skills, innovative ideas, and cultural expressions.TechXetra is Tezpur University's renowned annual techno-cultural festival, merging
-          technology and culture. Since its inception on October 17, 2008, it has become a major
-          event in North-East India, drawing participants nationwide. The festival showcases
-          technical skills, innovative ideas, and cultural expressions.
+        <p className=' text-red-400 font-lemonMilk max-sm:pl-5 max-sm:pr-20 sm:pl-20  pt-8 sm:text-[0.96rem] max-sm:text-[0.5rem] leading-relaxed text-justify'>
+          The annual techno-cultural fest of Tezpur University, TECHXETRA, is back and better than ever! Established in October 2008, TECHXETRA has quickly become one of the premier fests in India and Northeast, celebrating the dynamic fusion of culture and technology.
+          Every year, TECHXETRA revolves around a unique theme that addresses real-world issues, fostering a bridge between students and genuine challenges. With vibrant cultural showcases, innovative tech events, and an inspiring campus backdrop, we attract some of the brightest minds in the nation.
+          At the heart of TECHXETRA is a commitment to making learning fun and engaging. We blend entertaining events with rich cultural experiences in dance and music, ensuring high energy and joy throughout the fest.
+          Our success is driven by the dedicated students and faculty of Tezpur University, who work tirelessly to elevate the fest to new heights. We invite you to join us for TECHXETRA 2024—a platform for innovation, cultural exchange, and, most importantly, a celebration of technological science.
+          Come be a part of this vibrant journey and contribute to a brighter future!
         </p>
       </div>
       <div className='max-sm:hidden'>

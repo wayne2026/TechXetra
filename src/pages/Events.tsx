@@ -34,16 +34,16 @@ const Events: React.FC = () => {
         initialSlide:0,
         responsive: [
             {
-                breakpoint: 1024, // At 1024px or below (tablet and smaller)
+                breakpoint: 1024,
                 settings: {
-                    slidesToShow: 2,  // Show 2 slides on tablets
+                    slidesToShow: 2, 
                     slidesToScroll: 1,
                 }
             },
             {
-                breakpoint: 768, // At 768px or below (mobile devices)
+                breakpoint: 768, 
                 settings: {
-                    slidesToShow: 1,  // Show 1 slide on mobile
+                    slidesToShow: 1,
                     slidesToScroll: 1,
                 }
             }
@@ -161,14 +161,14 @@ const Events: React.FC = () => {
 
     return (
         <div className='overflow-x-hidden relative '>
-            <div className="w-full z-50 pt-14  mx-auto bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b]">
+            <div className="w-full z-50   mx-auto bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b]">
                 <StarsBackground className='absolute '
                     starDensity={0.0002}
                 />
 
                 <ShootingStars />
 
-                <h1 className="font-semibold font-manrope text-7xl w-fit h-fit pt-6 pl-9 ml-10 text-transparent bg-clip-text bg-gradient-radial from-[#FD8444] to-[#7527ED]">Events</h1>
+                <h1 className="font-semibold  text-7xl w-fit h-fit pt-6 pl-9 ml-10 text-transparent bg-clip-text bg-gradient-radial from-[#FD8444] to-[#7527ED]">Events</h1>
 
                 <div className='list-none ml-10 absolute  z-10 font-manrope container flex text-white pl-9'>
                     <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'All' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('All')}>All</li>
