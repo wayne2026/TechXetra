@@ -132,9 +132,9 @@ const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
 							</button>
 							<button
 								className="w-[80%] px-4 py-1 rounded-md bg-gray-900 hover:cursor-pointer transform ease-in-out duration-150 hover:bg-gray-800"
-								onClick={() => navigate("/profile")}
+								onClick={() => navigate("/signup")}
 							>
-								Profile
+								Sign Up
 							</button>
 						</div>
 					</form>

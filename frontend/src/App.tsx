@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
 import About from "./pages/About";
 import Events from "./pages/Events";
 import Profile from "./pages/Profile";
@@ -17,6 +18,10 @@ function App() {
 				<Route
 					path="/login"
 					element={<Login setToken={setToken} setUser={setUser} />}
+				/>
+				<Route
+					path="/signup"
+					element={<Signup setToken={setToken} setUser={setUser} />}
 				/>
 				<Route
 					path="/profile"
