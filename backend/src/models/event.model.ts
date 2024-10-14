@@ -10,6 +10,11 @@ interface IEvent extends Document {
         location: string;
     };
     images: string[];
+    limit: {
+        age: number;
+        date: Date;
+    }
+    creator: mongoose.Schema.Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -42,6 +47,11 @@ const EventSchema: Schema<IEvent> = new Schema(
             type: [String],
             required: true,
         },
+        creator: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        }
     },
     {
         timestamps: true,

@@ -37,7 +37,8 @@ export interface IUser extends Document {
 	isVerified: boolean;
 	isBlocked: boolean;
 	events: IUserEvent[];
-	refreshToken: string;
+	googleId: string;
+	refreshToken?: string;
 	oneTimePassword?: string;
     oneTimeExpire?: Date;
     resetPasswordToken?: string;
@@ -138,6 +139,7 @@ const UserSchema: Schema<IUser> = new Schema(
 			type: String,
 			maxlength: [10, "Phone number must be less than 10 characters."],
 			minlength: [10, "Phone number must be more than 10 characters."],
+			required: [true, "Phone Number is required."],
 		},
 		isVerified: { 
 			type: Boolean,
@@ -147,6 +149,7 @@ const UserSchema: Schema<IUser> = new Schema(
 			type: Boolean,
 			default: false
 		},
+		googleId: String,
 		events: [EventSchema],
 		refreshToken: String,
 		oneTimePassword: String,

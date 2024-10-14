@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import app from "./app.js";
 import { StatusCodes } from "http-status-codes";
+import "./utils/emailQueue.js";
+import Redis from "ioredis";
 
 process.on("uncaughtException", (err: Error) => {
     console.log(`Error: ${err.message}`);
@@ -13,6 +15,7 @@ process.on("uncaughtException", (err: Error) => {
 
 dotenv.config();
 
+export const redis = new Redis.default();
 const PORT = process.env.PORT || 4000;
 
 app.get("/", (req: Request, res: Response) => {

@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import helmet from "helmet";
 import limiter from "./config/rateLimiter.js";
 import ErrorMiddleware from "./middlewares/error.js";
+import userRouter from "./routes/user.routes.js";
 
 const app: Application = express();
 
@@ -34,13 +35,7 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.static("public"));
 
-// import userRouter from "./routes/user";
-// import adminRouter from "./routes/admin";
-// import eventRouter from "./routes/events";
-
-// app.use("/api/v1/user", userRouter);
-// app.use("/admin", adminRouter);
-// app.use("/events", eventRouter);
+app.use("/api/v1/users", userRouter);
 
 app.use(ErrorMiddleware);
 
