@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import userModel, { IUser } from "../models/user";
-import EventModel from "../models/events";
+import userModel, { IUser } from "../models/user.js";
+import EventModel from "../models/events.js";
 import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { CustomRequest } from "../middleware/auth_middleware";
+import { CustomRequest } from "../middleware/auth_middleware.js";
 
 const generateAccessToken = (user: IUser) => {
 	const secret = process.env.ACCESS_TOKEN_SECRET || "default-secret";

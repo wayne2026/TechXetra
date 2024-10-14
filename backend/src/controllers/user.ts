@@ -3,11 +3,11 @@ import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-import User from "../models/user";
+import User from "../models/user.js";
 
 import dotenv from "dotenv";
 dotenv.config();
-import { IUser } from "../models/user";
+import { IUser } from "../models/user.js";
 
 const generateAccessToken = (user: IUser) => {
 	const secret = process.env.ACCESS_TOKEN_SECRET || "default-secret";
