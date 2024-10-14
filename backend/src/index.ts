@@ -7,10 +7,10 @@ import "./utils/emailQueue.js";
 import Redis from "ioredis";
 
 process.on("uncaughtException", (err: Error) => {
-    console.log(`Error: ${err.message}`);
-    console.log(`Shutting down the server due to Uncaught Exception`);
-    
-    process.exit(1);
+	console.log(`Error: ${err.message}`);
+	console.log(`Shutting down the server due to Uncaught Exception`);
+
+	process.exit(1);
 });
 
 dotenv.config();
@@ -20,27 +20,29 @@ const PORT = process.env.PORT || 4000;
 
 app.get("/", (req: Request, res: Response) => {
 	res.status(StatusCodes.OK).json({
-        success: true,
-        message: "Welcome to TechXetra API",
-        version: "1.0.0"
-    });
+		success: true,
+		message: "Welcome to TechXetra API",
+		version: "1.0.0",
+	});
 });
 
 const start = () => {
-    connectDB();
+	connectDB();
 
-    const server = app.listen(PORT, () => {
-        console.log(`App listening at http://localhost:${PORT}`);
-    });
+	const server = app.listen(PORT, () => {
+		console.log(`App listening at http://localhost:${PORT}`);
+	});
 
-    process.on("unhandledRejection", (err: any) => {
-        console.log(`Error: ${err.message}`);
-        console.log(`Shutting down the server due to Unhandled Promise Rejection`);
-    
-        server.close(() => {
-            process.exit(1);
-        });
-    });
+	process.on("unhandledRejection", (err: any) => {
+		console.log(`Error: ${err.message}`);
+		console.log(
+			`Shutting down the server due to Unhandled Promise Rejection`
+		);
+
+		server.close(() => {
+			process.exit(1);
+		});
+	});
 };
 
 start();
