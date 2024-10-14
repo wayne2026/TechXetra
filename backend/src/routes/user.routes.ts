@@ -5,8 +5,8 @@ import { isUserVerified, verifyToken } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.route("/register").get(uploadAvatar.single("avatar"), registerUser);
-router.route("/login").get(loginUser);
+router.route("/register").post(uploadAvatar.single("avatar"), registerUser);
+router.route("/login").post(loginUser);
 router.route("/me").get(verifyToken, getUser);
 router.route("/logout").get(verifyToken, logoutUser);
 router.route("/edit/profile").put(verifyToken, isUserVerified, uploadAvatar.single("avatar"), updateProfile);
