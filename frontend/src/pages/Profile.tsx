@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 type User = {
 	_id: string;
 	username: string;
@@ -12,7 +14,15 @@ type User = {
 	events: string[];
 };
 
-const Profile = ({ user }: { user: User | null }) => {
+const Profile = ({
+	user,
+	handleLogout,
+}: {
+	user: User | null;
+	handleLogout: () => void;
+}) => {
+	const navigate = useNavigate();
+
 	if (!user) {
 		return (
 			<div className="text-center py-10 text-gray-400">
@@ -26,6 +36,8 @@ const Profile = ({ user }: { user: User | null }) => {
 
 	// Generate QR code URL
 	const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${user._id}`;
+
+	console.log(user.events[0]);
 
 	return (
 		<div className="flex justify-center items-center h-screen bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b] text-white">
@@ -111,6 +123,19 @@ const Profile = ({ user }: { user: User | null }) => {
 					) : (
 						<p className="text-gray-500">No events registered</p>
 					)}
+				</div>
+
+				{/* Logout Button */}
+				<div className="mt-8 text-center">
+					<button
+						className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+						onClick={() => {
+							handleLogout();
+							navigate("/login");
+						}}
+					>
+						Logout
+					</button>
 				</div>
 			</div>
 		</div>

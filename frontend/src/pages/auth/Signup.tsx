@@ -61,7 +61,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
 		try {
 			// Send signup request to the backend
 			const registerResponse = await axios.post(
-				"http://localhost:3000/api/v1/user/register",
+				"http://localhost:8000/api/v1/user/register",
 				{
 					avatar: "Ayatar",
 					username,

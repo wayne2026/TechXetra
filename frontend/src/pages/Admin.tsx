@@ -29,7 +29,7 @@ const AdminPanel: React.FC = () => {
 		const fetchUsers = async () => {
 			try {
 				const response = await axios.get(
-					"http://localhost:3000/api/v1/user"
+					"http://localhost:8000/api/v1/user"
 				);
 				setUsers(response.data.users);
 			} catch (error) {

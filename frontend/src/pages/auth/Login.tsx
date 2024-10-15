@@ -8,9 +8,7 @@ import axios from "axios";
 const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
 	const starsBG = useRef<HTMLDivElement>(null);
 	const formDiv = useRef<HTMLDivElement>(null);
-
 	const navigate = useNavigate();
-
 	const [email, setEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
 
@@ -31,6 +29,14 @@ const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
 		});
 	});
 
+	// Utility to get cookies by name
+	const getCookie = (name: string) => {
+		const cookie = document.cookie
+			.split("; ")
+			.find((row) => row.startsWith(name));
+		return cookie ? cookie.split("=")[1] : null;
+	};
+
 	const handleLogin = async () => {
 		if (!email || !password) {
 			alert("Please enter email and password");
@@ -38,18 +44,24 @@ const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
 		}
 		try {
 			const axiosResponse = await axios.post(
-				"http://localhost:3000/api/v1/user/login",
-				{
-					email,
-					password,
-				}
+				"http://localhost:8000/api/v1/users/login",
+				{ email, password },
+				{ withCredentials: true }
 			);
 			console.log(axiosResponse.data);
-			setToken(axiosResponse.data.accessToken);
+			setToken(getCookie("accessToken")); // Read the accessToken from the updated cookies
 			setUser(axiosResponse.data.user);
+
+			// Save user in localStorage
+			localStorage.setItem(
+				"user",
+				JSON.stringify(axiosResponse.data.user)
+			);
+
 			navigate("/profile");
 		} catch (error) {
 			console.error(error);
+			alert("Login failed, please try again.");
 		}
 	};
 
@@ -123,10 +135,7 @@ const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
 							<button
 								type="button"
 								className="w-[80%] px-4 py-1 rounded-md bg-gray-900 hover:cursor-pointer transform ease-in-out duration-150 hover:bg-gray-800"
-								onClick={() => {
-									console.log(email, password);
-									handleLogin();
-								}}
+								onClick={handleLogin}
 							>
 								Login
 							</button>
