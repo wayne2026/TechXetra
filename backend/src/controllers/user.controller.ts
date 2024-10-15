@@ -6,7 +6,6 @@ import ErrorHandler from "../utils/errorHandler.js";
 import { addEmailToQueue } from "../utils/emailQueue.js";
 import sendToken from "../utils/jwtToken.js";
 import { CustomRequest } from "../middlewares/auth.middleware.js";
-import { firebaseAdmin } from "../config/firebase.admin.js";
 import path from "path";
 import fs from "fs";
 
@@ -325,63 +324,6 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 		await user.save();
 	
 		sendToken(user, StatusCodes.OK, res);
-	} catch (error) {
-		next(error);
-	}
-};
-
-export const googleLogin = async (req: Request, res: Response, next: NextFunction) => {
-	try {
-		const { token } = req.body;
-		if (!token) {
-			return next(new ErrorHandler("Token not found", StatusCodes.NOT_FOUND));
-		}
-	
-		const decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
-		if (!decodedToken) {
-			return next(new ErrorHandler("Google Auth Failed", 404));
-		}
-		const { uid, email, name, picture, email_verified, phone_number } = decodedToken;
-		const user = await User.findOne({ email });
-	
-		if (user) {
-			if (user?.googleId === uid) {
-				sendToken(user, StatusCodes.OK, res);
-			} else {
-				user.googleId = uid;
-				user.account.push(accountEnum.GOOGLE);
-				if (user?.avatar?.length === 0) {
-					user.avatar = picture || "";
-				}
-				if (email === process.env.ADMIN_EMAIL) {
-					user.role = roleEnum.ADMIN;
-					await user.save();
-				}
-				await user.save();
-				sendToken(user, StatusCodes.OK, res);
-			}
-		} else {
-
-			let firstName, lastName;
-			if (name) {
-				const nameParts = name.split(" ");
-				firstName = nameParts[0];
-				lastName = nameParts.slice(1).join(" ");
-			}
-			const newUser = await User.create({
-				firstName,
-				lastName,
-				email,
-				avatar: picture,
-				account: [accountEnum.GOOGLE],
-				college: "College is not available",
-				phoneNumber: phone_number || "Phone is not available",
-				isVerified: email_verified,
-				role: email === process.env.ADMIN_EMAIL? roleEnum.ADMIN : roleEnum.USER,
-				googleId: uid
-			});
-			sendToken(newUser, StatusCodes.CREATED, res);
-		}
 	} catch (error) {
 		next(error);
 	}
