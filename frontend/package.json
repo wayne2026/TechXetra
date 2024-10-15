@@ -14,8 +14,9 @@
     "@gsap/react": "^2.1.1",
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
-    "@react-three/drei": "^9.112.0",
+    "@react-three/drei": "^9.114.3",
     "@react-three/fiber": "^8.17.7",
+    "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.7.0",
@@ -32,7 +33,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
-    "@types/node": "^22.7.2",
+    "@types/node": "^22.7.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/react-slick": "^0.23.13",
@@ -46,6 +47,6 @@
     "tailwindcss": "^3.4.10",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.3"
+    "vite": "^5.4.9"
   }
 }
