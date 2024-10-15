@@ -44,7 +44,7 @@ export const verifyToken = async (req: CustomRequest, res: Response, next: NextF
 				}
 
 				const newAccessToken = user.generateAccessToken();
-				const expireTime = Number(process.env.ACCESS_COOKIE_EXPIRE) * 60 * 1000;
+				const expireTime = Number(process.env.ACCESS_COOKIE_EXPIRE) * 24 * 60 * 60 * 1000;
 
 				const options: CookieOptions = {
 					expires: new Date(

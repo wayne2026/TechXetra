@@ -11,15 +11,6 @@ const Hero = () => {
   const btnRef = useRef<HTMLButtonElement>(null);
   const starsBg = useRef<HTMLDivElement>(null);
 
-  // useGSAP(() => {
-  //   gsap.from(btnRef.current, {
-  //     y: -5,
-  //     opacity: 0,
-  //     delay: 0.9,
-  //     duration: 0.8,
-  //   });
-  // }, [btnRef]);
-
   useGSAP(() => {
     gsap.from(starsBg.current, {
       opacity: 0,

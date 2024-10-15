@@ -1,5 +1,5 @@
 import { Route, Routes, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Landing from "./pages/Landing";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
@@ -14,7 +14,7 @@ import axios from "axios";
 
 function App() {
 	const [user, setUser] = useState(null);
-	const [token, setToken] = useState<string | null>(null); // Holds accessToken
+	const [, setToken] = useState<string | null>(null); // Holds accessToken
 	const [isLoading, setIsLoading] = useState(true);
 	const navigate = useNavigate();
 
@@ -45,12 +45,12 @@ function App() {
 		checkLoginStatus();
 	}, []);
 
-	const handleLogout = () => {
+	const handleLogout = useCallback(() => {
 		localStorage.removeItem("user");
 		setToken(null);
 		setUser(null);
 		navigate("/login");
-	};
+	}, [navigate]);
 
 	// Axios interceptor for handling failed requests
 	useEffect(() => {
@@ -65,14 +65,14 @@ function App() {
 		);
 
 		return () => axios.interceptors.response.eject(axiosInterceptor);
-	}, []);
+	}, [handleLogout]);
 
 	if (isLoading) return <div>Loading...</div>;
 
 	return (
 		<>
 			<Routes>
-				<Route path="/" element={<Landing user={user} />} />
+				<Route path="/" element={<Landing />} />
 				<Route
 					path="/login"
 					element={<Login setToken={setToken} setUser={setUser} />}
