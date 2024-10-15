@@ -2,16 +2,19 @@ import { useNavigate } from "react-router-dom";
 
 type User = {
 	_id: string;
-	username: string;
+	firstName: string;
+	lastName: string;
 	email: string;
 	avatar: string;
 	role: string;
-	"college/university": string;
-	phone_number: string;
-	physical_verification: boolean;
+	account: string[];
+	college: string;
+	phoneNumber: string;
+	isVerified: boolean;
+	isBlocked: boolean;
+	events: string[];
 	createdAt: string;
 	updatedAt: string;
-	events: string[];
 };
 
 const Profile = ({
@@ -37,8 +40,6 @@ const Profile = ({
 	// Generate QR code URL
 	const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${user._id}`;
 
-	console.log(user.events[0]);
-
 	return (
 		<div className="flex justify-center items-center h-screen bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b] text-white">
 			<div className="bg-gray-900 rounded-lg shadow-lg p-8 w-3/4 max-w-4xl">
@@ -53,14 +54,15 @@ const Profile = ({
 						{/* Avatar */}
 						<img
 							src={user.avatar}
-							alt={user.username}
+							alt={`${user.firstName} ${user.lastName}`}
 							className="w-32 h-32 rounded-full shadow-md border-4 border-purple-500"
 						/>
 
 						{/* User Info */}
 						<div>
 							<h1 className="text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#FD8444] to-[#7527ED]">
-								{capitalize(user.username)}
+								{capitalize(user.firstName)}{" "}
+								{capitalize(user.lastName)}
 							</h1>
 							<p className="text-lg mb-1">
 								<span className="font-semibold">Email: </span>
@@ -71,21 +73,35 @@ const Profile = ({
 								{user.role}
 							</p>
 							<p className="text-lg mb-1">
+								<span className="font-semibold">
+									Account Types:{" "}
+								</span>
+								{user.account.join(", ")}
+							</p>
+							<p className="text-lg mb-1">
 								<span className="font-semibold">College: </span>
-								{capitalize(user["college/university"])}
+								{capitalize(user.college)}
 							</p>
 							<p className="text-lg mb-1">
 								<span className="font-semibold">Phone: </span>
-								{user.phone_number}
+								{user.phoneNumber}
 							</p>
 							<p className="text-lg mb-1">
 								<span className="font-semibold">
 									Verified:{" "}
 								</span>
-								{user.physical_verification ? (
+								{user.isVerified ? (
 									<span className="text-green-500">Yes</span>
 								) : (
 									<span className="text-red-500">No</span>
+								)}
+							</p>
+							<p className="text-lg mb-1">
+								<span className="font-semibold">Blocked: </span>
+								{user.isBlocked ? (
+									<span className="text-red-500">Yes</span>
+								) : (
+									<span className="text-green-500">No</span>
 								)}
 							</p>
 						</div>
