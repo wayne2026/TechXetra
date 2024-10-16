@@ -48,11 +48,11 @@ const FooterBar: React.FC = () => {
       <ShootingStars />
 
       {/* Main content grid layout */}
-      <div className="flex justify-between max-sm:hidden">
+      <div className="flex justify-around max-sm:hidden">
         {/* Left section: TechXetra logo and character */}
         <div className="flex flex-col items-center">
           <img src="/TechXetraLogo1.png" alt="TechXetra Logo" className="rounded-full h-[150px] w-[150px]" /> {/* TechXetra Logo */}
-          <img  src="/finalmc.png" alt="Character Left" className="h-[500px] mt-6" /> {/* Character image */}
+          {/* <img  src="/finalmc.png" alt="Character Left" className="h-[500px] mt-6" />  */}
         </div>
 
         {/* Middle section: TechXetra wordmark */}
@@ -63,7 +63,7 @@ const FooterBar: React.FC = () => {
         {/* Right section: Dots and character */}
         <div className="flex flex-col items-center">
           <img src="Dots.svg" alt="Dots Image" className="h-[100px] w-[100px]" /> {/* Dots image */}
-          <img src="/finalmc.png" alt="Character Right" className="h-[500px] mt-6" /> {/* Character image */}
+          {/* <img src="/finalmc.png" alt="Character Right" className="h-[500px] mt-6" />  */}
         </div>
       </div>
 
