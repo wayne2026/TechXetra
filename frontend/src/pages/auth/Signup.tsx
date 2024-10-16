@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRef, useState } from "react";
+import { useRef, useState ,useEffect} from "react";
 import { StarsBackground } from "../../../components/StarBackground";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -7,11 +7,31 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
+import { ShootingStars } from '../../../components/ShootingStars'
 
 const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
   const starsBG = useRef<HTMLDivElement>(null);
   const formDiv = useRef<HTMLDivElement>(null);
+  
 
+  useEffect(() => {
+    
+      gsap.to("img.animate", {
+        y: 'random(-20,20)',
+        x: 'random(-20,20)',
+        repeat: -1,
+        yoyo: true,
+        ease: 'power1.inOut',
+        duration: 2,
+      });
+    
+    document.body.style.overflow = 'hidden';
+
+   
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
   const navigate = useNavigate();
 
   // Form state
@@ -150,7 +170,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
   };
 
   return (
-    <div className="w-full bg-black mx-auto min-h-screen overflow-hidden">
+    <div className="w-full bg-black mx-auto border-2 overflow-hidden ">
       <div ref={starsBG} className="w-full h-full">
         <StarsBackground
           starDensity={0.0009}
@@ -160,10 +180,12 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
           maxTwinkleSpeed={1.2}
           className="absolute bg-gradient-to-b from-[#000000] via-[#220135] to-[#020b22]"
         />
+        <ShootingStars/>
         <div
           ref={formDiv}
-          className="w-full min-h-screen flex justify-center items-center"
+          className="w-full min-h-screen flex justify-center m-auto items-center "
         >
+          <img src="finalmc.png" alt="" width={350} className="animate max-md:hidden"/>
           <form className="border-[0.5px] border-slate-700 rounded-lg mx-auto w-[40rem] pt-6 pb-10 text-white">
             <div className="w-full pb-4">
               <p className="w-full flex justify-center font-originTech text-[0.8rem]">
@@ -194,7 +216,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                   <input
                     type="text"
                     id="username"
-                    className="w-[100%] py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
+                    className="w-[100%] outline-none py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
                     placeholder="John"
                     onChange={(e) => setFirstName(e.target.value)}
                     value={firstName}
@@ -212,7 +234,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                   <input
                     type="email"
                     id="lastName"
-                    className="w-[100%] py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
+                    className="w-[100%] outline-none py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
                     placeholder="Doe"
                     onChange={(e) => setLastName(e.target.value)}
                     value={lastName}
@@ -234,7 +256,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                   <input
                     type="text"
                     id="email"
-                    className="w-[100%] py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
+                    className="w-[100%] outline-none py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
                     placeholder="example@example.com"
                     onChange={(e) => setEmail(e.target.value)}
                     value={email}
@@ -254,7 +276,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                       <input
                         type={showPassword ? "text" : "password"}
                         id="password"
-                        className="w-[100%] py-1 bg-slate-500 rounded-l-md flex justify-start items-center pl-2"
+                        className="w-[100%] outline-none py-1 bg-slate-500 rounded-l-md flex justify-start items-center pl-2"
                         placeholder="********"
                         onChange={(e) => setPassword(e.target.value)}
                         value={password}
@@ -290,7 +312,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                       <input
                         type={showConfirmPassword ? "text" : "password"}
                         id="password"
-                        className="w-[100%] py-1 bg-slate-500 rounded-l-md flex justify-start items-center pl-2"
+                        className="w-[100%] py-1 outline-none bg-slate-500 rounded-l-md flex justify-start items-center pl-2"
                         placeholder="********"
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         value={confirmPassword}
@@ -320,7 +342,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                   <input
                     type="email"
                     id="phoneNumber"
-                    className="w-[100%] py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
+                    className="w-[100%] outline-none py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
                     placeholder="9999933333"
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     value={phoneNumber}
@@ -370,7 +392,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                     <input
                       type="text"
                       id="schoolName"
-                      className="w-[100%] py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
+                      className="w-[100%] outline-none py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
                       placeholder="name"
                     />
                   </div>
@@ -415,7 +437,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                     <input
                       type="text"
                       id="schoolName"
-                      className="w-[100%] py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
+                      className="w-[100%] py-1 outline-none bg-slate-500 rounded-md flex justify-start items-center pl-2"
                       placeholder="name"
                     />
                   </div>
@@ -456,11 +478,11 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                   Upload Avatar
                 </label>
               </div>
-              <div className="w-full flex justify-center pt-1">
+              <div className="w-full flex justify-center pt-1 ">
                 <input
                   type="file"
                   id="avatar"
-                  className="w-[95%] py-1 bg-slate-500 rounded-md pl-2"
+                  className="w-[95%] py-1 font-originTech outline-none bg-slate-500 rounded-md pl-2"
                   onChange={handleAvatarChange}
                 />
               </div>
@@ -497,7 +519,10 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                 </Link>
               </p>
             </div>
+            
           </form>
+          <img src="mascot-bg.png" alt="" width={350} className="animate max-md:hidden"/>
+
         </div>
       </div>
     </div>

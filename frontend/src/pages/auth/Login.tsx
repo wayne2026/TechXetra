@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { StarsBackground } from "../../../components/StarBackground";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ShootingStars } from '../../../components/ShootingStars'
 
 const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
   const starsBG = useRef<HTMLDivElement>(null);
@@ -12,7 +13,24 @@ const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  
 
+  useEffect(() => {
+    
+      gsap.to("img.animate" ,{
+        y: 'random(-20,20)',
+        x: 'random(-20,20)',
+        repeat: -1,
+        yoyo: true,
+        ease: 'power1.inOut',
+        duration: 2
+      });
+    
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
   useGSAP(() => {
     gsap.from(starsBG.current, {
       opacity: 0,
@@ -74,10 +92,12 @@ const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
           maxTwinkleSpeed={1.2}
           className="absolute bg-gradient-to-b from-[#000000] via-[#220135] to-[#020b22]"
         />
+        <ShootingStars/>
         <div
           ref={formDiv}
           className="w-full h-full flex justify-center items-center"
         >
+          <img src="finalmc.png"  width={400} alt="" className="animate max-md:hidden"/>
           <form
             action=""
             method="post"
@@ -102,7 +122,7 @@ const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                 <input
                   type="text"
                   name=""
-                  className="w-[100%] py-1 bg-violet-400 rounded-md flex justify-start items-center pl-2 text-violet-800 placeholder:text-violet-600"
+                  className="w-[100%] outline-none py-1 bg-violet-400 rounded-md flex justify-start items-center pl-2 text-violet-800 placeholder:text-violet-600"
                   placeholder="Tyler"
                   onChange={(e) => setEmail(e.target.value)}
                   value={email}
@@ -120,7 +140,7 @@ const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                 <input
                   type="password"
                   name=""
-                  className="w-[100%] py-1 bg-violet-400 rounded-md flex justify-start items-center pl-2 text-violet-800 placeholder:text-violet-600"
+                  className="w-[100%] outline-none py-1 bg-violet-400 rounded-md flex justify-start items-center pl-2 text-violet-800 placeholder:text-violet-600"
                   placeholder="Siuuuu"
                   onChange={(e) => setPassword(e.target.value)}
                   value={password}
@@ -148,6 +168,7 @@ const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
               </p>
             </div>
           </form>
+          <img src="mascot-bg.png"  width={400} alt="" className="animate max-md:hidden" />
         </div>
       </div>
     </div>
