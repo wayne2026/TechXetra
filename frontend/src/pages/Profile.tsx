@@ -1,4 +1,5 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
+import { useEffect } from "react";
 
 type User = {
 	_id: string;
@@ -26,6 +27,13 @@ const Profile = ({
 }) => {
 	const navigate = useNavigate();
 
+	useEffect(() => {
+  
+	  document.body.style.overflow = 'hidden';
+	  return () => {
+		document.body.style.overflow = 'auto';
+	  };
+	},[]);
 	if (!user) {
 		return (
 			<div className="text-center py-10 text-gray-400">
@@ -41,30 +49,30 @@ const Profile = ({
 	const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${user._id}`;
 
 	return (
-		<div className="flex justify-center items-center h-screen bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b] text-white">
-			<div className="bg-gray-900 rounded-lg shadow-lg p-8 w-3/4 max-w-4xl">
+		<div className="flex max-sm:flex-col overflow-hidden sm:justify-center items-center h-screen bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b] text-white">
+			<div className="bg-gray-900 rounded-lg max-sm:h-screen max-sm:w-screen shadow-lg p-8 sm:w-3/4 sm:max-w-4xl">
 				{/* Profile Heading */}
-				<h1 className="text-5xl font-extrabold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#FD8444] to-[#7527ED]">
+				<h1 className="sm:text-5xl max-sm:text-5xl  font-extrabold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#FD8444] to-[#7527ED]">
 					Profile
 				</h1>
 
-				<div className="flex items-center justify-between space-x-8">
+				<div className="flex max-sm:flex-col items-center justify-between space-x-8 max-sm:">
 					{/* Left side: Avatar and user info */}
-					<div className="flex items-center space-x-8">
+					<div className="flex max-sm:flex-col items-center space-x-8 max-sm:gap-5">
 						{/* Avatar */}
 						<img
 							src={user.avatar}
 							alt={`${user.firstName} ${user.lastName}`}
-							className="w-32 h-32 rounded-full shadow-md border-4 border-purple-500"
+							className="sm:w-32 sm:h-32 max-sm:w-28 rounded-full shadow-md border-4 border-purple-500"
 						/>
 
 						{/* User Info */}
-						<div>
+						<div className="max-sm:flex max-sm:flex-col max-sm:gap-1">
 							<h1 className="text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#FD8444] to-[#7527ED]">
 								{capitalize(user.firstName)}{" "}
 								{capitalize(user.lastName)}
 							</h1>
-							<p className="text-lg mb-1">
+							<p className="sm:text-lg mb-1">
 								<span className="font-semibold">Email: </span>
 								{user.email}
 							</p>
