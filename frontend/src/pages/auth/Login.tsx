@@ -135,7 +135,7 @@ const Login = () => {
                 <input
                   type="password"
                   className="w-[100%] outline-none py-1 bg-violet-400 rounded-md flex justify-start items-center pl-2 text-violet-800 placeholder:text-violet-600"
-                  placeholder=""
+                  placeholder="******"
                   onChange={(e) => setPassword(e.target.value)}
                   value={password}
                 />
