@@ -14,12 +14,12 @@ export const verifyToken = async (req: CustomRequest, res: Response, next: NextF
 	const accessToken = req.cookies.accessToken as string | undefined;
     const refreshToken = req.cookies.refreshToken as string | undefined;
 
-    if (!accessToken) {
-		return next(new ErrorHandler("Access token required", StatusCodes.FORBIDDEN));
-	}
+    // if (!accessToken) {
+	// 	return next(new ErrorHandler("Access token required", StatusCodes.FORBIDDEN));
+	// }
 
     try {
-        const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!) as JwtPayload & { id: string, email: string, role: string };
+        const decoded = jwt.verify(accessToken!, process.env.ACCESS_TOKEN_SECRET!) as JwtPayload & { id: string, email: string, role: string };
 		const user = await User.findById(decoded.id);
 		if (!user) {
 			return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
@@ -31,7 +31,8 @@ export const verifyToken = async (req: CustomRequest, res: Response, next: NextF
 		req.user = user;
 		next();
     } catch (err) {
-        if (err instanceof jwt.TokenExpiredError && refreshToken) {
+        // if (err instanceof jwt.TokenExpiredError && refreshToken) {
+		if (refreshToken) {
             try {
                 const decodedRefresh = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!) as JwtPayload & { id: string };
                 const user = await User.findById(decodedRefresh.id);
@@ -44,7 +45,7 @@ export const verifyToken = async (req: CustomRequest, res: Response, next: NextF
 				}
 
 				const newAccessToken = user.generateAccessToken();
-				const expireTime = Number(process.env.ACCESS_COOKIE_EXPIRE) * 24 * 60 * 60 * 1000;
+				const expireTime = Number(process.env.ACCESS_COOKIE_EXPIRE) * 60 * 1000;
 
 				const options: CookieOptions = {
 					expires: new Date(

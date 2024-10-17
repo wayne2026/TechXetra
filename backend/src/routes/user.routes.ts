@@ -5,6 +5,7 @@ import {
 	logoutUser,
 	registerUser,
 	updateProfile,
+	verifyUser,
 } from "../controllers/user.controller.js";
 import { uploadAvatar } from "../middlewares/multer.middlware.js";
 import { isUserVerified, verifyToken } from "../middlewares/auth.middleware.js";
@@ -14,6 +15,7 @@ const router = Router();
 router.route("/register").post(uploadAvatar.single("avatar"), registerUser);
 router.route("/login").post(loginUser);
 router.route("/me").get(verifyToken, getUser);
+router.route("/verify").put(verifyToken, verifyUser);
 router.route("/logout").get(verifyToken, logoutUser);
 router
 	.route("/edit/profile")

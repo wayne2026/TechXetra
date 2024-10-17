@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRef, useState ,useEffect} from "react";
+import { useRef, useState, useEffect } from "react";
 import { StarsBackground } from "../../../components/StarBackground";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -8,26 +8,25 @@ import axios from "axios";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
 import { ShootingStars } from '../../../components/ShootingStars'
+import { useUser } from "../../context/user_context";
+import { toast } from "react-toastify";
 
-const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
+const Register = () => {
   const starsBG = useRef<HTMLDivElement>(null);
   const formDiv = useRef<HTMLDivElement>(null);
-  
 
   useEffect(() => {
-    
-      gsap.to("img.animate", {
-        y: 'random(-20,20)',
-        x: 'random(-20,20)',
-        repeat: -1,
-        yoyo: true,
-        ease: 'power1.inOut',
-        duration: 2,
-      });
-    
+    gsap.to("img.animate", {
+      y: 'random(-20,20)',
+      x: 'random(-20,20)',
+      repeat: -1,
+      yoyo: true,
+      ease: 'power1.inOut',
+      duration: 2,
+    });
+
     document.body.style.overflow = 'hidden';
 
-   
     return () => {
       document.body.style.overflow = 'auto';
     };
@@ -46,11 +45,48 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null); // For image preview
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 
-  // Error state
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const userContext = useUser();
+  const [loginLoading, setLoginLoading] = useState<boolean>(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoginLoading(true);
+    const config = {
+      headers: { "Content-Type": "multipart/form-data" },
+      withCredentials: true,
+    };
+    if (!firstName || !lastName || !email || !password || !confirmPassword || !college || !phoneNumber) {
+      toast.warning("All fields are required");
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.warning("Passwords do not match");
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append("firstName", firstName);
+      formData.append("lastName", lastName);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("college", college);
+      formData.append("phoneNumber", phoneNumber);
+      if (avatar) {
+        formData.append("avatar", avatar);
+      }
+      const { data }: { data: UserResponse } = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, formData, config);
+      userContext?.setUser(data.user);
+      toast.success("Logged In!");
+      navigate("/verify");
+    } catch (error: any) {
+      userContext?.setUser(null);
+      toast.error(error.response.data.message);
+      setLoginLoading(false);
+    }
+    setLoginLoading(false);
+  };
 
   useGSAP(() => {
     gsap.from(starsBG.current, {
@@ -68,74 +104,6 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
       duration: 0.3,
     });
   });
-
-  const handleSignup = async () => {
-    setErrorMessage(""); // Clear previous error messages
-
-    // Client-side validation
-    if (
-      !firstName ||
-      !lastName ||
-      !email ||
-      !password ||
-      !confirmPassword ||
-      !college ||
-      !phoneNumber
-    ) {
-      setErrorMessage("Please fill in all fields.");
-      return;
-    }
-    if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match.");
-      return;
-    }
-
-    try {
-      // FormData to handle file upload (avatar)
-      const formData = new FormData();
-      formData.append("firstName", firstName);
-      formData.append("lastName", lastName);
-      formData.append("email", email);
-      formData.append("password", password);
-      formData.append("college", college);
-      formData.append("phoneNumber", phoneNumber);
-      if (avatar) {
-        formData.append("avatar", avatar);
-      }
-
-      // Send signup request to the backend
-      const response = await axios.post(
-        "http://localhost:8000/api/v1/users/register",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-      console.log(response.data);
-
-      // Extract tokens from response
-      const { accessToken, user } = response.data;
-
-      // Store tokens and user data in the app
-      setToken(accessToken);
-      setUser(user);
-
-      // Redirect to the profile page
-      navigate("/profile");
-    } catch (error: any) {
-      // Handle server-side errors
-      if (error.response && error.response.data) {
-        setErrorMessage(
-          error.response.data.message ||
-            "Registration failed. Please try again."
-        );
-      } else {
-        setErrorMessage(
-          "Something went wrong. Please check your connection and try again."
-        );
-      }
-    }
-  };
 
   const handleToggleShowPassword = () => {
     if (showPassword === true) {
@@ -180,13 +148,13 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
           maxTwinkleSpeed={1.2}
           className="absolute bg-gradient-to-b from-[#000000] via-[#220135] to-[#020b22]"
         />
-        <ShootingStars/>
+        <ShootingStars />
         <div
           ref={formDiv}
           className="w-full min-h-screen flex justify-center m-auto items-center "
         >
-          <img src="finalmc.png" alt="" width={350} className="animate max-md:hidden"/>
-          <form className="border-[0.5px] border-slate-700 rounded-lg mx-auto w-[40rem] pt-6 pb-10 text-white">
+          <img src="finalmc.png" alt="" width={350} className="animate max-md:hidden" />
+          <form onSubmit={handleSubmit} className="border-[0.5px] border-slate-700 rounded-lg mx-auto w-[40rem] pt-6 pb-10 text-white">
             <div className="w-full pb-4">
               <p className="w-full flex justify-center font-originTech text-[0.8rem]">
                 Welcome to the official website of
@@ -195,13 +163,6 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                 TechXetra
               </p>
             </div>
-
-            {/* Display error message */}
-            {errorMessage && (
-              <div className="col-span-2 text-red-500 text-center mb-4">
-                {errorMessage}
-              </div>
-            )}
 
             {/* First Name */}
             <div className="w-full flex flex-row gap-2">
@@ -232,7 +193,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                     Last Name
                   </label>
                   <input
-                    type="email"
+                    type="text"
                     id="lastName"
                     className="w-[100%] outline-none py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
                     placeholder="Doe"
@@ -254,7 +215,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                     Email Address
                   </label>
                   <input
-                    type="text"
+                    type="email"
                     id="email"
                     className="w-[100%] outline-none py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
                     placeholder="example@example.com"
@@ -282,7 +243,8 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                         value={password}
                       />
                     </div>
-                    <div
+                    <button
+                      type="button"
                       className="w-[10%] flex justify-center items-center rounded-r-md hover:cursor-pointer bg-violet-400"
                       onClick={handleToggleShowPassword}
                     >
@@ -291,7 +253,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                       ) : (
                         <FaEye className="" />
                       )}
-                    </div>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -311,14 +273,15 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                     <div className="w-[90%]">
                       <input
                         type={showConfirmPassword ? "text" : "password"}
-                        id="password"
+                        id="confirmPassword"
                         className="w-[100%] py-1 outline-none bg-slate-500 rounded-l-md flex justify-start items-center pl-2"
                         placeholder="********"
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         value={confirmPassword}
                       />
                     </div>
-                    <div
+                    <button
+                      type="button"
                       className="w-[10%] flex justify-center items-center rounded-r-md hover:cursor-pointer bg-violet-400"
                       onClick={handleToggleConfirmPassword}
                     >
@@ -327,7 +290,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                       ) : (
                         <FaEye className="" />
                       )}
-                    </div>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -340,7 +303,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                     Phone Number
                   </label>
                   <input
-                    type="email"
+                    type="number"
                     id="phoneNumber"
                     className="w-[100%] outline-none py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
                     placeholder="9999933333"
@@ -363,13 +326,14 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                   <select
                     name="institutionName"
                     id="institutionName"
+                    value={college}
                     className="w-full text-slate-200 py-1 rounded-md bg-slate-400 pl-1"
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                       e.preventDefault();
                       setCollege(e.target.value);
                     }}
                   >
-                    <option value="choose" selected>
+                    <option value="">
                       Choose an option
                     </option>
                     <option value="school">School</option>
@@ -411,7 +375,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                         id="classRange"
                         className="w-full text-slate-200 py-1 rounded-md bg-slate-400 pl-1"
                       >
-                        <option value="default" selected>
+                        <option value="">
                           Choose an Option
                         </option>
                         <option value="oneToFour">Class 1-4</option>
@@ -456,7 +420,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                         id="classRange"
                         className="w-full text-slate-200 py-1 rounded-md bg-slate-400 pl-1"
                       >
-                        <option value="default" selected>
+                        <option value="">
                           UG/PG
                         </option>
                         <option value="ug">UG</option>
@@ -489,7 +453,7 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
             </div>
 
             {/* Avatar Preview */}
-            {avatarPreview && (
+            {/* {avatarPreview && (
               <div className="col-span-2 flex justify-center pt-4">
                 <img
                   src={avatarPreview}
@@ -497,13 +461,13 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                   className="w-24 h-24 object-cover rounded-full border-2 border-gray-500"
                 />
               </div>
-            )}
+            )} */}
 
             <div className="w-full flex justify-center items-center pt-8">
               <button
-                type="button"
+                type="submit"
+                disabled={loginLoading}
                 className="w-[40%] px-4 py-1 rounded-md bg-violet-600 hover:cursor-pointer transform ease-in-out duration-150 hover:bg-violet-800 font-originTech"
-                onClick={handleSignup}
               >
                 Signup
               </button>
@@ -519,9 +483,9 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
                 </Link>
               </p>
             </div>
-            
+
           </form>
-          <img src="mascot-bg.png" alt="" width={350} className="animate max-md:hidden"/>
+          <img src="mascot-bg.png" alt="" width={350} className="animate max-md:hidden" />
 
         </div>
       </div>
@@ -529,4 +493,4 @@ const Signup = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
   );
 };
 
-export default Signup;
+export default Register;
