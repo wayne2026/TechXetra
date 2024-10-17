@@ -65,7 +65,7 @@ const Login = () => {
       return;
     }
     try {
-      const { data }: { data: UserResponse } = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, { email, password }, config);
+      const { data }: { data: UserResponse } = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login, { email, password }`, config);
       userContext?.setUser(data.user);
       toast.success("Logged In!");
       navigate(from, { replace: true });
@@ -110,16 +110,15 @@ const Login = () => {
             <div className="w-full flex justify-center items-center">
               <div className="w-[80%] flex flex-col">
                 <label
-                  htmlFor=""
+                  htmlFor="email"
                   className="pb-1 font-originTech text-violet-600"
                 >
                   Email Address
                 </label>
                 <input
-                  type="text"
-                  name=""
+                  type="email"
                   className="w-[100%] outline-none py-1 bg-violet-400 rounded-md flex justify-start items-center pl-2 text-violet-800 placeholder:text-violet-600"
-                  placeholder="Tyler"
+                  placeholder="johndoe@gmail.com"
                   onChange={(e) => setEmail(e.target.value)}
                   value={email}
                 />
@@ -128,16 +127,15 @@ const Login = () => {
             <div className="w-full flex justify-center items-center pt-4">
               <div className="w-[80%] flex flex-col">
                 <label
-                  htmlFor=""
+                  htmlFor="password"
                   className="pb-1 font-originTech text-violet-600"
                 >
                   Password
                 </label>
                 <input
                   type="password"
-                  name=""
                   className="w-[100%] outline-none py-1 bg-violet-400 rounded-md flex justify-start items-center pl-2 text-violet-800 placeholder:text-violet-600"
-                  placeholder="Siuuuu"
+                  placeholder=""
                   onChange={(e) => setPassword(e.target.value)}
                   value={password}
                 />

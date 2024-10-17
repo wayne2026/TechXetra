@@ -1,6 +1,5 @@
 interface UserEvent {
 	eventId: string;
-	paymentId: string;
 	physicalVerification: {
 		status: boolean;
 		verifierId?: string;
@@ -16,7 +15,11 @@ interface User {
 	avatar: string;
 	role: string;
 	account: string[];
-	college: string;
+	schoolOrCollege: string;
+    schoolName?: string;
+	collegeName?: string;
+	collegeClass?: string;
+	schoolClass?: string;
 	phoneNumber: string;
 	isVerified: boolean;
 	isBlocked: boolean;
@@ -28,4 +31,34 @@ interface UserResponse {
     success: boolean;
     user: User;
     token: string;
+}
+
+interface EventDetails {
+	_id: string;
+    title: string;
+    smallDescription: string;
+    description?: string;
+    category: string;
+    participation: string;
+    maxGroup?: number;
+    registrationRequired: boolean;
+    paymentRequired: boolean;
+    amount?: number;
+    eventDate: Date;
+    venue?: string;
+    deadline?: Date;
+    images?: string[];
+    backgroundImage?: string;
+    eligibility?: {
+        schoolOrCollege: string;
+        collegeClass?: string;
+        schoolClass?: string;
+    }
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+interface EventDetailsResponse {
+	success: boolean;
+	events: EventDetails[]
 }

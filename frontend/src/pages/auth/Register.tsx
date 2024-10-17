@@ -39,10 +39,14 @@ const Register = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [college, setCollege] = useState<string>("");
+  const [schoolOrCollege, setSchoolOrCollege] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [avatar, setAvatar] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null); // For image preview
+  const [schoolName, setSchoolName] = useState("");
+  const [collegeName, setCollegeName] = useState("");
+  const [schoolClass, setSchoolClass] = useState("");
+  const [collegeClass, setCollegeClass] = useState("");
+  // const [avatarPreview, setAvatarPreview] = useState<string | null>(null); // For image preview
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
@@ -57,8 +61,20 @@ const Register = () => {
       headers: { "Content-Type": "multipart/form-data" },
       withCredentials: true,
     };
-    if (!firstName || !lastName || !email || !password || !confirmPassword || !college || !phoneNumber) {
+    if (!firstName || !lastName || !email || !password || !confirmPassword || !schoolOrCollege || !phoneNumber) {
       toast.warning("All fields are required");
+      return;
+    }
+    if (schoolOrCollege === "") {
+      toast.warning("School or College name is required");
+      return;
+    }
+    if (schoolOrCollege === "SCHOOL" && (!schoolName ||!schoolClass)) {
+      toast.warning("School name and class are required");
+      return;
+    }
+    if (schoolOrCollege === "COLLEGE" && (!collegeName ||!collegeClass)) {
+      toast.warning("College name and class are required");
       return;
     }
     if (password !== confirmPassword) {
@@ -71,15 +87,25 @@ const Register = () => {
       formData.append("lastName", lastName);
       formData.append("email", email);
       formData.append("password", password);
-      formData.append("college", college);
+      formData.append("schoolOrCollege", schoolOrCollege);
       formData.append("phoneNumber", phoneNumber);
+      if (schoolOrCollege === "SCHOOL") {
+        formData.append("schoolName", schoolName);
+        formData.append("schoolClass", schoolClass);
+      } else if (schoolOrCollege === "COLLEGE") {
+        formData.append("collegeName", collegeName);
+        formData.append("collegeClass", collegeClass);
+      } else {
+        toast.warning("All fields are required");
+        return;
+      }
       if (avatar) {
         formData.append("avatar", avatar);
       }
       const { data }: { data: UserResponse } = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, formData, config);
       userContext?.setUser(data.user);
       toast.success("Logged In!");
-      navigate("/verify");
+      navigate("/verify", { replace: true });
     } catch (error: any) {
       userContext?.setUser(null);
       toast.error(error.response.data.message);
@@ -126,15 +152,15 @@ const Register = () => {
     const file = e.target.files && e.target.files[0];
     setAvatar(file);
 
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setAvatarPreview(null);
-    }
+    // if (file) {
+    //   const reader = new FileReader();
+    //   reader.onloadend = () => {
+    //     setAvatarPreview(reader.result as string);
+    //   };
+    //   reader.readAsDataURL(file);
+    // } else {
+    //   setAvatarPreview(null);
+    // }
   };
 
   return (
@@ -238,7 +264,7 @@ const Register = () => {
                         type={showPassword ? "text" : "password"}
                         id="password"
                         className="w-[100%] outline-none py-1 bg-slate-500 rounded-l-md flex justify-start items-center pl-2"
-                        placeholder="********"
+                        placeholder=""
                         onChange={(e) => setPassword(e.target.value)}
                         value={password}
                       />
@@ -275,7 +301,7 @@ const Register = () => {
                         type={showConfirmPassword ? "text" : "password"}
                         id="confirmPassword"
                         className="w-[100%] py-1 outline-none bg-slate-500 rounded-l-md flex justify-start items-center pl-2"
-                        placeholder="********"
+                        placeholder=""
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         value={confirmPassword}
                       />
@@ -325,25 +351,22 @@ const Register = () => {
                 <div className="w-full">
                   <select
                     name="institutionName"
-                    id="institutionName"
-                    value={college}
+                    value={schoolOrCollege}
                     className="w-full text-slate-200 py-1 rounded-md bg-slate-400 pl-1"
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                       e.preventDefault();
-                      setCollege(e.target.value);
+                      setSchoolOrCollege(e.target.value);
                     }}
                   >
-                    <option value="">
-                      Choose an option
-                    </option>
-                    <option value="school">School</option>
-                    <option value="college">College/University</option>
+                    <option value="">Choose an option</option>
+                    <option value="SCHOOL">School</option>
+                    <option value="COLLEGE">College/University</option>
                   </select>
                 </div>
               </div>
             </div>
 
-            {college === "school" && (
+            {schoolOrCollege === "SCHOOL" && (
               <div className="w-full flex flex-row gap-2 pt-4">
                 <div className="basis-1/2 w-full flex justify-center items-center">
                   <div className="w-[90%] flex flex-col">
@@ -355,9 +378,10 @@ const Register = () => {
                     </label>
                     <input
                       type="text"
-                      id="schoolName"
+                      value={schoolName}
+                      onChange={(e) => setSchoolName(e.target.value)}
                       className="w-[100%] outline-none py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
-                      placeholder="name"
+                      placeholder="School Name"
                     />
                   </div>
                 </div>
@@ -372,15 +396,19 @@ const Register = () => {
                     <div className="w-full">
                       <select
                         name="classRange"
-                        id="classRange"
+                        value={schoolClass}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                          e.preventDefault();
+                          setSchoolClass(e.target.value);
+                        }}
                         className="w-full text-slate-200 py-1 rounded-md bg-slate-400 pl-1"
                       >
                         <option value="">
                           Choose an Option
                         </option>
-                        <option value="oneToFour">Class 1-4</option>
-                        <option value="fiveToEight">Class 5-8</option>
-                        <option value="nineToTwelve">Class 9-12</option>
+                        <option value="ONE_TO_FOUR">Class 1-4</option>
+                        <option value="FIVE_TO_EIGHT">Class 5-8</option>
+                        <option value="NINE_TO_TWELVE">Class 9-12</option>
                       </select>
                     </div>
                   </div>
@@ -388,7 +416,7 @@ const Register = () => {
               </div>
             )}
 
-            {college === "college" && (
+            {schoolOrCollege === "COLLEGE" && (
               <div className="w-full flex flex-row gap-2 pt-4">
                 <div className="basis-1/2 w-full flex justify-center items-center">
                   <div className="w-[90%] flex flex-col">
@@ -400,7 +428,8 @@ const Register = () => {
                     </label>
                     <input
                       type="text"
-                      id="schoolName"
+                      value={collegeName}
+                      onChange={(e) => setCollegeName(e.target.value)}
                       className="w-[100%] py-1 outline-none bg-slate-500 rounded-md flex justify-start items-center pl-2"
                       placeholder="name"
                     />
@@ -417,14 +446,18 @@ const Register = () => {
                     <div className="w-full">
                       <select
                         name="classRange"
-                        id="classRange"
+                        value={collegeClass}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                          e.preventDefault();
+                          setCollegeClass(e.target.value);
+                        }}
                         className="w-full text-slate-200 py-1 rounded-md bg-slate-400 pl-1"
                       >
                         <option value="">
                           UG/PG
                         </option>
-                        <option value="ug">UG</option>
-                        <option value="pg">PG</option>
+                        <option value="UG">UG</option>
+                        <option value="PG">PG</option>
                       </select>
                     </div>
                   </div>

@@ -35,7 +35,7 @@ const Hero: React.FC = () => {
         <ShootingStars />
         <div className="w-full h-[5rem] flex justify-between max-sm:mt-3 text-white">
           <div className="sm:pl-20 max-sm:pl-10 sm:mt-12">
-            <img src="./final text-Photoroom.png" width={200} alt="Logo" className="max-sm:w-24" />
+            <img src="./techxetra-text.png" width={200} alt="Logo" className="max-sm:w-24" />
           </div>
           <div className="w-fit sm:mt-14 sm:mr-16 h-fit max-sm:mt-4 max-sm:mr-10 z-10">
             <button
@@ -57,7 +57,7 @@ const Hero: React.FC = () => {
         </div>
         <div id="words-animation" className="max-sm:mt-3 mt-44 mb-14 sm:text-[3.4rem] font-autoTechno">
           <h1 className="bg-gradient-to-r from-[#5162ce] via-[#E12198]/[77%] to-[#F3AC80] bg-clip-text text-transparent text-center max-sm:leading-[70px] sm:leading-[100px]">
-            <span className="max-sm:text-[1.2rem]">REVIVING</span> <br className="sm:hidden" /> <span className="max-sm:text-[1.6rem]">THE <br className="hidden" />LEGACY</span>
+            <span className="max-sm:text-[1.2rem] ">REVIVING</span> <br className="sm:hidden" /> <span className="max-sm:text-[1.6rem]">THE <br className="hidden" />LEGACY</span>
             <br /><span className="sm:text-[2.7rem] max-sm:text-4xl sm:mr-6">INSPIRING</span><br className="sm:hidden" /><span className="max-sm:text-[2.5rem] sm:text-[2.7rem]">INNOVATION</span>
           </h1>
         </div>
