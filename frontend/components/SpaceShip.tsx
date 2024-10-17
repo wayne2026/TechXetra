@@ -9,14 +9,13 @@ const Planet: React.FC = () => {
 
     const { scene } = useGLTF("/Drone.glb");
 
-   
     const [floatingOffset, setFloatingOffset] = useState(0);
 
     useFrame((state, delta) => {
+        console.log(state)
         setFloatingOffset(floatingOffset + delta);
         if (planetRef.current) {
             planetRef.current.position.y = Math.sin(floatingOffset) * 0.05;
-           
         }
     });
 
