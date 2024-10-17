@@ -13,7 +13,6 @@ export const getAllEvents = async (req: Request, res: Response, next: NextFuncti
 
         res.status(StatusCodes.OK).json({
             success: true,
-            message: "All events",
             events,
         });
     } catch (error) {
@@ -41,7 +40,7 @@ export const getEventById = async (req: Request, res: Response, next: NextFuncti
 
 export const createEvent = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-        const { title, description, price, date, location } = req.body;
+        const { title, description } = req.body;
 
         const files = req.files as Express.Multer.File[];
         const filenames = files ? files.map(file => `${process.env.SERVER_URL}/events/${file.filename}`) : [];
@@ -49,11 +48,6 @@ export const createEvent = async (req: CustomRequest, res: Response, next: NextF
         const event = await Event.create({
             title,
             description,
-            price,
-            info: {
-                date,
-                location,
-            },
             images: filenames,
             creator: req.user?._id,
         });
@@ -75,16 +69,11 @@ export const updateEventDetails = async (req: CustomRequest, res: Response, next
             return next(new ErrorHandler(`Event not found with id ${req.params.id}`, StatusCodes.NOT_FOUND));
         }
 
-        const { title, description, price, date, location } = req.body;
+        const { title, description } = req.body;
 
         const updatedData = {
 			title: title || event.title,
             description: description || event.description,
-            price: price || event.price,
-            info: {
-                date: date || event.info.date,
-                location: location || event.info.location,
-            },
         };
 	
 		const updatedEvent = await User.findByIdAndUpdate(
@@ -140,8 +129,8 @@ export const updateEventImages = async (req: CustomRequest, res: Response, next:
         const newFiles = req.files as Express.Multer.File[];
         const newImageUrls = newFiles.map(file => `${process.env.SERVER_URL}/events/${file.filename}`);
 
-        event.images = event.images.filter((image: string) => !oldImageUrls.includes(image));
-        event.images.push(...newImageUrls);
+        event.images = event?.images?.filter((image: string) => !oldImageUrls.includes(image));
+        event?.images?.push(...newImageUrls);
         await event.save();
 
         for (const url of oldImageUrls) {
@@ -177,7 +166,7 @@ export const deleteEventImages = async (req: CustomRequest, res: Response, next:
 
         const { imageUrls } = req.body;
 
-        event.images = event.images.filter((image: string) => !imageUrls.includes(image));
+        event.images = event?.images?.filter((image: string) => !imageUrls.includes(image));
         await event.save();
 
         for (const url of imageUrls) {
@@ -222,48 +211,65 @@ export const deleteEvent = async (req: CustomRequest, res: Response, next: NextF
     }
 }
 
+export const addEventDetailsArray = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { data } = req.body;
+
+        if (!Array.isArray(data)) {
+            return next(new ErrorHandler("Data should be an array of events", StatusCodes.BAD_REQUEST));
+        }
+
+        const events = await Event.insertMany(data);
+        
+        res.status(StatusCodes.CREATED).json({
+            success: true,
+            count: events.length,
+            events,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const updateEventBackGroundImages = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const event = await Event.findById(req.params.id);
+        if (!event) {
+            return next(new ErrorHandler(`Event not found with id ${req.params.id}`, StatusCodes.NOT_FOUND))
+        }
+
+        const filename = req.file ? `${process.env.SERVER_URL}/events/${req.file.filename}` : "";
+        if (req.file && event?.backgroundImage && event?.backgroundImage?.length > 0) {
+			const basename = event?.backgroundImage?.split('/').pop() || "";
+			const imagePath = path.join('./public/events', basename);
+			try {
+				if (fs.existsSync(imagePath)) {
+					await fs.promises.unlink(imagePath);
+				}
+			} catch (error) {
+				console.error('Error deleting image:', error);
+			}
+		}
+
+        const updatedEvent = await Event.findByIdAndUpdate(
+			event._id,
+			{ backgroundImage: filename },
+			{ new: true, runValidators: true, useFindAndModify: false }
+		);
+
+        res.status(200).json({
+			success: true,
+			event: updatedEvent,
+			message: "BackGround Image updated successfully"
+		});
+    } catch (error) {
+        next(error);
+    }
+}
+
 // Needs changes ***
 export const enrollEvent = async (req: CustomRequest, res: Response, next: NextFunction) => {
-    const { eventID } = req.body;
-    const userDeatils = req?.user;
-    const user_id = userDeatils?.id;
-
     try {
-        const user = await User.findById(user_id)
-        if (!user) {
-            return res.status(StatusCodes.UNAUTHORIZED).json({
-                message: "User not found",
-            });
-        }
-
-        if (user.events.includes(eventID)) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                message: "User already enrolled in this event",
-            });
-        }
-
-        const event = await Event.findById(eventID);
-
-        if (!event) {
-            return res.status(StatusCodes.NOT_FOUND).json({
-                message: "Event not found",
-            });
-        }
-
-        user.events.push(eventID);
-
-        const savedUser = await user.save();
-
-        if (!savedUser) {
-            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                message: "Failed to enroll in the event",
-            });
-        }
-
-        return res.status(StatusCodes.OK).json({
-            message: "Event enrolled successfully",
-            enrolledEvents: savedUser.events, 
-        });
     } catch (error) {
         next(error);
     }

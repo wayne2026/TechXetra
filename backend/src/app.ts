@@ -6,6 +6,7 @@ import helmet from "helmet";
 import limiter from "./config/rateLimiter.js";
 import ErrorMiddleware from "./middlewares/error.js";
 import userRouter from "./routes/user.routes.js";
+import eventRouter from "./routes/event.routes.js";
 
 const app: Application = express();
 
@@ -36,6 +37,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.static("public"));
 
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/events", eventRouter);
 
 app.use(ErrorMiddleware);
 

@@ -15,8 +15,8 @@ function App() {
 	const userContext = useUser();
 
 	return userContext?.loading ? (
-		<div>
-			Loading...
+		<div className="bg-black h-screen flex justify-center items-center">
+			<img src="/TechXetraLogo1.png" width={400} />
 		</div>
 	) : (
 		<div>
@@ -41,8 +41,12 @@ function App() {
 					<Route
 						element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}
 					>
-						<Route path="/profile" element={<Profile />} />
                         <Route path="/verify" element={<Verify />} />
+					</Route>
+					<Route
+						element={<ProtectedRoute isAuthenticated={userContext?.user && userContext?.user?.isVerified ? true : false} redirect="/login" />}
+					>
+						<Route path="/profile" element={<Profile />} />
 					</Route>
 					<Route path="*" element={<NotFound />} />
 				</Routes>
