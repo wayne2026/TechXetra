@@ -10,13 +10,39 @@ export const roleEnum = {
 } as const;
 
 export const accountEnum = {
-    EMAIL: "EMAIL",
-    GOOGLE: "GOOGLE",
+	EMAIL: "EMAIL",
+	GOOGLE: "GOOGLE",
+} as const;
+
+export const schoolEnum = {
+	SCHOOL: "SCHOOL",
+	COLLEGE: "COLLEGE",
+} as const;
+
+export const schoolClassEnum = {
+	ONE_TO_FOUR: "ONE_TO_FOUR",
+	FIVE_TO_EIGHT: "FIVE_TO_EIGHT",
+	NINE_TO_TWELVE: "NINE_TO_TWELVE",
+} as const;
+
+export const collegeClassEnum = {
+	UG: "UG",
+	PG: "PG",
 } as const;
 
 export interface IUserEvent extends Document {
 	eventId: mongoose.Schema.Types.ObjectId;
-	paymentId: mongoose.Schema.Types.ObjectId;
+    paymentRequired: boolean;
+	eligible: boolean;
+	isGroup: boolean;
+	members?: mongoose.Schema.Types.ObjectId[];
+	payment?: {
+		status: boolean;
+		transactionId: string;
+		paymentImage: string;
+		amount: number;
+		verifierId?: mongoose.Schema.Types.ObjectId;
+	}
 	physicalVerification: {
 		status: boolean;
 		verifierId?: mongoose.Schema.Types.ObjectId;
@@ -32,52 +58,105 @@ export interface IUser extends Document {
 	avatar: string;
 	role: typeof roleEnum[keyof typeof roleEnum];
 	account: Array<typeof accountEnum[keyof typeof accountEnum]>;
-	college: string;
+	schoolOrCollege: typeof schoolEnum[keyof typeof schoolEnum];
+	schoolName?: string;
+	collegeName?: string;
+	collegeClass?: typeof collegeClassEnum[keyof typeof collegeClassEnum];
+	schoolClass?: typeof schoolClassEnum[keyof typeof schoolClassEnum];
 	phoneNumber: string;
 	isVerified: boolean;
 	isBlocked: boolean;
 	events: IUserEvent[];
-	googleId: string;
 	refreshToken?: string;
 	oneTimePassword?: string;
-    oneTimeExpire?: Date;
-    resetPasswordToken?: string;
-    resetPasswordExpire?: Date;
+	oneTimeExpire?: Date;
+	resetPasswordToken?: string;
+	resetPasswordExpire?: Date;
 	createdAt: Date;
 	updatedAt: Date;
 
 	generateAccessToken(): string;
 	generateRefreshToken(): string;
-    comparePassword(enteredPassword: string): Promise<boolean>;
-    getResetPasswordToken(): string;
-    getOneTimePassword(): string;
+	comparePassword(enteredPassword: string): Promise<boolean>;
+	getResetPasswordToken(): string;
+	getOneTimePassword(): string;
 }
 
 const EventSchema: Schema<IUserEvent> = new Schema(
-    {
+	{
 		eventId: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Event",
-            required: true,
+			required: true,
 		},
-		paymentId: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: "Payment",
+		paymentRequired: {
+            type: Boolean,
             required: true,
+            default: true,
+        },
+		eligible: {
+			type: Boolean,
+            required: true,
+            default: true,
+		},
+		isGroup: {
+			type: Boolean,
+            required: true,
+            default: false,
+		},
+		members: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "User",
+			},
+		],
+		payment: {
+			status: {
+				type: Boolean,
+				required: function (this: IUserEvent) {
+					return this.paymentRequired;
+				},
+				default: false,
+			},
+			transactionId: {
+				type: String,
+				required: function (this: IUserEvent) {
+					return this.paymentRequired;
+				},
+			},
+			paymentImage: {
+				type: String,
+				required: function (this: IUserEvent) {
+					return this.paymentRequired;
+				},
+			},
+			amount: {
+				type: Number,
+				required: function (this: IUserEvent) {
+					return this.paymentRequired;
+				},
+			},
+			verifierId: {
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "User",
+				required: function (this: IUserEvent) {
+					return this.paymentRequired && this.payment?.status;
+				},
+			},
 		},
 		physicalVerification: {
 			status: {
-                type: Boolean,
-                required: true,
-                default: false,
-            },
-            verifierId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User",
-                required: function (this: IUserEvent) {
-                    return this.physicalVerification && this.physicalVerification.status;
-                },
-            },
+				type: Boolean,
+				required: true,
+				default: false,
+			},
+			verifierId: {
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "User",
+				required: function (this: IUserEvent) {
+					return this.physicalVerification && this.physicalVerification.status;
+				},
+			},
 		}
 	},
 	{
@@ -122,15 +201,26 @@ const UserSchema: Schema<IUser> = new Schema(
 			default: roleEnum.USER,
 		},
 		account: {
-            type: [{
-                type: String,
-                enum: Object.values(accountEnum),
-            }],
-            default: [accountEnum.EMAIL],
-        },
-		college: {
+			type: [{
+				type: String,
+				enum: Object.values(accountEnum),
+			}],
+			default: [accountEnum.EMAIL],
+		},
+		schoolOrCollege: {
 			type: String,
-			required: [true, "College is required."],
+			enum: Object.values(schoolEnum),
+			default: schoolEnum.COLLEGE,
+		},
+		schoolName: String,
+		collegeName: String,
+		collegeClass: {
+			type: String,
+			enum: Object.values(collegeClassEnum),
+		},
+		schoolClass: {
+			type: String,
+			enum: Object.values(schoolClassEnum),
 		},
 		phoneNumber: {
 			type: String,
@@ -138,36 +228,35 @@ const UserSchema: Schema<IUser> = new Schema(
 			minlength: [10, "Phone number must be more than 10 characters."],
 			required: [true, "Phone Number is required."],
 		},
-		isVerified: { 
+		isVerified: {
 			type: Boolean,
 			default: false
 		},
-        isBlocked: { 
+		isBlocked: {
 			type: Boolean,
 			default: false
 		},
-		googleId: String,
 		events: [EventSchema],
 		refreshToken: String,
 		oneTimePassword: String,
-        oneTimeExpire: Date,
-        resetPasswordToken: String,
-        resetPasswordExpire: Date,
+		oneTimeExpire: Date,
+		resetPasswordToken: String,
+		resetPasswordExpire: Date,
 	},
-	{ 
+	{
 		timestamps: true
 	}
 );
 
 // Password Hash
 UserSchema.pre<IUser>("save", async function (next) {
-    if (!this.isModified("password")) {
-        return next();
-    }
-    if (this.password) {
-        this.password = await bcrypt.hash(this.password, 10);
-    }
-    next();
+	if (!this.isModified("password")) {
+		return next();
+	}
+	if (this.password) {
+		this.password = await bcrypt.hash(this.password, 10);
+	}
+	next();
 });
 
 // Access Token
@@ -176,12 +265,12 @@ UserSchema.methods.generateAccessToken = function (this: IUser) {
 		{
 			id: this._id,
 			email: this.email,
-            role: this.role,
+			role: this.role,
 		},
-		process.env.ACCESS_TOKEN_SECRET!, 
+		process.env.ACCESS_TOKEN_SECRET!,
 		{ expiresIn: process.env.ACCESS_TOKEN_EXPIRE }
 	);
-    return token;
+	return token;
 };
 
 // Refresh Token
@@ -192,44 +281,44 @@ UserSchema.methods.generateRefreshToken = function (this: IUser) {
 		{ expiresIn: process.env.REFRESH_TOKEN_EXPIRE }
 	);
 	this.refreshToken = token;
-    return token;
+	return token;
 };
 
 // Compare Password
 UserSchema.methods.comparePassword = async function (this: IUser, enteredPassword: string) {
-    let isPasswordMatched;
-    if (this.password) {
-        isPasswordMatched = await bcrypt.compare(enteredPassword, this.password);
-    }
-    return isPasswordMatched;
+	let isPasswordMatched;
+	if (this.password) {
+		isPasswordMatched = await bcrypt.compare(enteredPassword, this.password);
+	}
+	return isPasswordMatched;
 };
 
 // Generating Password Reset Token
 UserSchema.methods.getResetPasswordToken = function (this: IUser) {
-    const resetToken = crypto.randomBytes(20).toString("hex");
+	const resetToken = crypto.randomBytes(20).toString("hex");
 
-    this.resetPasswordToken = crypto
-        .createHash("sha256")
-        .update(resetToken)
-        .digest("hex");
+	this.resetPasswordToken = crypto
+		.createHash("sha256")
+		.update(resetToken)
+		.digest("hex");
 
-    this.resetPasswordExpire = new Date(Date.now() + 15 * 60 * 1000);
+	this.resetPasswordExpire = new Date(Date.now() + 15 * 60 * 1000);
 
-    return resetToken;
+	return resetToken;
 };
 
 // Generating One Time Password
 UserSchema.methods.getOneTimePassword = function (this: IUser) {
-    const otp = Math.floor(100000 + Math.random() * 900000);
+	const otp = Math.floor(100000 + Math.random() * 900000);
 
-    this.oneTimePassword = crypto
-        .createHash("sha256")
-        .update(otp.toString())
-        .digest("hex");
+	this.oneTimePassword = crypto
+		.createHash("sha256")
+		.update(otp.toString())
+		.digest("hex");
 
-    this.oneTimeExpire = new Date(Date.now() + 15 * 60 * 1000);
+	this.oneTimeExpire = new Date(Date.now() + 15 * 60 * 1000);
 
-    return otp.toString();
+	return otp.toString();
 };
 
 const User = mongoose.model<IUser>("User", UserSchema);

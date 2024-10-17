@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import crypto from "crypto";
-import User, { accountEnum, roleEnum } from "../models/user.model.js";
+import User, { accountEnum, collegeClassEnum, roleEnum, schoolClassEnum, schoolEnum } from "../models/user.model.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import { addEmailToQueue } from "../utils/emailQueue.js";
 import sendToken from "../utils/jwtToken.js";
@@ -11,13 +11,27 @@ import fs from "fs";
 
 export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const { firstName, lastName, email, password, college, phoneNumber } = req.body;
+		const { firstName, lastName, email, password, phoneNumber, schoolOrCollege, schoolName, collegeName, collegeClass, schoolClass } = req.body;
 
-		if (!firstName || !lastName || !email || !password || !college || !phoneNumber) {
-			return next(new ErrorHandler("Please enter FirstName, LastName, Email, Password, College and PhoneNumber", StatusCodes.NOT_FOUND));
+		if (!firstName || !lastName || !email || !password || !phoneNumber || !schoolOrCollege) {
+			return next(new ErrorHandler("Please enter FirstName, LastName, Email, Password, SchoolOrCollege and PhoneNumber", StatusCodes.NOT_FOUND));
+		}
+
+		if (!Object.values(schoolEnum).includes(schoolOrCollege)) {
+			return next(new ErrorHandler("Invalid field SchoolOrCollege", 400));
+		}
+
+		if (schoolClass && !Object.values(schoolClassEnum).includes(schoolClass)) {
+			return next(new ErrorHandler("Invalid field SchoolClass", 400));
+		}
+
+		if (collegeClass && !Object.values(collegeClassEnum).includes(collegeClass)) {
+			return next(new ErrorHandler("Invalid field CollegeClass", 400));
 		}
 
 		const filename = req?.file ? `${process.env.SERVER_URL}/avatars/${req?.file?.filename}` : "";
+
+		console.log(process.env.ADMIN_EMAIL)
 
 		const user = await User.create({
 			firstName,
@@ -25,9 +39,13 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
 			email,
 			password,
 			avatar: filename,
-			role: email === process.env.ADMIN_EMAIL? roleEnum.ADMIN : roleEnum.USER,
-			college,
-			phoneNumber
+			role: email === process.env.ADMIN_EMAIL ? roleEnum.ADMIN : roleEnum.USER,
+			schoolOrCollege,
+			schoolName: schoolOrCollege === schoolEnum.SCHOOL ? schoolName : undefined,
+			collegeName: schoolOrCollege === schoolEnum.COLLEGE? collegeName : undefined,
+            collegeClass: schoolOrCollege === schoolEnum.COLLEGE? collegeClass : undefined,
+            schoolClass: schoolOrCollege === schoolEnum.SCHOOL? schoolClass : undefined,
+            phoneNumber,
 		});
 
 		if (!user) {
@@ -206,38 +224,6 @@ export const resetPassword = async (req: CustomRequest, res: Response, next: Nex
 	}
 };
 
-export const setPassword = async (req: CustomRequest, res: Response, next: NextFunction) => {
-	try {
-		const user = await User.findById(req.user?._id).select("+password");
-		if (!user) {
-			return next(new ErrorHandler("User not found", 404));
-		}
-	
-		if (user.account.includes(accountEnum.EMAIL)) {
-			return next(new ErrorHandler("Password already Saved", 400));
-		}
-	
-		const { newPassword, confirmPassword } = req.body;
-	
-		if (!newPassword || !confirmPassword) {
-			return next(new ErrorHandler("All fields are required", 404));
-		}
-	
-		if (newPassword !== confirmPassword) {
-			return next(new ErrorHandler("Password does not match", 400));
-		}
-	
-		user.password = newPassword;
-		user.account = [...user.account, accountEnum.EMAIL];
-	
-		await user.save();
-	
-		sendToken(user, 200, res);
-	} catch (error) {
-		next(error);
-	}
-};
-
 export const requestForgot = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 
@@ -365,12 +351,28 @@ export const updateProfile = async (req: CustomRequest, res: Response, next: Nex
 			}
 		}
 	
-		const { firstName, lastName, college, phoneNumber } = req.body;
+		const { firstName, lastName, phoneNumber, schoolOrCollege, schoolName, collegeName, schoolClass, collegeClass } = req.body;
+
+		if (schoolOrCollege && !Object.values(schoolEnum).includes(schoolOrCollege)) {
+			return next(new ErrorHandler("Invalid field SchoolOrCollege", 400));
+		}
+
+		if (schoolClass && !Object.values(schoolClassEnum).includes(schoolClass)) {
+			return next(new ErrorHandler("Invalid field SchoolClass", 400));
+		}
+
+		if (collegeClass && !Object.values(collegeClassEnum).includes(collegeClass)) {
+			return next(new ErrorHandler("Invalid field CollegeClass", 400));
+		}
 	
 		const updatedProfile = {
 			firstName: firstName || user.firstName,
 			lastName: lastName || user.lastName,
-			college: college || user.college,
+			schoolOrCollege: schoolOrCollege || user.schoolOrCollege,
+			schoolName: schoolName || user.schoolName,
+            collegeName: collegeName || user.collegeName,
+			schoolClass: schoolClass || user.schoolClass,
+			collegeClass: collegeClass || user.collegeClass,
             phoneNumber: phoneNumber || user.phoneNumber,
 			avatar: filename
 		};
