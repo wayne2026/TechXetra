@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -19,6 +19,7 @@ interface EventData {
 const Events: React.FC = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [hoveredEventId, setHoveredEventId] = useState<string | null>(null);
+
 
     const settings = {
         
@@ -449,7 +450,7 @@ const Events: React.FC = () => {
 
 
                                         {hoveredEventId === d.id && (
-                                            <div className='absolute inset-0  opacity-35 transition-opacity duration-300'>
+                                            <div className='absolute inset-0 transition-opacity duration-[500ms] opacity-0 hover:opacity-35'>
                                                 <img src={d.imageUrl} alt={d.title} className='object-cover w-full h-full rounded-3xl' />
                                             </div>
                                         )}

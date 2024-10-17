@@ -1,16 +1,16 @@
 import { StarsBackground } from '../../components/StarBackground';
 import { ShootingStars } from '../../components/ShootingStars';
-import { useEffect, useRef } from 'react';
-import gsap from 'gsap'
+import {  useRef } from 'react';
+
 
 
 const FooterBar: React.FC = () => {
   const socials = [
-    { name: 'YouTube', icon: '/Youtube Icon.svg', link: 'https://www.youtube.com/channel/UC9Q6J9Z9Q9Z9Q9Z9Q9Z9Q9Q' },
-    { name: 'Facebook', icon: '/Facebook Icon.svg', link: 'https://www.facebook.com/techxetra.tu' },
-    { name: 'Instagram', icon: '/Instagram Icon.svg', link: 'https://www.instagram.com/techxetra.tu' },
-    { name: 'X', icon: '/X Icon.svg', link: 'https://www.twitter.com/techxetra_tu' },
-    { name: 'LinkedIn', icon: '/LinkedIn Icon.svg', link: 'https://www.linkedin.com/company/techxetra-tu' },
+    // { name: 'YouTube', icon: '/Youtube Icon.svg', link: 'https://www.youtube.com/channel/UC9Q6J9Z9Q9Z9Q9Z9Q9Z9Q9Q' },
+    { name: 'Facebook', icon: '/Facebook Icon.svg', link: 'https://www.facebook.com/techxetra/' },
+    { name: 'Instagram', icon: '/Instagram Icon.svg', link: 'https://www.instagram.com/techxetra/' },
+    // { name: 'X', icon: '/X Icon.svg', link: 'https://www.twitter.com/techxetra_tu' },
+    { name: 'LinkedIn', icon: '/LinkedIn Icon.svg', link: 'https://www.linkedin.com/company/techxetra-tezpur-university/about/' },
   ];
 
   const mobimageRef = useRef<HTMLImageElement | null>(null);
@@ -18,37 +18,16 @@ const FooterBar: React.FC = () => {
 
 
 
-  useEffect(() => {
-    if (mobimageRef.current) {
-      gsap.to(mobimageRef.current, {
-        y: 'random(-20,20)',
-        x: 'random(-20,20)',
-        repeat: -1,
-        yoyo: true,
-        ease: 'power1.inOut',
-        duration: 2,
-      });
-    }
-    if (deskimageRef.current) {
-      gsap.to(deskimageRef.current, {
-        y: 'random(-20,20)',
-        x: 'random(-20,20)',
-        repeat: -1,
-        yoyo: true,
-        ease: 'power1.inOut',
-        duration: 2,
-      });
-    }
-  }, []);
+
 
   return (
-    <div className="relative overflow-x-hidden bg-gradient-to-b from-[#22071b] via-[#190341] to-[#1f021c] text-white py-10">
+    <div className="relative pt-20 overflow-x-hidden bg-gradient-to-b from-[#22071b] via-[#190341] to-[#1f021c] text-white py-10">
       {/* Background stars and shooting effects */}
       <StarsBackground className="absolute" starDensity={0.0002} />
       <ShootingStars />
 
       {/* Main content grid layout */}
-      <div className="flex justify-around max-sm:hidden">
+      <div className="flex  justify-around max-sm:hidden">
         {/* Left section: TechXetra logo and character */}
         <div className="flex flex-col items-center">
           <img src="/TechXetraLogo1.png" alt="TechXetra Logo" className="rounded-full h-[150px] w-[150px]" /> {/* TechXetra Logo */}
@@ -57,7 +36,7 @@ const FooterBar: React.FC = () => {
 
         {/* Middle section: TechXetra wordmark */}
         <div className="flex justify-center my-auto">
-          <img ref={deskimageRef} src="/TechXetraWordmark.png" alt="TechXetra Wordmark" className="h-[700px]" /> {/* TechXetra Wordmark */}
+          <img ref={deskimageRef} src="/techxetra-text.png" alt="TechXetra Wordmark" width={800} className="pt-10" /> {/* TechXetra Wordmark */}
         </div>
 
         {/* Right section: Dots and character */}
@@ -78,7 +57,7 @@ const FooterBar: React.FC = () => {
       </div>
 
       {/* Socials and Address section */}
-      <div className='flex flex-col md:flex-row justify-between items-center mt-10 px-4 md:px-8'>
+      <div className='flex flex-col md:flex-row justify-between items-center  md:px-8'>
   {/* Social Media Links */}
   <div className="flex flex-col items-center my-auto">
     <div className="text-base sm:text-lg md:text-xl font-bold text-center">FOLLOW US ON</div>

@@ -24,7 +24,7 @@ const About: React.FC = () => {
 
 
   return (
-    <div className='max-sm:pt-28 max-sm:pb-14 bg-gradient-to-b from-[#11021a] via-[#030229] to-[#1f021c] relative flex max-sm:flex-col sm:items-center overflow-hidden  '>
+    <div className='max-sm:pt-28 mx-auto  max-sm:pb-14 bg-gradient-to-b from-[#11021a] via-[#030229] to-[#1f021c] relative flex max-sm:flex-col sm:items-center sm:justify-center overflow-hidden  '>
       <StarsBackground className='absolute ' />
       <ShootingStars />
       <div className=' sm:w-[800px]'>
@@ -40,7 +40,7 @@ const About: React.FC = () => {
           Come be a part of this vibrant journey and contribute to a brighter future!
         </p>
       </div>
-      <div className='max-sm:hidden'>
+      <div className='max-sm:hidden sm:mt-20'>
         <SpaceShip />
       </div>
     </div>

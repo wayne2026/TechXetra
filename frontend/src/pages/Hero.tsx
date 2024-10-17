@@ -4,7 +4,7 @@ import { StarsBackground } from "../../components/StarBackground";
 import { ShootingStars } from '../../components/ShootingStars';
 import RotatingPlanet from "../../components/Planet";
 import gsap from "gsap";
-import { useRef, useEffect, useState } from "react";
+import { useRef } from "react";
 import { useUser } from "../context/user_context";
 
 const Hero: React.FC = () => {
