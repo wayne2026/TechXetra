@@ -115,10 +115,7 @@ const UserSchema: Schema<IUser> = new Schema(
 				"Please fill a valid email address",
 			],
 		},
-		avatar: { 
-			type: String, 
-			required: true 
-		},
+		avatar: String,
 		role: {
 			type: String,
 			enum: Object.values(roleEnum),

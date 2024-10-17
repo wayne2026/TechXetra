@@ -3,29 +3,34 @@ import { useRef, useState, useEffect } from "react";
 import { StarsBackground } from "../../../components/StarBackground";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ShootingStars } from '../../../components/ShootingStars'
+import { useUser } from "../../context/user_context";
+import { toast } from "react-toastify";
 
-const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
+const Login = () => {
   const starsBG = useRef<HTMLDivElement>(null);
   const formDiv = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  
+  const userContext = useUser();
+  const from = location.state?.from?.pathname || "/profile";
+  const [loginLoading, setLoginLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    
-      gsap.to("img.animate" ,{
-        y: 'random(-20,20)',
-        x: 'random(-20,20)',
-        repeat: -1,
-        yoyo: true,
-        ease: 'power1.inOut',
-        duration: 2
-      });
-    
+
+    gsap.to("img.animate", {
+      y: 'random(-20,20)',
+      x: 'random(-20,20)',
+      repeat: -1,
+      yoyo: true,
+      ease: 'power1.inOut',
+      duration: 2
+    });
+
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = 'auto';
@@ -48,37 +53,28 @@ const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
     });
   });
 
-  // Utility to get cookies by name
-  const getCookie = (name: string) => {
-    const cookie = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith(name));
-    return cookie ? cookie.split("=")[1] : null;
-  };
-
-  const handleLogin = async () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoginLoading(true);
+    const config = {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
+    };
     if (!email || !password) {
-      alert("Please enter email and password");
+      toast.warning("All fields are required");
       return;
     }
     try {
-      const axiosResponse = await axios.post(
-        "http://localhost:8000/api/v1/users/login",
-        { email, password },
-        { withCredentials: true }
-      );
-      console.log(axiosResponse.data);
-      setToken(getCookie("accessToken")); // Read the accessToken from the updated cookies
-      setUser(axiosResponse.data.user);
-
-      // Save user in localStorage
-      localStorage.setItem("user", JSON.stringify(axiosResponse.data.user));
-
-      navigate("/profile");
-    } catch (error) {
-      console.error(error);
-      alert("Login failed, please try again.");
+      const { data }: { data: UserResponse } = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, { email, password }, config);
+      userContext?.setUser(data.user);
+      toast.success("Logged In!");
+      navigate(from, { replace: true });
+    } catch (error: any) {
+      userContext?.setUser(null);
+      toast.error(error.response.data.message);
+      setLoginLoading(false);
     }
+    setLoginLoading(false);
   };
 
   return (
@@ -92,14 +88,14 @@ const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
           maxTwinkleSpeed={1.2}
           className="absolute bg-gradient-to-b from-[#000000] via-[#220135] to-[#020b22]"
         />
-        <ShootingStars/>
+        <ShootingStars />
         <div
           ref={formDiv}
           className="w-full h-full flex justify-center items-center"
         >
-          <img src="finalmc.png"  width={400} alt="" className="animate max-md:hidden"/>
+          <img src="finalmc.png" width={400} alt="" className="animate max-md:hidden" />
           <form
-            action=""
+            onSubmit={handleSubmit}
             method="post"
             className="border-[0.5px] border-slate-700 rounded-lg mx-auto w-[25rem] pt-6 pb-10 px-4 text-white"
           >
@@ -149,9 +145,9 @@ const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
             </div>
             <div className="w-full flex justify-center items-center pt-8">
               <button
-                type="button"
+                disabled={loginLoading}
+                type="submit"
                 className="w-[80%] px-4 py-1 rounded-md bg-violet-600 font-originTech hover:cursor-pointer transform ease-in-out duration-150 hover:bg-violet-800"
-                onClick={handleLogin}
               >
                 Login
               </button>
@@ -160,7 +156,7 @@ const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
               <p className="text-sm text-center text-violet-600 font-originTech">
                 Don't have an account?{" "}
                 <Link
-                  to="/signup"
+                  to="/register"
                   className="text-violet-600 hover:text-violet-300 transition ease-in-out duration-150"
                 >
                   Register
@@ -168,7 +164,7 @@ const Login = ({ setToken, setUser }: { setToken: any; setUser: any }) => {
               </p>
             </div>
           </form>
-          <img src="mascot-bg.png"  width={400} alt="" className="animate max-md:hidden" />
+          <img src="mascot-bg.png" width={400} alt="" className="animate max-md:hidden" />
         </div>
       </div>
     </div>

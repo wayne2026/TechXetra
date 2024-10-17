@@ -401,15 +401,15 @@ const Events: React.FC = () => {
 
                 <ShootingStars />
 
-                <h1 className="font-semibold font-technoHideo text-7xl w-fit h-fit pt-6 pl-9 ml-10 text-transparent bg-clip-text bg-gradient-radial from-[#FD8444] to-[#7527ED]">Events</h1>
+                <h1 className="text-center md:text-left md:pl-16 font-semibold font-technoHideo text-4xl md:text-7xl text-transparent bg-clip-text bg-gradient-radial from-[#FD8444] to-[#7527ED]">Events</h1>
 
-                <div className='list-none ml-10 absolute  z-10 font-manrope container flex text-white pl-9'>
+                <div className='list-none ml-10 absolute z-10 font-manrope container flex flex-wrap text-white px-6'>
                     <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'All' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('All')}>All</li>
-                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'Technical Events' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('Technical Events')}>Technical Events</li>
-                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'General Events' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('General Events')}>General Events</li>
-                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'Sports Events' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('Sports Events')}>Sports Events</li>
+                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'Technical Events' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('Technical Events')}>Technical</li>
+                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'General Events' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('General Events')}>General</li>
+                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'Sports Events' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('Sports Events')}>Sports</li>
                     <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'E-Sports' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('E-Sports')}>E-Sports</li>
-                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'Cultural Events' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('Cultural Events')}>Cultural Events</li>
+                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'Cultural Events' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('Cultural Events')}>Cultural</li>
                     <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'Miscellaneous' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('Miscellaneous')}>Miscellaneous</li>
                 </div>
 

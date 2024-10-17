@@ -17,7 +17,7 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
 			return next(new ErrorHandler("Please enter FirstName, LastName, Email, Password, College and PhoneNumber", StatusCodes.NOT_FOUND));
 		}
 
-		const filename = req.file ? `${process.env.SERVER_URL}/avatars/${req.file.filename}` : "";
+		const filename = req?.file ? `${process.env.SERVER_URL}/avatars/${req?.file?.filename}` : "";
 
 		const user = await User.create({
 			firstName,
