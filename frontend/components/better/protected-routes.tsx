@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 
 interface Props {
