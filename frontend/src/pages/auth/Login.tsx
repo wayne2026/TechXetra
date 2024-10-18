@@ -96,7 +96,6 @@ const Login = () => {
           <img src="finalmc.png" width={400} alt="" className="animate max-md:hidden" />
           <form
             onSubmit={handleSubmit}
-            method="post"
             className="border-[0.5px] border-slate-700 rounded-lg mx-auto w-[25rem] pt-6 pb-10 px-4 text-white"
           >
             <div className="w-full pb-4">
