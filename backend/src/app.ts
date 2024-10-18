@@ -13,6 +13,10 @@ const app: Application = express();
 const corsOptions: CorsOptions = {
     origin: (origin, callback) => {
         const allowedOrigins = [
+            "https://techxetra.in",
+            "https://www.techxetra.in",
+            "https://admin.techxetra.in",
+            "https://www.admin.techxetra.in",
             "http://localhost:5173",
             "http://localhost:5174",
         ];

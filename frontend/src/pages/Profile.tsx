@@ -10,7 +10,7 @@ export const createQRCode = (data: string) => {
 		width: 300,
 		height: 300,
 		margin: 10,
-		data: `${import.meta.env.VITE_BASE_URL}/user/${data}`,
+		data: `${window.location.protocol}//${window.location.host}/profile?id=${data}`,
 		qrOptions: {
 			typeNumber: 0,
 			mode: "Byte",
