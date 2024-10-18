@@ -11,8 +11,7 @@ const Planet: React.FC = () => {
 
     const [floatingOffset, setFloatingOffset] = useState(0);
 
-    useFrame((state, delta) => {
-        console.log(state)
+    useFrame((_, delta) => {
         setFloatingOffset(floatingOffset + delta);
         if (planetRef.current) {
             planetRef.current.position.y = Math.sin(floatingOffset) * 0.05;
