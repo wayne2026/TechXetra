@@ -10,11 +10,30 @@ import Register from "./pages/auth/Register";
 import NotFound from "./pages/not-found";
 import Verify from "./pages/verify";
 import "react-toastify/dist/ReactToastify.css";
+import { useEffect, useState } from "react";
 
 function App() {
 	const userContext = useUser();
+	const [fontLoaded, setFontLoaded] = useState(false);
 
-	return userContext?.loading ? (
+	useEffect(() => {
+		const font = new FontFace(
+			'AutoTechno', // Replace with your font's name
+			'/auto-techno.ttf' // Replace with your font's URL
+		);
+
+		// Load the font
+		font.load().then(() => {
+			// Add the font to the document
+			document.fonts.add(font);
+			setFontLoaded(true);
+		}).catch((error) => {
+			console.error('Font loading failed:', error);
+			setFontLoaded(true);  // You can still render the content even if font loading fails
+		});
+	}, []);
+
+	return userContext?.loading || !fontLoaded ? (
 		<div className="bg-black h-screen flex justify-center items-center">
 			<img src="/TechXetraLogo1.png" width={400} />
 		</div>
@@ -41,7 +60,7 @@ function App() {
 					<Route
 						element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}
 					>
-                        <Route path="/verify" element={<Verify />} />
+						<Route path="/verify" element={<Verify />} />
 					</Route>
 					<Route
 						element={<ProtectedRoute isAuthenticated={userContext?.user && userContext?.user?.isVerified ? true : false} redirect="/login" />}
