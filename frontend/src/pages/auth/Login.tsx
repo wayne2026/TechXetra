@@ -65,7 +65,10 @@ const Login = () => {
       return;
     }
     try {
-      const { data }: { data: UserResponse } = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, { email, password }, config);
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+      const { data }: { data: UserResponse } = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, formData, config);
       userContext?.setUser(data.user);
       toast.success("Logged In!");
       navigate(from, { replace: true });
