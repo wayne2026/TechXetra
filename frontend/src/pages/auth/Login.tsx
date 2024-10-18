@@ -62,10 +62,15 @@ const Login = () => {
     };
     if (!email || !password) {
       toast.warning("All fields are required");
+      setLoginLoading(false);
       return;
     }
     try {
-      const { data }: { data: UserResponse } = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, { email, password }, config);
+      const payload = {
+        email,
+        password,
+      }
+      const { data }: { data: UserResponse } = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, payload, config)
       userContext?.setUser(data.user);
       toast.success("Logged In!");
       navigate(from, { replace: true });
