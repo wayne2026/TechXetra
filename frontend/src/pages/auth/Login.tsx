@@ -65,10 +65,7 @@ const Login = () => {
       return;
     }
     try {
-      const formData = new FormData();
-      formData.append("email", email);
-      formData.append("password", password);
-      const { data }: { data: UserResponse } = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, formData, config);
+      const { data }: { data: UserResponse } = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, { email, password }, config);
       userContext?.setUser(data.user);
       toast.success("Logged In!");
       navigate(from, { replace: true });
@@ -99,7 +96,6 @@ const Login = () => {
           <img src="finalmc.png" width={400} alt="" className="animate max-md:hidden" />
           <form
             onSubmit={handleSubmit}
-            method="post"
             className="border-[0.5px] border-slate-700 rounded-lg mx-auto w-[25rem] pt-6 pb-10 px-4 text-white"
           >
             <div className="w-full pb-4">
