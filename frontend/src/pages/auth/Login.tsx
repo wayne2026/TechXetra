@@ -7,6 +7,8 @@ import axios from "axios";
 import { ShootingStars } from "../../../components/ShootingStars";
 import { useUser } from "../../context/user_context";
 import { toast } from "react-toastify";
+import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const starsBG = useRef<HTMLDivElement>(null);
@@ -18,6 +20,7 @@ const Login = () => {
   const userContext = useUser();
   const from = location.state?.from?.pathname || "/profile";
   const [loginLoading, setLoginLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   useEffect(() => {
     gsap.to("img.animate", {
@@ -83,6 +86,14 @@ const Login = () => {
     setLoginLoading(false);
   };
 
+  const handleToggleShowPassword = () => {
+    if (showPassword === true) {
+      setShowPassword(false);
+    } else if (showPassword === false) {
+      setShowPassword(true);
+    }
+  };
+
   return (
     <div className="w-full bg-black mx-auto h-screen overflow-hidden">
       <div ref={starsBG} className="w-full h-full">
@@ -107,66 +118,80 @@ const Login = () => {
           />
           <form
             onSubmit={handleSubmit}
-            className="border-[0.5px] border-slate-700 rounded-lg mx-auto w-[25rem] pt-6 pb-10 px-4 text-white"
+            className="border-[0.5px] border-slate-700 rounded-lg mx-auto w-[40rem] pt-6 pb-10 text-white"
           >
-            <div className="w-full pb-4">
-              <p className="w-full flex justify-center font-originTech text-[0.8rem]">
+            <div className="w-full pt-6 pb-4">
+              <p className="w-full  flex justify-center font-originTech text-[0.8rem]">
                 Welcome to the official website of
               </p>
-              <p className="w-full flex justify-center font-bold font-techno text-[2rem] -mt-2">
+              <p className="w-full flex justify-center font-bold font-techno text-[1.5rem]">
                 TechXetra
               </p>
             </div>
-            <div className="w-full flex justify-center items-center">
-              <div className="w-[80%] flex flex-col">
-                <label
-                  htmlFor="email"
-                  className="pb-1 font-originTech text-white-600"
-                >
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  className="w-[100%] outline-none py-1 bg-violet-400 rounded-md flex justify-start items-center pl-2 text-white-800 placeholder:text-white"
-                  placeholder="johndoe@gmail.com"
-                  onChange={(e) => setEmail(e.target.value)}
-                  value={email}
-                />
+            <div className="sm:p-5 p-3">
+              <div className="mx-auto w-full md:w-[80%] flex flex-col gap-2 pt-4">
+                <div className="flex-1 flex flex-col">
+                  <label
+                    htmlFor="email"
+                    className="pb-1 text-white-600 font-originTech"
+                  >
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    className="w-full outline-none py-2 bg-slate-500 rounded-md pl-2"
+                    placeholder="example@example.com"
+                    onChange={(e) => setEmail(e.target.value)}
+                    value={email}
+                  />
+                </div>
+
+                <div className="flex-1 flex flex-col">
+                  <label
+                    htmlFor="password"
+                    className="pb-1 text-white-600 font-originTech"
+                  >
+                    Password
+                  </label>
+                  <div className="flex flex-row">
+                    <input
+                      type="password"
+                      name="password"
+                      className="w-full outline-none py-2 bg-slate-500 rounded-l-md pl-2"
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="********"
+                      value={password}
+                    />
+                    <button
+                      type="button"
+                      className="flex justify-center items-center rounded-r-md hover:cursor-pointer bg-slate-500 py-2 px-4"
+                      onClick={handleToggleShowPassword}
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="w-full flex justify-center items-center pt-4">
-              <div className="w-[80%] flex flex-col">
-                <label
-                  htmlFor="password"
-                  className="pb-1 font-originTech text-white-600"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  className="w-[100%] outline-none py-1 bg-violet-400 rounded-md flex justify-start items-center pl-2 text-white-800 placeholder:text-white"
-                  placeholder="******"
-                  onChange={(e) => setPassword(e.target.value)}
-                  value={password}
-                />
-              </div>
-            </div>
-            <div className="w-full flex justify-center items-center pt-8">
+
+            {/* Submit Button */}
+            <div className="flex justify-center">
               <button
-                disabled={loginLoading}
                 type="submit"
-                className="w-[80%] px-4 py-1 rounded-md bg-violet-600 font-originTech hover:cursor-pointer transform ease-in-out duration-150 hover:bg-violet-800"
+                className="w-36 bg-white-600 mt-6 py-2 rounded-lg font-bold bg-violet-700"
+                disabled={loginLoading}
               >
-                Login
+                {loginLoading ? "Loading..." : "Log in"}
               </button>
+
             </div>
-            <div className="w-full flex justify-center items-center pt-1">
-              <p className="text-sm text-center text-white-600 font-originTech">
-                Don't have an account?{" "}
-                <Link
-                  to="/register"
-                  className="text-blue-600 hover:text-violet-300 transition ease-in-out duration-150"
-                >
+
+            {/* Switch to Login */}
+            <div className="mt-4 text-center">
+              <p className="text-md">
+                Already have an account?{" "}
+                <Link to="/register" className="text-violet-400 hover:underline">
                   Register
                 </Link>
               </p>

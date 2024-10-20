@@ -35,7 +35,7 @@ const Hero: React.FC = () => {
         <ShootingStars />
         <div className="w-full flex justify-between items-center md:pr-10 md:pl-10 pl-8 pr-8 mt-6 text-white ">
           <div className="">
-            <img src="/techxetra-text.png" width={200} alt="Logo" className="max-sm:w-24 " />
+            <img src="/techxetra-text.svg" width={200} alt="Logo" className="max-sm:w-24 " />
           </div>
           <div className="w-fit  h-fit z-10">
             <button

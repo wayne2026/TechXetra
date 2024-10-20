@@ -36,7 +36,7 @@ const FooterBar: React.FC = () => {
 
         {/* Middle section: TechXetra wordmark */}
         <div className="flex justify-center my-auto">
-          <img ref={deskimageRef} src="/techxetra-text.png" alt="TechXetra Wordmark" width={800} className="pt-10" /> {/* TechXetra Wordmark */}
+          <img ref={deskimageRef} src="/techxetra-text.svg" alt="TechXetra Wordmark" width={800} className="pt-10" /> {/* TechXetra Wordmark */}
         </div>
 
         {/* Right section: Dots and character */}
@@ -52,7 +52,7 @@ const FooterBar: React.FC = () => {
           <div className=''><img src="Dots.svg" alt="Dots Image" className="h-[100px] w-[100px]" /> {/* Dots image */}</div>
         </div>
         <div className='flex justify-center'>
-        <img ref={mobimageRef} src="/techxetra-text.png" alt="TechXetra Wordmark" width={300} className='pb-16'/> {/* TechXetra Wordmark */}
+        <img ref={mobimageRef} src="/techxetra-text.svg" alt="TechXetra Wordmark" width={300} className='pb-16'/> {/* TechXetra Wordmark */}
         </div>
       </div>
 

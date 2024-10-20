@@ -41,12 +41,10 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [schoolOrCollege, setSchoolOrCollege] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
-  const [avatar, setAvatar] = useState<File | null>(null);
   const [schoolName, setSchoolName] = useState("");
   const [collegeName, setCollegeName] = useState("");
   const [schoolClass, setSchoolClass] = useState("");
   const [collegeClass, setCollegeClass] = useState("");
-  // const [avatarPreview, setAvatarPreview] = useState<string | null>(null); // For image preview
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
@@ -108,9 +106,6 @@ const Register = () => {
         toast.warning("All fields are required");
         return;
       }
-      if (avatar) {
-        formData.append("avatar", avatar);
-      }
       const { data }: { data: UserResponse } = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/users/register`,
         formData,
@@ -160,22 +155,6 @@ const Register = () => {
     }
   };
 
-  // Handle avatar preview
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files && e.target.files[0];
-    setAvatar(file);
-
-    // if (file) {
-    //   const reader = new FileReader();
-    //   reader.onloadend = () => {
-    //     setAvatarPreview(reader.result as string);
-    //   };
-    //   reader.readAsDataURL(file);
-    // } else {
-    //   setAvatarPreview(null);
-    // }
-  };
-
   return (
     <div className="w-screen h-screen bg-black mx-auto border-2  ">
       <div ref={starsBG} className="w-full h-full">
@@ -202,11 +181,11 @@ const Register = () => {
             onSubmit={handleSubmit}
             className="border-[0.5px]  border-slate-700 rounded-lg mx-auto w-[40rem] pt-6 pb-10 text-white"
           >
-            <div className={`w-full ${schoolOrCollege?'max-sm:pt-40':''} pb-4`}>
-              <p className="w-full  flex justify-center font-originTech text-[0.8rem]">
+            <div className={`w-full ${schoolOrCollege ? 'max-sm:pt-40' : ''} pb-4`}>
+              <p className="w-full flex justify-center font-originTech text-[0.8rem]">
                 Welcome to the official website of
               </p>
-              <p className="w-full  flex justify-center font-bold font-techno text-[1.5rem]">
+              <p className="w-full flex justify-center font-bold font-techno text-[1.5rem]">
                 TechXetra
               </p>
             </div>
@@ -224,7 +203,7 @@ const Register = () => {
                   <input
                     type="text"
                     id="firstName"
-                    className="w-full outline-none py-1 bg-slate-500 rounded-md pl-2"
+                    className="w-full outline-none py-2 bg-slate-500 rounded-md pl-2"
                     placeholder="John"
                     onChange={(e) => setFirstName(e.target.value)}
                     value={firstName}
@@ -242,7 +221,7 @@ const Register = () => {
                   <input
                     type="text"
                     id="lastName"
-                    className="w-full outline-none py-1 bg-slate-500 rounded-md pl-2"
+                    className="w-full outline-none py-2 bg-slate-500 rounded-md pl-2"
                     placeholder="Doe"
                     onChange={(e) => setLastName(e.target.value)}
                     value={lastName}
@@ -262,7 +241,7 @@ const Register = () => {
                   <input
                     type="email"
                     id="email"
-                    className="w-full outline-none py-1 bg-slate-500 rounded-md pl-2"
+                    className="w-full outline-none py-2 bg-slate-500 rounded-md pl-2"
                     placeholder="example@example.com"
                     onChange={(e) => setEmail(e.target.value)}
                     value={email}
@@ -280,13 +259,14 @@ const Register = () => {
                     <input
                       type={showPassword ? "text" : "password"}
                       id="password"
-                      className="w-full outline-none py-1 bg-slate-500 rounded-l-md pl-2"
+                      className="w-full outline-none py-2 bg-slate-500 rounded-l-md pl-2"
                       onChange={(e) => setPassword(e.target.value)}
                       value={password}
+                      placeholder="******"
                     />
                     <button
                       type="button"
-                      className="flex justify-center items-center rounded-r-md hover:cursor-pointer bg-slate-500 p-1"
+                      className="flex justify-center items-center rounded-r-md hover:cursor-pointer bg-slate-500 py-2 px-4"
                       onClick={handleToggleShowPassword}
                     >
                       {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -308,13 +288,14 @@ const Register = () => {
                     <input
                       type={showConfirmPassword ? "text" : "password"}
                       id="confirmPassword"
-                      className="w-full outline-none py-1 bg-slate-500 rounded-l-md pl-2"
+                      className="w-full outline-none py-2 bg-slate-500 rounded-l-md pl-2"
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       value={confirmPassword}
+                      placeholder="*******"
                     />
                     <button
                       type="button"
-                      className="flex justify-center items-center rounded-r-md hover:cursor-pointer bg-slate-500 p-1"
+                      className="flex justify-center items-center rounded-r-md hover:cursor-pointer bg-slate-500 py-2 px-4"
                       onClick={handleToggleConfirmPassword}
                     >
                       {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
@@ -332,7 +313,7 @@ const Register = () => {
                   <input
                     type="number"
                     id="phoneNumber"
-                    className="w-full outline-none py-1 bg-slate-500 rounded-md pl-2"
+                    className="w-full  outline-none py-2 bg-slate-500 rounded-md pl-2"
                     placeholder="9999933333"
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     value={phoneNumber}
@@ -351,7 +332,7 @@ const Register = () => {
                 <select
                   name="institutionName"
                   value={schoolOrCollege}
-                  className="w-full text-slate-200 py-1 rounded-md bg-slate-400 pl-1"
+                  className="w-full text-slate-200 py-2.5 rounded-md bg-slate-400 pl-1"
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                     e.preventDefault();
                     setSchoolOrCollege(e.target.value);
@@ -376,7 +357,7 @@ const Register = () => {
                     <input
                       type="text"
                       id="schoolName"
-                      className=" outline-none py-1 bg-slate-500 rounded-md pl-2"
+                      className=" outline-none py-2 bg-slate-500 rounded-md pl-2"
                       onChange={(e) => setSchoolName(e.target.value)}
                       value={schoolName}
                     />
@@ -396,7 +377,7 @@ const Register = () => {
                           e.preventDefault();
                           setSchoolClass(e.target.value);
                         }}
-                        className="w-full text-slate-200 py-[5px] rounded-md bg-slate-400 pl-1"
+                        className="w-full text-slate-200 py-2.5 rounded-md bg-slate-400 pl-1"
                       >
                         <option value="">Choose an Option</option>
                         <option value="ONE_TO_FOUR">Class 1-4</option>
@@ -419,7 +400,7 @@ const Register = () => {
                     <input
                       type="text"
                       id="collegeName"
-                      className=" outline-none py-1 bg-slate-500 rounded-md pl-2"
+                      className=" outline-none py-2 bg-slate-500 rounded-md pl-2"
                       onChange={(e) => setCollegeName(e.target.value)}
                       value={collegeName}
                     />
@@ -439,7 +420,7 @@ const Register = () => {
                           e.preventDefault();
                           setCollegeClass(e.target.value);
                         }}
-                        className="w-full text-slate-200 py-[5px] rounded-md bg-slate-400 pl-1"
+                        className="w-full text-slate-200 py-2.5 rounded-md bg-slate-400 pl-1"
                       >
                         <option value="">UG/PG</option>
                         <option value="UG">UG</option>
@@ -450,38 +431,22 @@ const Register = () => {
                 </div>
               )}
             </div>
-            {/* Avatar */}
-            <div className="col-span-2 flex flex-col items-center pt-4">
-              <div className="w-full">
-                <label
-                  htmlFor="avatar"
-                  className="pb-1 font-originTech text-white-500 pl-4"
-                >
-                  Upload Avatar
-                </label>
-              </div>
-              <div className="w-full flex justify-center pt-1 ">
-                <input
-                  type="file"
-                  id="avatar"
-                  className="w-[95%] py-1 font-originTech outline-none bg-slate-500 rounded-md pl-2"
-                  onChange={handleAvatarChange}
-                />
-              </div>
-            </div>
 
             {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full bg-white-600 mt-6 py-2 rounded-lg font-bold hover:bg-violet-700"
-              disabled={loginLoading}
-            >
-              {loginLoading ? "Loading..." : "Register"}
-            </button>
+            <div className="flex justify-center">
+              <button
+                type="submit"
+                className="w-36 bg-white-600 mt-6 py-2 rounded-lg font-bold bg-violet-700"
+                disabled={loginLoading}
+              >
+                {loginLoading ? "Loading..." : "Register"}
+              </button>
+
+            </div>
 
             {/* Switch to Login */}
             <div className="mt-4 text-center">
-              <p className="text-sm">
+              <p className="text-md">
                 Already have an account?{" "}
                 <Link to="/login" className="text-violet-400 hover:underline">
                   Log in
