@@ -34,9 +34,9 @@ const SpaceShip: React.FC = () => {
     }, []);
     return (
 
-        <div style={{ height: isTablet?"500px":"550px", width: "550px", position: 'relative',border:'1px solid ' }}>
+        <div style={{ height: isTablet?"500px":"550px", width: "550px", position: 'relative' }}>
             <Canvas
-                camera={{ position: [5, 0, 9], fov: isTablet? 20: 19}}
+                camera={{ position: [5, 0, 9], fov: isTablet? 20: 23}}
                 style={{ height: "100%", width: "100%", position: 'absolute', top: 0, left: 0 }} 
                 gl={{ alpha: true }} 
             >

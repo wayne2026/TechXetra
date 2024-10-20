@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -7,8 +7,11 @@ import { ShootingStars } from '../../components/ShootingStars';
 import { BackgroundGradient } from "../components/ui/background-gradeint";
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Events: React.FC = () => {
+
+    const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [hoveredEventId, setHoveredEventId] = useState<string | null>(null);
     const [events, setEvents] = useState<EventDetails[]>();
@@ -33,10 +36,10 @@ const Events: React.FC = () => {
         slidesToScroll: 1,
         arrows: true,
         centerMode: false,
-        draggable: true, 
-        swipe: true,         
+        draggable: true,
+        swipe: true,
         touchMove: true,
-        initialSlide:0,
+        initialSlide: 0,
         responsive: [
             {
                 breakpoint: 1024, // At 1024px or below (tablet and smaller)
@@ -66,9 +69,9 @@ const Events: React.FC = () => {
 
                 <ShootingStars />
 
-                <h1 className="text-center md:text-left md:pl-16 font-semibold font-technoHideo text-4xl md:text-7xl text-transparent bg-clip-text bg-gradient-radial from-[#FD8444] to-[#7527ED]">Events</h1>
+                <h1 className="text-center md:text-left md:pl-20 font-semibold font-technoHideo text-4xl md:text-7xl text-transparent bg-clip-text bg-gradient-radial from-[#FD8444] to-[#7527ED]">Events</h1>
 
-                <div className='list-none ml-10 absolute z-10 font-manrope container flex flex-wrap text-white px-6'>
+                <div className='list-none max-sm:justify-center md:pl-20 absolute z-10 font-manrope container flex flex-wrap text-white px-6'>
                     <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'All' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('All')}>All</li>
                     <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'TECHNICAL' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('TECHNICAL')}>Technical</li>
                     <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'GENERAL' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('GENERAL')}>General</li>
@@ -81,10 +84,15 @@ const Events: React.FC = () => {
 
 
                 <div className=' pt-20 '>
-                    <Slider {...settings} className='border-'>
+                    <Slider {...settings} className='border-1'>
                         {filteredData?.map((data, index) => (
                             <div
                                 key={index}
+                                onClick={() => {
+                                    if (data.title === "Hackxetra") {
+                                        navigate(`/event?id=${data._id}`)
+                                    }
+                                }}
                                 className='px-4 py-16'
                                 onMouseEnter={() => {
                                     setHoveredEventId(data._id);

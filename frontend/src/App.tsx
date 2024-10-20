@@ -7,6 +7,7 @@ import Profile from "./pages/Profile";
 import Landing from "./pages/Landing";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import Events_Page from './pages/Events_Page'
 import NotFound from "./pages/not-found";
 import Verify from "./pages/verify";
 import "react-toastify/dist/ReactToastify.css";
@@ -57,6 +58,8 @@ function App() {
 					<Route path="/" element={<Landing />} />
 					<Route path="/login" element={<Login />} />
 					<Route path="/register" element={<Register />} />
+					<Route path="/event" element={<Events_Page />} />
+
 
 					<Route
 						element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}

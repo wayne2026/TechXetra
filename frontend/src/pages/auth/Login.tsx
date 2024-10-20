@@ -125,7 +125,7 @@ const Login = () => {
                 Welcome to the official website of
               </p>
               <p className="w-full flex justify-center font-bold font-techno text-[1.5rem] text-violet-700">
-              <Link to="/" >TechXetra</Link>
+                <Link to="/" >TechXetra</Link>
               </p>
             </div>
             <div className="sm:p-5 p-3">
@@ -156,7 +156,7 @@ const Login = () => {
                   </label>
                   <div className="flex flex-row">
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       name="password"
                       className="w-full outline-none py-2 bg-slate-500 rounded-l-md pl-2"
                       onChange={(e) => setPassword(e.target.value)}
