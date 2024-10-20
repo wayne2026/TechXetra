@@ -190,7 +190,7 @@ const Register = () => {
         <ShootingStars />
         <div
           ref={formDiv}
-          className="w-full h-screen max-sm:overflow-y-scroll flex justify-center m-auto items-center "
+          className="w-full h-screen  max-sm:overflow-y-scroll flex justify-center m-auto items-center "
         >
           <img
             src="finalmc.png"
@@ -202,8 +202,8 @@ const Register = () => {
             onSubmit={handleSubmit}
             className="border-[0.5px]  border-slate-700 rounded-lg mx-auto w-[40rem] pt-6 pb-10 text-white"
           >
-            <div className="w-full pb-4">
-              <p className="w-full max-sm:pt-20 flex justify-center font-originTech text-[0.8rem]">
+            <div className={`w-full ${schoolOrCollege?'max-sm:pt-40':''} pb-4`}>
+              <p className="w-full  flex justify-center font-originTech text-[0.8rem]">
                 Welcome to the official website of
               </p>
               <p className="w-full  flex justify-center font-bold font-techno text-[1.5rem]">
