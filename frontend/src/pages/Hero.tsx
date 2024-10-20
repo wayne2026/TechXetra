@@ -33,11 +33,11 @@ const Hero: React.FC = () => {
           className="absolute h-[150vh]"
         />
         <ShootingStars />
-        <div className="w-full h-[5rem] flex justify-between max-sm:mt-3 text-white">
-          <div className="sm:pl-20 max-sm:pl-10 sm:mt-12">
-            <img src="/techxetra-text.png" width={200} alt="Logo" className="max-sm:w-24" />
+        <div className="w-full flex justify-between items-center md:pr-10 md:pl-10 pl-8 pr-8 mt-6 text-white ">
+          <div className="">
+            <img src="/techxetra-text.png" width={200} alt="Logo" className="max-sm:w-24 " />
           </div>
-          <div className="w-fit sm:mt-14 sm:mr-16 h-fit max-sm:mt-4 max-sm:mr-10 z-10">
+          <div className="w-fit  h-fit z-10">
             <button
               ref={btnRef}
               type="button"
@@ -49,7 +49,7 @@ const Hero: React.FC = () => {
                 }
               }}
             >
-              <h1 className="font-originTech sm:text-2xl sm:pt-9 sm:pr-10">
+              <h1 className="font-originTech sm:text-2xl ">
                 {userContext?.user ? `${userContext?.user?.firstName}` : "Login"}
               </h1>
             </button>
@@ -58,7 +58,7 @@ const Hero: React.FC = () => {
         <div id="words-animation" className="max-sm:mt-3 mt-44 mb-14 sm:text-[3.4rem] font-autoTechno">
           <h1 className="bg-gradient-to-r from-[#5162ce] via-[#E12198]/[77%] to-[#F3AC80] bg-clip-text text-transparent text-center max-sm:leading-[70px] sm:leading-[100px]">
             <span className="max-sm:text-[1.2rem] ">REVIVING</span> <br className="sm:hidden" /> <span className="max-sm:text-[1.6rem]">THE <br className="hidden" />LEGACY</span>
-            <br /><span className="sm:text-[2.7rem] max-sm:text-4xl sm:mr-6">INSPIRING</span><br className="sm:hidden" /><span className="max-sm:text-[2.5rem] sm:text-[2.7rem]">INNOVATION</span>
+            <br /><span className="sm:text-[2.7rem] max-sm:text-4xl sm:mr-6">INSPIRING</span><br className="sm:hidden" /><span className="max-sm:text-[2.3rem] max-sm:mx-auto sm:text-[2.7rem]">INNOVATION</span>
           </h1>
         </div>
         <RotatingPlanet />

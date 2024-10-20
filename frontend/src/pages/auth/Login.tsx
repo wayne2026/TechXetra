@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useRef, useState, useEffect } from "react";
 import { StarsBackground } from "../../../components/StarBackground";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ShootingStars } from '../../../components/ShootingStars'
+import { ShootingStars } from "../../../components/ShootingStars";
 import { useUser } from "../../context/user_context";
 import { toast } from "react-toastify";
 
@@ -21,19 +20,18 @@ const Login = () => {
   const [loginLoading, setLoginLoading] = useState<boolean>(false);
 
   useEffect(() => {
-
     gsap.to("img.animate", {
-      y: 'random(-20,20)',
-      x: 'random(-20,20)',
+      y: "random(-20,20)",
+      x: "random(-20,20)",
       repeat: -1,
       yoyo: true,
-      ease: 'power1.inOut',
-      duration: 2
+      ease: "power1.inOut",
+      duration: 2,
     });
 
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     };
   }, []);
   useGSAP(() => {
@@ -65,11 +63,15 @@ const Login = () => {
       return;
     }
     try {
-       const payload = {
+      const payload = {
         email,
         password,
-      }
-      const { data }: { data: UserResponse } = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, payload, config);
+      };
+      const { data }: { data: UserResponse } = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/users/login`,
+        payload,
+        config
+      );
       userContext?.setUser(data.user);
       toast.success("Logged In!");
       navigate(from, { replace: true });
@@ -97,7 +99,12 @@ const Login = () => {
           ref={formDiv}
           className="w-full h-full flex justify-center items-center"
         >
-          <img src="finalmc.png" width={400} alt="" className="animate max-md:hidden" />
+          <img
+            src="finalmc.png"
+            width={400}
+            alt=""
+            className="animate max-md:hidden"
+          />
           <form
             onSubmit={handleSubmit}
             className="border-[0.5px] border-slate-700 rounded-lg mx-auto w-[25rem] pt-6 pb-10 px-4 text-white"
@@ -114,13 +121,13 @@ const Login = () => {
               <div className="w-[80%] flex flex-col">
                 <label
                   htmlFor="email"
-                  className="pb-1 font-originTech text-violet-600"
+                  className="pb-1 font-originTech text-white-600"
                 >
                   Email Address
                 </label>
                 <input
                   type="email"
-                  className="w-[100%] outline-none py-1 bg-violet-400 rounded-md flex justify-start items-center pl-2 text-violet-800 placeholder:text-violet-600"
+                  className="w-[100%] outline-none py-1 bg-violet-400 rounded-md flex justify-start items-center pl-2 text-white-800 placeholder:text-white"
                   placeholder="johndoe@gmail.com"
                   onChange={(e) => setEmail(e.target.value)}
                   value={email}
@@ -131,13 +138,13 @@ const Login = () => {
               <div className="w-[80%] flex flex-col">
                 <label
                   htmlFor="password"
-                  className="pb-1 font-originTech text-violet-600"
+                  className="pb-1 font-originTech text-white-600"
                 >
                   Password
                 </label>
                 <input
                   type="password"
-                  className="w-[100%] outline-none py-1 bg-violet-400 rounded-md flex justify-start items-center pl-2 text-violet-800 placeholder:text-violet-600"
+                  className="w-[100%] outline-none py-1 bg-violet-400 rounded-md flex justify-start items-center pl-2 text-white-800 placeholder:text-white"
                   placeholder="******"
                   onChange={(e) => setPassword(e.target.value)}
                   value={password}
@@ -154,18 +161,23 @@ const Login = () => {
               </button>
             </div>
             <div className="w-full flex justify-center items-center pt-1">
-              <p className="text-sm text-center text-violet-600 font-originTech">
+              <p className="text-sm text-center text-white-600 font-originTech">
                 Don't have an account?{" "}
                 <Link
                   to="/register"
-                  className="text-violet-600 hover:text-violet-300 transition ease-in-out duration-150"
+                  className="text-blue-600 hover:text-violet-300 transition ease-in-out duration-150"
                 >
                   Register
                 </Link>
               </p>
             </div>
           </form>
-          <img src="mascot-bg.png" width={400} alt="" className="animate max-md:hidden" />
+          <img
+            src="mascot-bg.png"
+            width={400}
+            alt=""
+            className="animate max-md:hidden"
+          />
         </div>
       </div>
     </div>

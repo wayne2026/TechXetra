@@ -52,7 +52,7 @@ const FooterBar: React.FC = () => {
           <div className=''><img src="Dots.svg" alt="Dots Image" className="h-[100px] w-[100px]" /> {/* Dots image */}</div>
         </div>
         <div className='flex justify-center'>
-        <img ref={mobimageRef} src="/TechXetraWordmark.png" alt="TechXetra Wordmark" className="h-[220px]" /> {/* TechXetra Wordmark */}
+        <img ref={mobimageRef} src="/techxetra-text.png" alt="TechXetra Wordmark" width={300} className='pb-16'/> {/* TechXetra Wordmark */}
         </div>
       </div>
 

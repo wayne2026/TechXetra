@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
-import { ShootingStars } from '../../../components/ShootingStars'
+import { ShootingStars } from "../../../components/ShootingStars";
 import { useUser } from "../../context/user_context";
 import { toast } from "react-toastify";
 
@@ -17,18 +17,18 @@ const Register = () => {
 
   useEffect(() => {
     gsap.to("img.animate", {
-      y: 'random(-20,20)',
-      x: 'random(-20,20)',
+      y: "random(-20,20)",
+      x: "random(-20,20)",
       repeat: -1,
       yoyo: true,
-      ease: 'power1.inOut',
+      ease: "power1.inOut",
       duration: 2,
     });
 
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
 
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = "auto";
     };
   }, []);
   const navigate = useNavigate();
@@ -49,7 +49,8 @@ const Register = () => {
   // const [avatarPreview, setAvatarPreview] = useState<string | null>(null); // For image preview
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
 
   const userContext = useUser();
   const [loginLoading, setLoginLoading] = useState<boolean>(false);
@@ -61,7 +62,15 @@ const Register = () => {
       headers: { "Content-Type": "multipart/form-data" },
       withCredentials: true,
     };
-    if (!firstName || !lastName || !email || !password || !confirmPassword || !schoolOrCollege || !phoneNumber) {
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !schoolOrCollege ||
+      !phoneNumber
+    ) {
       toast.warning("All fields are required");
       return;
     }
@@ -69,11 +78,11 @@ const Register = () => {
       toast.warning("School or College name is required");
       return;
     }
-    if (schoolOrCollege === "SCHOOL" && (!schoolName ||!schoolClass)) {
+    if (schoolOrCollege === "SCHOOL" && (!schoolName || !schoolClass)) {
       toast.warning("School name and class are required");
       return;
     }
-    if (schoolOrCollege === "COLLEGE" && (!collegeName ||!collegeClass)) {
+    if (schoolOrCollege === "COLLEGE" && (!collegeName || !collegeClass)) {
       toast.warning("College name and class are required");
       return;
     }
@@ -102,7 +111,11 @@ const Register = () => {
       if (avatar) {
         formData.append("avatar", avatar);
       }
-      const { data }: { data: UserResponse } = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, formData, config);
+      const { data }: { data: UserResponse } = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/users/register`,
+        formData,
+        config
+      );
       userContext?.setUser(data.user);
       toast.success("Logged In!");
       navigate("/verify", { replace: true });
@@ -179,8 +192,16 @@ const Register = () => {
           ref={formDiv}
           className="w-full min-h-screen flex justify-center m-auto items-center "
         >
-          <img src="finalmc.png" alt="" width={350} className="animate max-md:hidden" />
-          <form onSubmit={handleSubmit} className="border-[0.5px] border-slate-700 rounded-lg mx-auto w-[40rem] pt-6 pb-10 text-white">
+          <img
+            src="finalmc.png"
+            alt=""
+            width={350}
+            className="animate max-md:hidden"
+          />
+          <form
+            onSubmit={handleSubmit}
+            className="border-[0.5px] border-slate-700 rounded-lg mx-auto w-[40rem] pt-6 pb-10 text-white"
+          >
             <div className="w-full pb-4">
               <p className="w-full flex justify-center font-originTech text-[0.8rem]">
                 Welcome to the official website of
@@ -189,211 +210,185 @@ const Register = () => {
                 TechXetra
               </p>
             </div>
-
-            {/* First Name */}
-            <div className="w-full flex flex-row gap-2">
-              <div className="basis-1/2 w-full flex justify-center items-center">
-                <div className="w-[90%] flex flex-col">
+            <div className="sm:p-5 p-3">
+              {/* Input Fields */}
+              <div className="w-full flex flex-col gap-2 sm:flex-row">
+                {/* First Name */}
+                <div className="flex-1 flex flex-col">
                   <label
                     htmlFor="firstName"
-                    className="pb-1 text-violet-500 font-originTech"
+                    className="pb-1 text-white-600 font-originTech"
                   >
                     First Name
                   </label>
                   <input
                     type="text"
-                    id="username"
-                    className="w-[100%] outline-none py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
+                    id="firstName"
+                    className="w-full outline-none py-1 bg-slate-500 rounded-md pl-2"
                     placeholder="John"
                     onChange={(e) => setFirstName(e.target.value)}
                     value={firstName}
                   />
                 </div>
-              </div>
-              <div className="basis-1/2 w-full flex justify-center items-center pr-4">
-                <div className="w-[100%] flex flex-col">
+
+                {/* Last Name */}
+                <div className="flex-1 flex flex-col">
                   <label
                     htmlFor="lastName"
-                    className="pb-1 text-violet-500 font-originTech"
+                    className="pb-1 text-white-600 font-originTech"
                   >
                     Last Name
                   </label>
                   <input
                     type="text"
                     id="lastName"
-                    className="w-[100%] outline-none py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
+                    className="w-full outline-none py-1 bg-slate-500 rounded-md pl-2"
                     placeholder="Doe"
                     onChange={(e) => setLastName(e.target.value)}
                     value={lastName}
                   />
                 </div>
               </div>
-            </div>
 
-            {/* Email */}
-            <div className="w-full flex flex-row gap-2 pt-4">
-              <div className="basis-1/2 w-full flex justify-center items-center">
-                <div className="w-[90%] flex flex-col">
+              {/* Email and Password */}
+              <div className="w-full flex flex-col gap-2 sm:flex-row pt-4">
+                <div className="flex-1 flex flex-col">
                   <label
                     htmlFor="email"
-                    className="pb-1 text-violet-500 font-originTech"
+                    className="pb-1 text-white-600 font-originTech"
                   >
                     Email Address
                   </label>
                   <input
                     type="email"
                     id="email"
-                    className="w-[100%] outline-none py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
+                    className="w-full outline-none py-1 bg-slate-500 rounded-md pl-2"
                     placeholder="example@example.com"
                     onChange={(e) => setEmail(e.target.value)}
                     value={email}
                   />
                 </div>
-              </div>
-              <div className="basis-1/2 w-full flex justify-center items-cente pr-4">
-                <div className="w-[100%] flex flex-col">
+
+                <div className="flex-1 flex flex-col">
                   <label
                     htmlFor="password"
-                    className="pb-1 text-violet-500 font-originTech"
+                    className="pb-1 text-white-600 font-originTech"
                   >
                     Password
                   </label>
-                  <div className="w-[100%] flex flex-row">
-                    <div className="w-[90%]">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        id="password"
-                        className="w-[100%] outline-none py-1 bg-slate-500 rounded-l-md flex justify-start items-center pl-2"
-                        placeholder=""
-                        onChange={(e) => setPassword(e.target.value)}
-                        value={password}
-                      />
-                    </div>
+                  <div className="flex flex-row">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      id="password"
+                      className="w-full outline-none py-1 bg-slate-500 rounded-l-md pl-2"
+                      onChange={(e) => setPassword(e.target.value)}
+                      value={password}
+                    />
                     <button
                       type="button"
-                      className="w-[10%] flex justify-center items-center rounded-r-md hover:cursor-pointer bg-violet-400"
+                      className="flex justify-center items-center rounded-r-md hover:cursor-pointer bg-slate-500 p-1"
                       onClick={handleToggleShowPassword}
                     >
-                      {showPassword ? (
-                        <FaEyeSlash className="" />
-                      ) : (
-                        <FaEye className="" />
-                      )}
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
                     </button>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Confirm Password */}
-            <div className="w-full flex flex-row gap-2 pt-4">
-              <div className="basis-1/2 w-full flex justify-center items-center">
-                <div className="w-[90%] flex flex-col">
+              {/* Confirm Password and Phone Number */}
+              <div className="w-full flex flex-col gap-2 sm:flex-row pt-4">
+                <div className="flex-1 flex flex-col">
                   <label
                     htmlFor="confirmPassword"
-                    className="pb-1 text-violet-500 font-originTech"
+                    className="pb-1 text-white-600 font-originTech"
                   >
                     Confirm Password
                   </label>
-                  <div className="w-[100%] flex flex-row">
-                    <div className="w-[90%]">
-                      <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        id="confirmPassword"
-                        className="w-[100%] py-1 outline-none bg-slate-500 rounded-l-md flex justify-start items-center pl-2"
-                        placeholder=""
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        value={confirmPassword}
-                      />
-                    </div>
+                  <div className="flex flex-row">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      id="confirmPassword"
+                      className="w-full outline-none py-1 bg-slate-500 rounded-l-md pl-2"
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      value={confirmPassword}
+                    />
                     <button
                       type="button"
-                      className="w-[10%] flex justify-center items-center rounded-r-md hover:cursor-pointer bg-violet-400"
+                      className="flex justify-center items-center rounded-r-md hover:cursor-pointer bg-slate-500 p-1"
                       onClick={handleToggleConfirmPassword}
                     >
-                      {showConfirmPassword ? (
-                        <FaEyeSlash className="" />
-                      ) : (
-                        <FaEye className="" />
-                      )}
+                      {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                     </button>
                   </div>
                 </div>
-              </div>
-              <div className="basis-1/2 w-full flex justify-center items-center pr-4">
-                <div className="w-[100%] flex flex-col">
+
+                <div className="flex-1 flex flex-col">
                   <label
                     htmlFor="phoneNumber"
-                    className="pb-1 text-violet-500 font-originTech"
+                    className="pb-1 text-white-600 font-originTech"
                   >
                     Phone Number
                   </label>
                   <input
                     type="number"
                     id="phoneNumber"
-                    className="w-[100%] outline-none py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
+                    className="w-full outline-none py-1 bg-slate-500 rounded-md pl-2"
                     placeholder="9999933333"
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     value={phoneNumber}
                   />
                 </div>
               </div>
-            </div>
 
-            <div className="w-full flex justify-center items-center pt-4">
-              <div className="w-[95%] flex flex-col">
+              {/* School/College Selection */}
+              <div className="w-full flex flex-col pt-4">
                 <label
                   htmlFor="college"
-                  className="pb-1 text-violet-500 font-originTech"
+                  className="pb-1 text-white-600 font-originTech"
                 >
                   School/College/University
                 </label>
-                <div className="w-full">
-                  <select
-                    name="institutionName"
-                    value={schoolOrCollege}
-                    className="w-full text-slate-200 py-1 rounded-md bg-slate-400 pl-1"
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                      e.preventDefault();
-                      setSchoolOrCollege(e.target.value);
-                    }}
-                  >
-                    <option value="">Choose an option</option>
-                    <option value="SCHOOL">School</option>
-                    <option value="COLLEGE">College/University</option>
-                  </select>
-                </div>
+                <select
+                  name="institutionName"
+                  value={schoolOrCollege}
+                  className="w-full text-slate-200 py-1 rounded-md bg-slate-400 pl-1"
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                    e.preventDefault();
+                    setSchoolOrCollege(e.target.value);
+                  }}
+                >
+                  <option value="">Choose an option</option>
+                  <option value="SCHOOL">School</option>
+                  <option value="COLLEGE">College/University</option>
+                </select>
               </div>
-            </div>
 
-            {schoolOrCollege === "SCHOOL" && (
-              <div className="w-full flex flex-row gap-2 pt-4">
-                <div className="basis-1/2 w-full flex justify-center items-center">
-                  <div className="w-[90%] flex flex-col">
+              {/* School or College Details */}
+              {schoolOrCollege === "SCHOOL" && (
+                <div className="w-full flex flex-col sm:flex-row gap-2 pt-4">
+                  <div className="flex-1 flex flex-col">
                     <label
-                      htmlFor="username"
-                      className="pb-1 text-violet-500 font-originTech"
+                      htmlFor="schoolName"
+                      className="pb-1 text-white-600 font-originTech"
                     >
                       School Name
                     </label>
                     <input
                       type="text"
-                      value={schoolName}
+                      id="schoolName"
+                      className=" outline-none py-1 bg-slate-500 rounded-md pl-2"
                       onChange={(e) => setSchoolName(e.target.value)}
-                      className="w-[100%] outline-none py-1 bg-slate-500 rounded-md flex justify-start items-center pl-2"
-                      placeholder="School Name"
+                      value={schoolName}
                     />
                   </div>
-                </div>
-                <div className="basis-1/2 w-full flex justify-center items-center pr-4">
-                  <div className="w-[100%] flex flex-col">
+                  <div className="flex-1 flex flex-col">
                     <label
-                      htmlFor="email"
-                      className="pb-1 text-violet-500 font-originTech"
+                      htmlFor="schoolClass"
+                      className="pb-1 text-white-600 font-originTech"
                     >
                       Class Range
                     </label>
-                    <div className="w-full">
+                    <div className="">
                       <select
                         name="classRange"
                         value={schoolClass}
@@ -401,11 +396,9 @@ const Register = () => {
                           e.preventDefault();
                           setSchoolClass(e.target.value);
                         }}
-                        className="w-full text-slate-200 py-1 rounded-md bg-slate-400 pl-1"
+                        className="w-full text-slate-200 py-[5px] rounded-md bg-slate-400 pl-1"
                       >
-                        <option value="">
-                          Choose an Option
-                        </option>
+                        <option value="">Choose an Option</option>
                         <option value="ONE_TO_FOUR">Class 1-4</option>
                         <option value="FIVE_TO_EIGHT">Class 5-8</option>
                         <option value="NINE_TO_TWELVE">Class 9-12</option>
@@ -413,37 +406,32 @@ const Register = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-
-            {schoolOrCollege === "COLLEGE" && (
-              <div className="w-full flex flex-row gap-2 pt-4">
-                <div className="basis-1/2 w-full flex justify-center items-center">
-                  <div className="w-[90%] flex flex-col">
+              )}
+              {schoolOrCollege === "COLLEGE" && (
+                <div className="w-full flex flex-col sm:flex-row gap-2 pt-4">
+                  <div className="flex-1 flex flex-col">
                     <label
-                      htmlFor="username"
-                      className="pb-1 text-violet-500 font-originTech"
+                      htmlFor="collegeName"
+                      className="pb-1 text-white-600 font-originTech"
                     >
-                      College/University Name
+                      College Name
                     </label>
                     <input
                       type="text"
-                      value={collegeName}
+                      id="collegeName"
+                      className=" outline-none py-1 bg-slate-500 rounded-md pl-2"
                       onChange={(e) => setCollegeName(e.target.value)}
-                      className="w-[100%] py-1 outline-none bg-slate-500 rounded-md flex justify-start items-center pl-2"
-                      placeholder="name"
+                      value={collegeName}
                     />
                   </div>
-                </div>
-                <div className="basis-1/2 w-full flex justify-center items-center pr-4">
-                  <div className="w-[100%] flex flex-col">
+                  <div className="flex-1 flex flex-col">
                     <label
-                      htmlFor="email"
-                      className="pb-1 text-violet-500 font-originTech"
+                      htmlFor="collegeClass"
+                      className="pb-1 text-white-600 font-originTech"
                     >
                       Graduate level
                     </label>
-                    <div className="w-full">
+                    <div className="">
                       <select
                         name="classRange"
                         value={collegeClass}
@@ -451,26 +439,23 @@ const Register = () => {
                           e.preventDefault();
                           setCollegeClass(e.target.value);
                         }}
-                        className="w-full text-slate-200 py-1 rounded-md bg-slate-400 pl-1"
+                        className="w-full text-slate-200 py-[5px] rounded-md bg-slate-400 pl-1"
                       >
-                        <option value="">
-                          UG/PG
-                        </option>
+                        <option value="">UG/PG</option>
                         <option value="UG">UG</option>
                         <option value="PG">PG</option>
                       </select>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-
+              )}
+            </div>
             {/* Avatar */}
             <div className="col-span-2 flex flex-col items-center pt-4">
               <div className="w-full">
                 <label
                   htmlFor="avatar"
-                  className="pb-1 font-originTech text-violet-500 pl-4"
+                  className="pb-1 font-originTech text-white-500 pl-4"
                 >
                   Upload Avatar
                 </label>
@@ -485,41 +470,31 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Avatar Preview */}
-            {/* {avatarPreview && (
-              <div className="col-span-2 flex justify-center pt-4">
-                <img
-                  src={avatarPreview}
-                  alt="Avatar Preview"
-                  className="w-24 h-24 object-cover rounded-full border-2 border-gray-500"
-                />
-              </div>
-            )} */}
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full bg-white-600 mt-6 py-2 rounded-lg font-bold hover:bg-violet-700"
+              disabled={loginLoading}
+            >
+              {loginLoading ? "Loading..." : "Register"}
+            </button>
 
-            <div className="w-full flex justify-center items-center pt-8">
-              <button
-                type="submit"
-                disabled={loginLoading}
-                className="w-[40%] px-4 py-1 rounded-md bg-violet-600 hover:cursor-pointer transform ease-in-out duration-150 hover:bg-violet-800 font-originTech"
-              >
-                Signup
-              </button>
-            </div>
-            <div className="w-full flex justify-center items-center pt-1">
-              <p className="text-sm text-center text-violet-600 font-originTech">
+            {/* Switch to Login */}
+            <div className="mt-4 text-center">
+              <p className="text-sm">
                 Already have an account?{" "}
-                <Link
-                  to="/login"
-                  className="text-violet-600 hover:text-violet-300 transition ease-in-out duration-150"
-                >
-                  Login
+                <Link to="/login" className="text-violet-400 hover:underline">
+                  Log in
                 </Link>
               </p>
             </div>
-
           </form>
-          <img src="mascot-bg.png" alt="" width={350} className="animate max-md:hidden" />
-
+          <img
+            src="mascot-bg.png"
+            alt=""
+            width={350}
+            className="animate max-md:hidden"
+          />
         </div>
       </div>
     </div>
