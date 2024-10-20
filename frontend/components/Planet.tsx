@@ -20,11 +20,17 @@ const Planet: React.FC = () => {
 
 const RotatingPlanet: React.FC = () => {
     const [isMobile, setIsMobile] = useState(false);
+    const [isTablet, setIsTablet] = useState(false);
+    const [isTabletH, _] = useState(false);
+
+
 
     useEffect(() => {
         // Detect mobile screen
         const handleResize = () => {
-            setIsMobile(window.innerWidth <= 768);
+            setIsMobile(window.innerWidth <= 425);
+            setIsTablet(window.innerWidth <= 768)
+            setIsTablet(window.innerWidth <= 1080)
         };
         handleResize();
         window.addEventListener("resize", handleResize);
@@ -32,9 +38,9 @@ const RotatingPlanet: React.FC = () => {
     }, []);
 
     return (
-        <div style={{ height: isMobile? "350px":"100%", width: "100%", position: 'relative',border:"" }}>
+        <div style={{ height: isMobile? "350px": isTablet?"500px": isTabletH?"750px":"100%", width: isTablet?"500px":"100%", position: 'relative',border:"" }}>
             <Canvas
-                camera={{ position: isMobile ? [0, 0, 9] : [0, 0, 10], fov: isMobile ? 18 : 15 }}
+                camera={{ position: isMobile ? [0, 0, 9] : isTablet?[0,0,12]: [0, 0, 10] , fov: isMobile ? 18 : 15 }}
                 style={{ height: "100%", width: "100%", position: 'absolute', top: 0, left: 0 }}
                 gl={{ alpha: true }}
             >

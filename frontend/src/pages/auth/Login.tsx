@@ -124,8 +124,8 @@ const Login = () => {
               <p className="w-full  flex justify-center font-originTech text-[0.8rem]">
                 Welcome to the official website of
               </p>
-              <p className="w-full flex justify-center font-bold font-techno text-[1.5rem]">
-                TechXetra
+              <p className="w-full flex justify-center font-bold font-techno text-[1.5rem] text-violet-700">
+              <Link to="/" >TechXetra</Link>
               </p>
             </div>
             <div className="sm:p-5 p-3">

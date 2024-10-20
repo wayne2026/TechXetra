@@ -169,7 +169,7 @@ const Register = () => {
         <ShootingStars />
         <div
           ref={formDiv}
-          className="w-full h-screen  max-sm:overflow-y-scroll flex justify-center m-auto items-center "
+          className="w-full h-screen max-sm:pb-20 max-sm:pt-20 max-sm:overflow-y-scroll flex justify-center m-auto items-center "
         >
           <img
             src="finalmc.png"
@@ -185,8 +185,8 @@ const Register = () => {
               <p className="w-full flex justify-center font-originTech text-[0.8rem]">
                 Welcome to the official website of
               </p>
-              <p className="w-full flex justify-center font-bold font-techno text-[1.5rem]">
-                TechXetra
+              <p className="w-full flex justify-center font-bold font-techno text-[1.5rem] text-violet-700">
+                <Link to="/" >TechXetra</Link>
               </p>
             </div>
             <div className="sm:p-5 p-3">
@@ -280,7 +280,7 @@ const Register = () => {
                 <div className="flex-1 flex flex-col">
                   <label
                     htmlFor="confirmPassword"
-                    className="pb-1 text-white-600 font-originTech"
+                    className="md:pb-1 max-xl:text-sm text-white-600 font-originTech"
                   >
                     Confirm Password
                   </label>
