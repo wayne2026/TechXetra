@@ -24,5 +24,17 @@ const eventStorage = multer.diskStorage({
     }
 });
 
+const paymentStorage = multer.diskStorage({
+    destination: async (req, file, cb) => {
+        await fsPromises.mkdir('./public/payments', { recursive: true });
+        cb(null, './public/payments');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
 export const uploadAvatar = multer({ storage: avatarStorage });
 export const uploadEvents = multer({ storage: eventStorage });
+export const uploadPayments = multer({ storage: paymentStorage });

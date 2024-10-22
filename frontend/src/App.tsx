@@ -61,7 +61,6 @@ function App() {
 					<Route path="/" element={<Landing />} />
 					<Route path="/login" element={<Login />} />
 					<Route path="/register" element={<Register />} />
-					<Route path="/event" element={<Events_Page />} />
 
 					<Route
 						element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}
@@ -71,6 +70,7 @@ function App() {
 					<Route
 						element={<ProtectedRoute isAuthenticated={userContext?.user && userContext?.user?.isVerified ? true : false} redirect="/login" />}
 					>
+						<Route path="/event" element={<Events_Page />} />
 						<Route path="/profile" element={<Profile />} />
 					</Route>
 					<Route path="*" element={<NotFound />} />

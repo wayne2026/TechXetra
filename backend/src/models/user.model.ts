@@ -30,6 +30,12 @@ export const collegeClassEnum = {
 	PG: "PG",
 } as const;
 
+export const paymentStatusEnum = {
+	NOT_SUBMITTED: "NOT_SUBMITTED",
+	SUBMITTED: "SUBMITTED",
+	VERIFIED: "VERIFIED",
+} as const;
+
 export interface IUserEvent extends Document {
 	eventId: mongoose.Schema.Types.ObjectId;
     paymentRequired: boolean;
@@ -37,7 +43,7 @@ export interface IUserEvent extends Document {
 	isGroup: boolean;
 	members?: mongoose.Schema.Types.ObjectId[];
 	payment?: {
-		status: boolean;
+		status: typeof paymentStatusEnum[keyof typeof paymentStatusEnum];
 		transactionId: string;
 		paymentImage: string;
 		amount: number;
@@ -112,11 +118,11 @@ const EventSchema: Schema<IUserEvent> = new Schema(
 		],
 		payment: {
 			status: {
-				type: Boolean,
+				type: String,
+				enum: Object.values(paymentStatusEnum),
 				required: function (this: IUserEvent) {
 					return this.paymentRequired;
 				},
-				default: false,
 			},
 			transactionId: {
 				type: String,
@@ -140,7 +146,7 @@ const EventSchema: Schema<IUserEvent> = new Schema(
 				type: mongoose.Schema.Types.ObjectId,
 				ref: "User",
 				required: function (this: IUserEvent) {
-					return this.paymentRequired && this.payment?.status;
+					return this.paymentRequired;
 				},
 			},
 		},

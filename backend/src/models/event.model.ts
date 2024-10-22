@@ -19,12 +19,14 @@ export const categoryEnum = {
 interface IEvent extends Document {
     _id: mongoose.Schema.Types.ObjectId;
     title: string;
-    smallDescription: string;
-    description?: string;
+    subTitle?: string;
+    description: string;
     category: typeof categoryEnum[keyof typeof categoryEnum];
     participation: typeof participationEnum[keyof typeof participationEnum];
     maxGroup?: number;
-    externalRegistration?: boolean;
+    isVisible: boolean;
+    canRegister: boolean;
+    externalRegistration: boolean;
     extrenalRegistrationLink?: string;
     externalLink?: string;
     registrationRequired: boolean;
@@ -33,7 +35,7 @@ interface IEvent extends Document {
     eventDate: Date;
     venue?: string;
     deadline?: Date;
-    images?: string[];
+    image?: string;
     rules?: string[];
     backgroundImage?: string;
     eligibility?: {
@@ -51,11 +53,11 @@ const EventSchema: Schema<IEvent> = new Schema(
             type: String,
             required: true,
         },
-        smallDescription: {
+        subTitle: String,
+        description: {
             type: String,
             required: true,
         },
-        description: String,
         category: {
             type: String,
             enum: Object.values(categoryEnum),
@@ -66,8 +68,22 @@ const EventSchema: Schema<IEvent> = new Schema(
             enum: Object.values(participationEnum),
             required: true,
         },
+        isVisible: {
+            type: Boolean,
+            required: true,
+            default: true,
+        },
+        canRegister: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
         maxGroup: Number,
-        externalRegistration: Boolean,
+        externalRegistration: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
         extrenalRegistrationLink: String,
         externalLink: String,
         registrationRequired: {
@@ -87,7 +103,7 @@ const EventSchema: Schema<IEvent> = new Schema(
             default: Date.now()
         },
         venue: String,
-        images: [String],
+        image: String,
         rules: [String],
         deadline: Date,
         backgroundImage: String,

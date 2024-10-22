@@ -1,12 +1,7 @@
-import background from '../assets/mesh.png'
-import hack from '../assets/hackxetra.jpg'
-
 import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap'
 
-
 const Hackathon = () => {
-
     const imageRef = useRef<HTMLImageElement | null>(null);
 
     useEffect(() => {
@@ -21,27 +16,27 @@ const Hackathon = () => {
             });
         }
     }, []);
+
     return (
         <div className='bg-black w-full lg:h-screen md:h-full h-full lg::py-0 py-4 flex justify-center items-center'>
             <div className='w-[90%] h-[85%] bg-slate-950 shadow-2xl shadow-purple-800 rounded-xl border border-dashed border-pink-600 '>
                 <div className='lg:flex justify-center items-center h-full rounded-lg'>
-                    <div className=' basis-1/2 h-full '>
+                    <div className='basis-1/2 h-full'>
                         <div
                             className="bg-cover bg-center bg-no-repeat basis-1/2 h-full relative rounded-lg mr-1"
-                            style={{ backgroundImage: `url(${background})` }}
+                            style={{ backgroundImage: `url("/mesh.png")` }}
                         >
-                            {/* Small Image */}
                             <div className="flex justify-center items-center h-full min-h-80">
                                 <img
                                     ref={imageRef}
-                                    src={hack}
+                                    src="/TechXetraLogo1.png"
                                     alt="Hackathon"
                                     className="xl:w-[25rem] lg:w-80 w-60  rounded-lg"
                                 />
                             </div>
                         </div>
                     </div>
-                    <div className=' basis-1/2 h-full'>
+                    <div className='basis-1/2 h-full'>
                         <div className='m-8'>
                             <h1 className="text-4xl font-bold text-pink-500">HACKXETRA</h1>
                             <p className="mt-2 text-gray-400">in collaboration with GDGC Tezpur University</p>

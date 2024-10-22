@@ -35,12 +35,13 @@ const Events: React.FC = () => {
     const navigate = useNavigate();
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [hoveredEventId, setHoveredEventId] = useState<string | null>(null);
-    const [events, setEvents] = useState<EventDetails[]>();
+    const [events, setEvents] = useState<AllEventCarousel[]>();
 
     const fetchEvents = async () => {
         try {
-            const { data }: { data: EventDetailsResponse } = await axios.get(`${import.meta.env.VITE_BASE_URL}/events/all`);
+            const { data }: { data: AllEventDetailsResponse } = await axios.get(`${import.meta.env.VITE_BASE_URL}/events/all`);
             setEvents(data.events);
+            console.log(data.events);
         } catch (error: any) {
             toast.error(error.response.data.message);
         }
@@ -112,12 +113,8 @@ const Events: React.FC = () => {
                         {filteredData?.map((data, index) => (
                             <div
                                 key={index}
-                                onClick={() => {
-                                    if (data.title === "Hackxetra") {
-                                        navigate(`/event?id=${data._id}`)
-                                    }
-                                }}
-                                className='px-4 py-16'
+                                onClick={() => navigate(`/event?id=${data._id}`)}
+                                className='px-4 py-16 '
                                 onMouseEnter={() => {
                                     setHoveredEventId(data._id);
                                 }}
@@ -132,13 +129,13 @@ const Events: React.FC = () => {
                                         <div className='flex pl-8 flex-col'>
                                             <h1 className='text-white font-manrope w-fit ml-5 pl-4 pr-4 mt-3 mb-3 rounded-[10px] bg-gradient-radial from-[#cb0044] to-[#e7551b] '>{index + 1}</h1>
                                             <div className='bg-[#2b2b2b] rounded-[25px] ml-4 mb-7 h-fit w-fit pr-5 pl-5  flex items-center '>
-                                                <h1 className={`font-bold font-manrope text-2xl  bg-gradient-radial from-[#EA1B60] to-[#FD7844] bg-clip-text text-transparent ${hoveredEventId === data._id ? 'bg-gradient-radial from-[#EA1B60] to-[#FD7844]' : ''} `}>
+                                                <h1 className={`font-bold font-manrope text-2xl bg-gradient-radial from-[#EA1B60] to-[#FD7844] bg-clip-text text-transparent ${hoveredEventId === data._id ? 'bg-gradient-radial from-[#EA1B60] to-[#FD7844]' : ''} `}>
                                                     {data.title.length > 15 ? `${data.title.slice(0, 15)}...` : data.title}
                                                 </h1>
                                             </div>
                                         </div>
                                         <p className={`text-slate-400 h-[300px] ${hoveredEventId === data._id ? 'text-white' : ''} font-manrope text-lg pl-14 pr-12 text-left`}>
-                                            {data.smallDescription.length > 200 ? `${data.smallDescription.slice(0, 200)}...` : data.smallDescription}
+                                            {data.description.length > 200 ? `${data.description.slice(0, 200)}...` : data.description}
                                         </p>
                                         <div className='flex justify-center mt-auto'>
                                             <img src="./line.svg" width={170} alt="" className='w-fit  pt-4 pl-8 pr-8' />

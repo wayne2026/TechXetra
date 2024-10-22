@@ -308,7 +308,7 @@ const Profile = () => {
 						)}
 
 						<div className="max-sm:flex max-sm:flex-col max-sm:gap-1">
-							<h1 className="text-4xl capitalize font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#FD8444] to-[#7527ED]">
+							<h1 className="text-4xl py-2 capitalize font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#FD8444] to-[#7527ED]">
 								{userContext?.user?.firstName}{" "}{userContext?.user?.lastName}
 							</h1>
 							<p className="sm:text-lg mb-1">

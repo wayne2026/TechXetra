@@ -36,7 +36,7 @@ interface UserResponse {
 interface EventDetails {
 	_id: string;
     title: string;
-    smallDescription: string;
+    description: string;
     description?: string;
     category: string;
     participation: string;
@@ -58,7 +58,21 @@ interface EventDetails {
     updatedAt: Date;
 }
 
+interface AllEventCarousel {
+	_id: string;
+    title: string;
+    description: string;
+    category: string;
+    participation: string;
+    backgroundImage?: string;
+}
+
 interface EventDetailsResponse {
 	success: boolean;
 	events: EventDetails[]
+}
+
+interface AllEventDetailsResponse {
+	success: boolean;
+	events: AllEventCarousel[]
 }
