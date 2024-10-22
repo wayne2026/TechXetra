@@ -22,7 +22,7 @@ app.get("/", (req: Request, res: Response) => {
 	res.status(StatusCodes.OK).json({
 		success: true,
 		message: "Welcome to TechXetra API",
-		version: "1.0.0",
+		version: "1.0.1",
 	});
 });
 
