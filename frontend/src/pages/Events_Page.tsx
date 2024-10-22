@@ -45,7 +45,7 @@ const Hackathon = () => {
                         <div className='m-8'>
                             <h1 className="text-4xl font-bold text-pink-500">HACKXETRA</h1>
                             <p className="mt-2 text-gray-400">in collaboration with GDGC Tezpur University</p>
-                            <p className="mt-4 text-white">Date: <span className="text-pink-500">07/11/24</span></p>
+                            <p className="mt-4 text-white">Date: <span className="text-pink-500">08/11/24</span></p>
                             <p className="text-white">Time: <span className="text-pink-500">10:30 am onwards</span></p>
                             <p className='text-white'>Venue: <span className="text-pink-500">Dean's Gallery</span></p>
                             <div className="2xl:mt-8 mt-4 text-white">

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import crypto from "crypto";
-import User, { accountEnum, collegeClassEnum, roleEnum, schoolClassEnum, schoolEnum } from "../models/user.model.js";
+import User, { collegeClassEnum, roleEnum, schoolClassEnum, schoolEnum } from "../models/user.model.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import { addEmailToQueue } from "../utils/emailQueue.js";
 import sendToken from "../utils/jwtToken.js";
@@ -331,24 +331,11 @@ export const getUser = async (req: CustomRequest, res: Response, next: NextFunct
 	}
 };
 
-export const updateProfile = async (req: CustomRequest, res: Response, next: NextFunction) => {
+export const updateProfileDetails = async (req: CustomRequest, res: Response, next: NextFunction) => {
 	try {
 		const user = await User.findById(req.user?._id);
 		if (!user) {
 			return next(new ErrorHandler("User not found", 404));
-		}
-
-		const filename = req.file ? `${process.env.SERVER_URL}/avatars/${req.file.filename}` : "";
-		if (req.file && user.avatar && user.avatar.length > 0) {
-			const basename = user.avatar.split('/').pop() || "";
-			const imagePath = path.join('./public/avatars', basename);
-			try {
-				if (fs.existsSync(imagePath)) {
-					await fs.promises.unlink(imagePath);
-				}
-			} catch (error) {
-				console.error('Error deleting image:', error);
-			}
 		}
 	
 		const { firstName, lastName, phoneNumber, schoolOrCollege, schoolName, collegeName, schoolClass, collegeClass } = req.body;
@@ -374,7 +361,6 @@ export const updateProfile = async (req: CustomRequest, res: Response, next: Nex
 			schoolClass: schoolClass || user.schoolClass,
 			collegeClass: collegeClass || user.collegeClass,
             phoneNumber: phoneNumber || user.phoneNumber,
-			avatar: filename
 		};
 	
 		const updatedUser = await User.findByIdAndUpdate(
@@ -386,12 +372,48 @@ export const updateProfile = async (req: CustomRequest, res: Response, next: Nex
 		res.status(200).json({
 			success: true,
 			user: updatedUser,
-			message: "Profile updated successfully"
+			message: "Profile Details updated successfully"
 		});
 	} catch (error) {
 		next(error);
 	}
 };
+
+export const uploadProfilePicture = async (req: CustomRequest, res: Response, next: NextFunction) => {
+	try {
+		const user = await User.findById(req.user?._id);
+		if (!user) {
+			return next(new ErrorHandler("User not found", 404));
+		}
+
+		const filename = req.file ? `${process.env.SERVER_URL}/avatars/${req.file.filename}` : "";
+		if (req.file && user.avatar && user.avatar.length > 0) {
+			const basename = user.avatar.split('/').pop() || "";
+			const imagePath = path.join('./public/avatars', basename);
+			try {
+				if (fs.existsSync(imagePath)) {
+					await fs.promises.unlink(imagePath);
+				}
+			} catch (error) {
+				console.error('Error deleting image:', error);
+			}
+		}
+
+		const updatedUser = await User.findByIdAndUpdate(
+			req.user?._id,
+			{ avatar: filename },
+			{ new: true, runValidators: true, useFindAndModify: false }
+		);
+
+		res.status(200).json({
+			success: true,
+			user: updatedUser,
+			message: "Profile Picture updated successfully"
+		});
+	} catch (error) {
+		next(error);
+	}
+}
 
 export const logoutUser = async (req: CustomRequest, res: Response, next: NextFunction) => {
 	try {

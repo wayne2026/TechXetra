@@ -22,6 +22,10 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     componentDidCatch(_: Error, __: ErrorInfo) {
         // You can log the error to an error reporting service
         console.error('Error caught in error boundary');
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 3000);  // Adjust timeout as needed
     }
 
     render() {
@@ -32,7 +36,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             // Render fallback UI when an error occurs
             return (
                 <div className='flex flex-col justify-center gap-8 items-center mt-8'>
-                    <h1>Something Went Wrong!!</h1>
+                    <h1 className='text-3xl font-semibold'>Something Went Wrong!!</h1>
+                    <p className='text-2xl font-semibold'>Reloading page...</p>
                 </div>
             );
         }

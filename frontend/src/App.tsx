@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import ErrorBoundary from "../components/better/error-boundary";
 import ProtectedRoute from "../components/better/protected-routes";
+import ChatAssistant from "../components/better/assitant";
 import { useUser } from "./context/user_context";
 import { ToastContainer } from "react-toastify";
 import Profile from "./pages/Profile";
@@ -19,21 +20,18 @@ function App() {
 
 	useEffect(() => {
 		const font = new FontFace(
-			'AutoTechno', // Replace with your font's name
-			'/auto-techno.ttf' // Replace with your font's URL
+			'AutoTechno',
+			'/auto-techno.ttf'
 		);
 
-		// Load the font
 		font.load().then(() => {
-			// Add the font to the document
 			document.fonts.add(font);
 			setFontLoaded(true);
 		}).catch((error) => {
 			console.error('Font loading failed:', error);
-			setFontLoaded(true);  // You can still render the content even if font loading fails
+			setFontLoaded(true);
 		});
 	}, []);
-
 
 	return userContext?.loading || !fontLoaded ? (
 		<div className="bg-black h-screen flex justify-center items-center">
@@ -54,17 +52,21 @@ function App() {
 				theme="dark"
 			/>
 			<ErrorBoundary>
+				<div
+					className="z-[60] fixed bottom-8 right-8 bg-gray-900 text-white p-2 rounded-md"
+				>
+					<ChatAssistant />
+				</div>
 				<Routes>
 					<Route path="/" element={<Landing />} />
 					<Route path="/login" element={<Login />} />
 					<Route path="/register" element={<Register />} />
 					<Route path="/event" element={<Events_Page />} />
 
-
 					<Route
 						element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}
 					>
-                        <Route path="/verify" element={<Verify />} />
+						<Route path="/verify" element={<Verify />} />
 					</Route>
 					<Route
 						element={<ProtectedRoute isAuthenticated={userContext?.user && userContext?.user?.isVerified ? true : false} redirect="/login" />}

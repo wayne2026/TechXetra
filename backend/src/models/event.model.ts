@@ -24,6 +24,9 @@ interface IEvent extends Document {
     category: typeof categoryEnum[keyof typeof categoryEnum];
     participation: typeof participationEnum[keyof typeof participationEnum];
     maxGroup?: number;
+    externalRegistration?: boolean;
+    extrenalRegistrationLink?: string;
+    externalLink?: string;
     registrationRequired: boolean;
     paymentRequired: boolean;
     amount?: number;
@@ -31,6 +34,7 @@ interface IEvent extends Document {
     venue?: string;
     deadline?: Date;
     images?: string[];
+    rules?: string[];
     backgroundImage?: string;
     eligibility?: {
         schoolOrCollege: typeof schoolEnum[keyof typeof schoolEnum];
@@ -63,6 +67,9 @@ const EventSchema: Schema<IEvent> = new Schema(
             required: true,
         },
         maxGroup: Number,
+        externalRegistration: Boolean,
+        extrenalRegistrationLink: String,
+        externalLink: String,
         registrationRequired: {
             type: Boolean,
             required: true,
@@ -81,6 +88,7 @@ const EventSchema: Schema<IEvent> = new Schema(
         },
         venue: String,
         images: [String],
+        rules: [String],
         deadline: Date,
         backgroundImage: String,
         eligibility: {

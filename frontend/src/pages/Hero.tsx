@@ -1,17 +1,13 @@
 import { useGSAP } from "@gsap/react";
-import { useNavigate } from "react-router-dom";
 import { StarsBackground } from "../../components/StarBackground";
 import { ShootingStars } from '../../components/ShootingStars';
 import RotatingPlanet from "../../components/Planet";
 import gsap from "gsap";
 import { useRef } from "react";
-import { useUser } from "../context/user_context";
+import Navbar from "../components/Navbar";
 
 const Hero: React.FC = () => {
-  const navigate = useNavigate();
-  const btnRef = useRef<HTMLButtonElement>(null);
   const starsBg = useRef<HTMLDivElement>(null);
-  const userContext = useUser();
 
   useGSAP(() => {
     gsap.from(starsBg.current, {
@@ -33,28 +29,7 @@ const Hero: React.FC = () => {
           className="absolute h-[150vh]"
         />
         <ShootingStars />
-        <div className="w-full flex justify-between items-center md:pr-10 md:pl-10 pl-8 pr-8 mt-6 text-white ">
-          <div className="">
-            <img src="/techxetra-text.svg" width={200} alt="Logo" className="max-sm:w-24 " />
-          </div>
-          <div className="w-fit  h-fit z-10">
-            <button
-              ref={btnRef}
-              type="button"
-              onClick={() => {
-                if (userContext?.user) {
-                  navigate("/profile"); 
-                } else {
-                  navigate("/login"); 
-                }
-              }}
-            >
-              <h1 className="font-originTech sm:text-2xl hover:text-transparent bg-clip-text bg-gradient-radial from-[#FD8444] to-[#7527ED] ">
-                {userContext?.user ? `${userContext?.user?.firstName}` : "Login"}
-              </h1>
-            </button>
-          </div>
-        </div>
+        <Navbar />
         <div id="words-animation" className="max-sm:mt-3 mt-44 mb-14 sm:text-[3.4rem] font-autoTechno">
           <h1 className="bg-gradient-to-r from-[#5162ce] via-[#E12198]/[77%] to-[#F3AC80] bg-clip-text text-transparent text-center max-sm:leading-[70px] sm:leading-[100px]">
             <span className="max-sm:text-[1.2rem] ">REVIVING</span> <br className="sm:hidden" /> <span className="max-sm:text-[1.6rem]">THE <br className="hidden" />LEGACY</span>
