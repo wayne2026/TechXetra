@@ -73,22 +73,27 @@ const Register = () => {
       !phoneNumber
     ) {
       toast.warning("All fields are required");
+      setLoginLoading(false);
       return;
     }
     if (schoolOrCollege === "") {
       toast.warning("School or College name is required");
+      setLoginLoading(false);
       return;
     }
     if (schoolOrCollege === "SCHOOL" && (!schoolName || !schoolClass)) {
       toast.warning("School name and class are required");
+      setLoginLoading(false);
       return;
     }
     if (schoolOrCollege === "COLLEGE" && (!collegeName || !collegeClass)) {
       toast.warning("College name and class are required");
+      setLoginLoading(false);
       return;
     }
     if (password !== confirmPassword) {
       toast.warning("Passwords do not match");
+      setLoginLoading(false);
       return;
     }
     try {
@@ -107,6 +112,7 @@ const Register = () => {
         formData.append("collegeClass", collegeClass);
       } else {
         toast.warning("All fields are required");
+        setLoginLoading(false);
         return;
       }
       const { data }: { data: UserResponse } = await axios.post(
@@ -122,8 +128,9 @@ const Register = () => {
       userContext?.setUser(null);
       toast.error(error.response.data.message);
       setLoginLoading(false);
+    } finally {
+      setLoginLoading(false);
     }
-    setLoginLoading(false);
   };
 
   useGSAP(() => {

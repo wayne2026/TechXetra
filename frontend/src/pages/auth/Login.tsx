@@ -64,6 +64,7 @@ const Login = () => {
     };
     if (!email || !password) {
       toast.warning("All fields are required");
+      setLoginLoading(false);
       return;
     }
     try {
@@ -83,8 +84,9 @@ const Login = () => {
       userContext?.setUser(null);
       toast.error(error.response.data.message);
       setLoginLoading(false);
+    } finally {
+      setLoginLoading(false);
     }
-    setLoginLoading(false);
   };
 
   const handleToggleShowPassword = () => {
