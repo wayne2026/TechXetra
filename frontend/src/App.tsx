@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import ErrorBoundary from "../components/better/error-boundary";
 import ProtectedRoute from "../components/better/protected-routes";
-import ChatAssistant from "../components/better/assitant";
+// import ChatAssistant from "../components/better/assitant";
 import { useUser } from "./context/user_context";
 import { ToastContainer } from "react-toastify";
 import Profile from "./pages/Profile";
@@ -52,11 +52,11 @@ function App() {
 				theme="dark"
 			/>
 			<ErrorBoundary>
-				<div
+				{/* <div
 					className="z-[60] fixed bottom-8 right-8 bg-gray-900 text-white p-2 rounded-md"
 				>
 					<ChatAssistant />
-				</div>
+				</div> */}
 				<Routes>
 					<Route path="/" element={<Landing />} />
 					<Route path="/login" element={<Login />} />
@@ -66,10 +66,6 @@ function App() {
 						element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}
 					>
 						<Route path="/verify" element={<Verify />} />
-					</Route>
-					<Route
-						element={<ProtectedRoute isAuthenticated={userContext?.user && userContext?.user?.isVerified ? true : false} redirect="/verify" />}
-					>
 						<Route path="/event" element={<Events_Page />} />
 						<Route path="/profile" element={<Profile />} />
 					</Route>

@@ -112,7 +112,7 @@ const Register = () => {
         config
       );
       userContext?.setUser(data.user);
-      toast.success("Logged In!");
+      toast.success("User registered, please verify yourself!");
       navigate("/verify", { replace: true });
     } catch (error: any) {
       userContext?.setUser(null);
