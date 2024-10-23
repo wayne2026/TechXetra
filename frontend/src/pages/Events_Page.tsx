@@ -3,6 +3,8 @@ import { gsap } from 'gsap'
 import { toast } from 'react-toastify';
 import { Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import { format, toZonedTime } from 'date-fns-tz';
+const timeZone = 'Asia/Kolkata';
 
 const Hackathon = () => {
     const [search] = useSearchParams();
@@ -93,12 +95,13 @@ const Hackathon = () => {
                             )}
                             <p className="mt-4 text-white">Date: <span className="text-pink-500">{new Date(event?.eventDate!).toLocaleDateString('en-GB')}</span></p>
                             <p className="text-white">Time: <span className="text-pink-500">
-                                {new Date(event?.eventDate!).toLocaleTimeString('en-GB', {
+                                {format(toZonedTime(event?.eventDate ? new Date(event.eventDate) : new Date(), timeZone), 'hh:mm a', { timeZone })} onwards
+                                {/* {new Date(event?.eventDate!).toLocaleTimeString('en-GB', {
                                     hour: '2-digit',
                                     minute: '2-digit',
                                     hour12: true,
                                     timeZone: 'Asia/Kolkata'
-                                })} onwards
+                                })} onwards */}
                             </span></p>
                             <p className='text-white'>Venue: <span className="text-pink-500">{event?.venue}</span></p>
                             {event?.rules && event?.rules?.length > 0 ? (
