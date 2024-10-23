@@ -1,35 +1,81 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { ToastContainer } from "react-toastify";
+import Loader from "./components/custom/loader";
+import { useUser } from "./context/user_context";
+import "react-toastify/dist/ReactToastify.css";
+import ErrorBoundary from "./components/custom/error-boundary";
+import { Route, Routes } from "react-router-dom";
+import ProtectedRoute from "./components/custom/protected-route";
+import HomePage from "./pages/home";
+import LoginPage from "./pages/login";
+import EventsPage from "./pages/events";
+import NotFound from "./pages/not-found";
+import PageTitle from "./components/custom/page-title";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+    const userContext = useUser();
+    return userContext?.loading ? (
+        <Loader />
+    ) : (
+        <div>
+            <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
+            <ErrorBoundary>
+                <Routes>
+                    <Route
+                        path="/"
+                        element={
+                            <>
+                                <PageTitle title="Home | TechXetra Admin" />
+                                <HomePage />
+                            </>
+                        }
+                    />
+                    <Route
+                        path="/login"
+                        element={
+                            <>
+                                <PageTitle title="Login | TechXetra Admin" />
+                                <LoginPage />
+                            </>
+                        }
+                    />
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+                    <Route
+                        element={<ProtectedRoute isAuthenticated={userContext?.user && ["ADMIN", "MODERATOR"].includes(userContext.user.role) ? true : false} redirect="/login" />}
+                    >
+                        <Route
+                            path="/events"
+                            element={
+                                <>
+                                    <PageTitle title="Events | TechXetra Admin" />
+                                    <EventsPage />
+                                </>
+                            }
+                        />
+                    </Route>
+                    <Route
+                        path="*"
+                        element={
+                            <>
+                                <PageTitle title="404 Error | TechXetra Admin" />
+                                <NotFound />
+                            </>
+                        }
+                    />
+                </Routes>
+            </ErrorBoundary>
+        </div>
+    )
 }
 
-export default App
+export default App;

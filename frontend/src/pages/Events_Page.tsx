@@ -56,7 +56,7 @@ const Hackathon = () => {
         <div className='bg-black w-full lg:h-screen md:h-full h-full lg::py-0 py-4 flex justify-center items-center'>
             <h1 className='text-5xl font-semibold text-white'>Comming Soon</h1>
         </div>
-    ) : (
+    ) : event ? (
         <div className='bg-black w-full lg:h-screen md:h-full h-full lg::py-0 py-4 flex justify-center items-center'>
             <div className='w-[90%] h-[85%] bg-slate-950 shadow-2xl shadow-purple-800 rounded-xl border border-dashed border-pink-600 '>
                 <div className='lg:flex justify-center items-center h-full rounded-lg'>
@@ -141,6 +141,10 @@ const Hackathon = () => {
 
                 </div>
             </div>
+        </div>
+    ) : (
+        <div className='flex justify-center items-center'>
+            <h1 className='text-xl font-semibold'>Event not found 404</h1>
         </div>
     )
 }

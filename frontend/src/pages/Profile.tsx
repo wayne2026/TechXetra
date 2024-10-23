@@ -55,11 +55,6 @@ const Profile = () => {
 		firstName: userContext?.user?.firstName || "",
 		lastName: userContext?.user?.lastName || "",
 		phoneNumber: userContext?.user?.phoneNumber || "",
-		schoolOrCollege: userContext?.user?.schoolOrCollege || "",
-		schoolName: userContext?.user?.schoolName || "",
-		collegeName: userContext?.user?.collegeName || "",
-		collegeClass: userContext?.user?.collegeClass || "",
-		schoolClass: userContext?.user?.schoolClass || "",
 	});
 	const [resetPassword, setResetPassword] = useState({
 		oldPassword: "",
@@ -163,12 +158,12 @@ const Profile = () => {
 	}
 
 	useEffect(() => {
-        if (open || openReset) {
-            document.body.classList.add('no-scroll');
-        } else {
-            document.body.classList.remove('no-scroll');
-        }
-    }, [open, openReset]);
+		if (open || openReset) {
+			document.body.classList.add('no-scroll');
+		} else {
+			document.body.classList.remove('no-scroll');
+		}
+	}, [open, openReset]);
 
 	return (
 		<div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b] text-white">
@@ -218,62 +213,18 @@ const Profile = () => {
 									</div>
 									<form className='mt-8 max-h-[70vh] overflow-y-scroll hide-scrollbar' onSubmit={handleUpdateProfile}>
 										<div className="flex flex-col justify-center space-y-2">
-											<div className="w-full flex flex-col md:flex-row justify-center items-center gap-3">
-												<div className="w-full md:w-1/2 flex flex-col gap-4">
-													<label htmlFor="first-name" className="text-lg font-semibold">First Name</label>
-													<input type="text" value={updateProfile.firstName} onChange={(e) => setUpdateProfile({ ...updateProfile, firstName: e.target.value })} className='text-md border px-2 py-2 rounded-md' placeholder='Enter First Name' />
-												</div>
-												<div className="w-full md:w-1/2 flex flex-col gap-4">
-													<label htmlFor="last-name" className="text-lg font-semibold">Last Name</label>
-													<input type="text" value={updateProfile.lastName} onChange={(e) => setUpdateProfile({ ...updateProfile, lastName: e.target.value })} className='text-md border px-2 py-2 rounded-md' placeholder='Enter First Name' />
-												</div>
+											<div className="flex flex-col gap-4">
+												<label htmlFor="first-name" className="text-lg font-semibold">First Name</label>
+												<input type="text" value={updateProfile.firstName} onChange={(e) => setUpdateProfile({ ...updateProfile, firstName: e.target.value })} className='text-md border px-2 py-2 rounded-md' placeholder='Enter First Name' />
 											</div>
-											<div className="w-full flex flex-col md:flex-row justify-center items-center gap-3">
-												<div className="w-full md:w-1/2 flex flex-col gap-4">
-													<label htmlFor="phone" className="text-lg font-semibold">Phone Number</label>
-													<input type="text" value={updateProfile.phoneNumber} onChange={(e) => setUpdateProfile({ ...updateProfile, phoneNumber: e.target.value })} className='text-md border px-2 py-2 rounded-md' placeholder='Enter First Name' />
-												</div>
-												<div className="w-full md:w-1/2 flex flex-col gap-4">
-													<label htmlFor="school-college" className="text-lg font-semibold">School/College</label>
-													<select value={updateProfile.schoolOrCollege} onChange={(e) => setUpdateProfile({ ...updateProfile, schoolOrCollege: e.target.value })} className='text-md border px-2 py-2 rounded-md'>
-														<option value="">Choose one</option>
-														<option value="SCHOOL">SCHOOL</option>
-														<option value="COLLEGE">COLLEGE</option>
-													</select>
-												</div>
+											<div className="flex flex-col gap-4">
+												<label htmlFor="last-name" className="text-lg font-semibold">Last Name</label>
+												<input type="text" value={updateProfile.lastName} onChange={(e) => setUpdateProfile({ ...updateProfile, lastName: e.target.value })} className='text-md border px-2 py-2 rounded-md' placeholder='Enter First Name' />
 											</div>
-											{updateProfile.schoolOrCollege === "SCHOOL" ? (
-												<div className="w-full flex flex-col md:flex-row justify-center items-center gap-3">
-													<div className="w-full md:w-1/2 flex flex-col gap-4">
-														<label htmlFor="school-name" className="text-lg font-semibold">School Name</label>
-														<input type="text" value={updateProfile.schoolName} onChange={(e) => setUpdateProfile({ ...updateProfile, schoolName: e.target.value })} className='text-md border px-2 py-2 rounded-md' placeholder='Enter First Name' />
-													</div>
-													<div className="w-full md:w-1/2 flex flex-col gap-4">
-														<label htmlFor="school-class" className="text-lg font-semibold">Class Range</label>
-														<select value={updateProfile.schoolClass} onChange={(e) => setUpdateProfile({ ...updateProfile, schoolClass: e.target.value })} className='text-md border px-2 py-2 rounded-md'>
-															<option value="">Choose an Option</option>
-															<option value="ONE_TO_FOUR">Class 1-4</option>
-															<option value="FIVE_TO_EIGHT">Class 5-8</option>
-															<option value="NINE_TO_TWELVE">Class 9-12</option>
-														</select>
-													</div>
-												</div>
-											) : (
-												<div className="w-full flex flex-col md:flex-row justify-center items-center gap-3">
-													<div className="w-full md:w-1/2 flex flex-col gap-4">
-														<label htmlFor="college-name" className="text-lg font-semibold">College Name</label>
-														<input type="text" value={updateProfile.collegeName} onChange={(e) => setUpdateProfile({ ...updateProfile, collegeName: e.target.value })} className='text-md border px-2 py-2 rounded-md' placeholder='Enter First Name' />
-													</div>
-													<div className="w-full md:w-1/2 flex flex-col gap-4">
-														<label htmlFor="college-class" className="text-lg font-semibold">UG / PG</label>
-														<select value={updateProfile.collegeClass} onChange={(e) => setUpdateProfile({ ...updateProfile, collegeClass: e.target.value })} className='text-md border px-2 py-2 rounded-md'>
-															<option value="">UG/PG</option>
-															<option value="UG">UG</option>
-															<option value="PG">PG</option>
-														</select>
-													</div>
-												</div>
-											)}
+											<div className="flex flex-col gap-4">
+												<label htmlFor="phone" className="text-lg font-semibold">Phone Number</label>
+												<input type="text" value={updateProfile.phoneNumber} onChange={(e) => setUpdateProfile({ ...updateProfile, phoneNumber: e.target.value })} className='text-md border px-2 py-2 rounded-md' placeholder='Enter First Name' />
+											</div>
 											<button type='submit' className='bg-indigo-500 px-3 py-2 rounded-lg text-white'>Submit</button>
 										</div>
 									</form>

@@ -338,28 +338,11 @@ export const updateProfileDetails = async (req: CustomRequest, res: Response, ne
 			return next(new ErrorHandler("User not found", 404));
 		}
 	
-		const { firstName, lastName, phoneNumber, schoolOrCollege, schoolName, collegeName, schoolClass, collegeClass } = req.body;
-
-		if (schoolOrCollege && !Object.values(schoolEnum).includes(schoolOrCollege)) {
-			return next(new ErrorHandler("Invalid field SchoolOrCollege", 400));
-		}
-
-		if (schoolClass && !Object.values(schoolClassEnum).includes(schoolClass)) {
-			return next(new ErrorHandler("Invalid field SchoolClass", 400));
-		}
-
-		if (collegeClass && !Object.values(collegeClassEnum).includes(collegeClass)) {
-			return next(new ErrorHandler("Invalid field CollegeClass", 400));
-		}
+		const { firstName, lastName, phoneNumber } = req.body;
 	
 		const updatedProfile = {
 			firstName: firstName || user.firstName,
 			lastName: lastName || user.lastName,
-			schoolOrCollege: schoolOrCollege || user.schoolOrCollege,
-			schoolName: schoolName || user.schoolName,
-            collegeName: collegeName || user.collegeName,
-			schoolClass: schoolClass || user.schoolClass,
-			collegeClass: collegeClass || user.collegeClass,
             phoneNumber: phoneNumber || user.phoneNumber,
 		};
 	

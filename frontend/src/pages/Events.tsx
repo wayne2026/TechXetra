@@ -76,10 +76,10 @@ const Events: React.FC = () => {
         infinite: true,
         speed: 500,
         slidesToShow: 3,
-        slidesToScroll: 2,
-        autoplay: true,
-        autoplaySpeed: 2000,
-        pauseOnHover: true,
+        slidesToScroll: 1,
+        // autoplay: true,
+        // autoplaySpeed: 2000,
+        // pauseOnHover: true,
         // arrows: true,
         nextArrow: <NextArrow />,
         prevArrow: <PrevArrow />,
@@ -163,7 +163,7 @@ const Events: React.FC = () => {
                                             <p className={`text-slate-400 h-[300px] ${hoveredEventId === data._id ? 'text-white' : ''} font-manrope text-lg pl-14 pr-12 text-left`}>
                                                 {data?.description?.length > 200 ? `${data?.description?.slice(0, 200)}...` : data?.description}
                                             </p>
-                                            <div className='flex justify-center mt-auto'>
+                                            <div className='flex justify-center mx-auto'>
                                                 <img src="./line.svg" width={170} alt="" className='w-fit  pt-4 pl-8 pr-8' />
                                             </div>
                                             <p className='text-[#808080] font-manrope w-fit pl-8 pt-4 pb-4'>Know More</p>
