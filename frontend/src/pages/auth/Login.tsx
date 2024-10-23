@@ -191,7 +191,7 @@ const Login = () => {
             {/* Switch to Login */}
             <div className="mt-4 text-center">
               <p className="text-md">
-                Already have an account?{" "}
+                Don't have an account?{" "}
                 <Link to="/register" className="text-violet-400 hover:underline">
                   Register
                 </Link>
