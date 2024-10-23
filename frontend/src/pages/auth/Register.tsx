@@ -54,8 +54,8 @@ const Register = () => {
   const userContext = useUser();
   const [loginLoading, setLoginLoading] = useState<boolean>(false);
 
-  const from = location.state?.from?.pathname || "/profile";
-
+  const from = location.state?.from?.pathname + location.state?.from?.search || "/profile";
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoginLoading(true);

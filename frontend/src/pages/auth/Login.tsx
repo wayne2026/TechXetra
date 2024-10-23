@@ -14,14 +14,14 @@ const Login = () => {
   const starsBG = useRef<HTMLDivElement>(null);
   const formDiv = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const location = useLocation();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const userContext = useUser();
   const [loginLoading, setLoginLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   
-  const from = location.state?.from?.pathname || "/profile";
+  const location = useLocation();
+  const from = location.state?.from?.pathname + location.state?.from?.search || "/profile";
   
   useEffect(() => {
     gsap.to("img.animate", {

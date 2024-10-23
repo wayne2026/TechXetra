@@ -13,7 +13,7 @@ const Verify = () => {
     const [verifyLoading, setVerifyLoading] = useState(false);
     const [requestLoading, setRequestLoading] = useState(false);
 
-    const from = location.state?.from?.pathname || "/profile";
+    const from = location.state?.from?.pathname + location.state?.from?.search || "/profile";
 
     const onOtpSubmit = async (otp: string) => {
         setVerifyLoading(true);
