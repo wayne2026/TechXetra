@@ -3,7 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import { StarsBackground } from "../../../components/StarBackground";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
@@ -34,6 +34,7 @@ const Register = () => {
   const navigate = useNavigate();
 
   // Form state
+  const location = useLocation();
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -52,6 +53,8 @@ const Register = () => {
 
   const userContext = useUser();
   const [loginLoading, setLoginLoading] = useState<boolean>(false);
+
+  const from = location.state?.from?.pathname || "/profile";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -113,7 +116,8 @@ const Register = () => {
       );
       userContext?.setUser(data.user);
       toast.success("User registered, please verify yourself!");
-      navigate("/verify", { replace: true });
+      // navigate("/verify", { replace: true });
+      navigate(from, { replace: true });
     } catch (error: any) {
       userContext?.setUser(null);
       toast.error(error.response.data.message);
