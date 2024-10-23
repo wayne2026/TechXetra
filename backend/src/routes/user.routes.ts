@@ -11,7 +11,7 @@ import {
 	verifyUser,
 } from "../controllers/user.controller.js";
 import { uploadAvatar } from "../middlewares/multer.middlware.js";
-import { isUserVerified, verifyToken } from "../middlewares/auth.middleware.js";
+import { verifyToken } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -21,8 +21,8 @@ router.route("/login").post(loginUser);
 router.route("/me").get(verifyToken, getUser);
 router.route("/verify").put(verifyToken, verifyUser);
 router.route("/logout").get(verifyToken, logoutUser);
-router.route("/update/password").put(verifyToken, isUserVerified, resetPassword);
-router.route("/upload/avatar").put(verifyToken, isUserVerified, uploadAvatar.single("avatar"), uploadProfilePicture);
-router.route("/update/profile").put(verifyToken, isUserVerified, updateProfileDetails);
+router.route("/update/password").put(verifyToken, resetPassword);
+router.route("/upload/avatar").put(verifyToken, uploadAvatar.single("avatar"), uploadProfilePicture);
+router.route("/update/profile").put(verifyToken, updateProfileDetails);
 
 export default router;
