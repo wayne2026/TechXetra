@@ -7,7 +7,7 @@ import ErrorHandler from '../utils/errorHandler.js';
 import path from 'path';
 import fs from "fs";
 
-export const getAllEvents = async (req: Request, res: Response, next: NextFunction) =>  {
+export const getAllEvents = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const events = await Event.find().select('title description backgroundImage category participation');
 
@@ -20,7 +20,7 @@ export const getAllEvents = async (req: Request, res: Response, next: NextFuncti
     }
 }
 
-export const getEventById = async (req: Request, res: Response, next: NextFunction) =>  {
+export const getEventById = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const event = await Event.findById(req.params.id);
         if (!event) {
@@ -37,25 +37,17 @@ export const getEventById = async (req: Request, res: Response, next: NextFuncti
     }
 }
 
-export const createEvent = async (req: CustomRequest, res: Response, next: NextFunction) => {
+export const createEvent = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const booleanFields = [
-            'isVisible',
-            'canRegister',
-            'externalRegistration',
-            'registrationRequired',
-            'paymentRequired'
-        ];
-
-        const { 
-            title, 
-            subTitle, 
-            description, 
-            category, 
-            participation, 
-            maxGroup, 
-            isVisible, 
-            canRegister, 
+        const {
+            title,
+            subTitle,
+            description,
+            category,
+            participation,
+            maxGroup,
+            isVisible,
+            canRegister,
             externalRegistration,
             extrenalRegistrationLink,
             externalLink,
@@ -81,23 +73,84 @@ export const createEvent = async (req: CustomRequest, res: Response, next: NextF
             return next(new ErrorHandler("All rules should be strings", StatusCodes.BAD_REQUEST));
         }
         if (schoolOrCollege && !Object.values(schoolEnum).includes(schoolOrCollege)) {
-			return next(new ErrorHandler("Invalid field SchoolOrCollege", 400));
-		}
-		if (schoolClass && !Object.values(schoolClassEnum).includes(schoolClass)) {
-			return next(new ErrorHandler("Invalid field SchoolClass", 400));
-		}
-		if (collegeClass && !Object.values(collegeClassEnum).includes(collegeClass)) {
-			return next(new ErrorHandler("Invalid field CollegeClass", 400));
-		}
-        for (const field of booleanFields) {
-            if (typeof req.body[field] !== 'undefined' && typeof req.body[field] !== 'boolean') {
-                return next(new ErrorHandler(`${field} should be a boolean`, StatusCodes.BAD_REQUEST));
-            }
+            return next(new ErrorHandler("Invalid field SchoolOrCollege", 400));
+        }
+        if (schoolClass && !Object.values(schoolClassEnum).includes(schoolClass)) {
+            return next(new ErrorHandler("Invalid field SchoolClass", 400));
+        }
+        if (collegeClass && !Object.values(collegeClassEnum).includes(collegeClass)) {
+            return next(new ErrorHandler("Invalid field CollegeClass", 400));
         }
 
-        const filename = req.file ? `${process.env.SERVER_URL}/events/${req.file.filename}` : "";
+        const eventImage = req.files && !Array.isArray(req.files) && req.files["image"]
+            ? `${process.env.SERVER_URL}/events/${(req.files["image"] as Express.Multer.File[])[0].filename}`
+            : "";
+
+        const eventBackground = req.files && !Array.isArray(req.files) && req.files["event"]
+            ? `${process.env.SERVER_URL}/events/${(req.files["event"] as Express.Multer.File[])[0].filename}`
+            : "";
 
         const event = await Event.create({
+            title,
+            subTitle,
+            description,
+            category,
+            participation,
+            maxGroup,
+            isVisible: Boolean(isVisible),
+            canRegister: Boolean(canRegister),
+            externalRegistration: Boolean(externalRegistration),
+            extrenalRegistrationLink,
+            externalLink,
+            registrationRequired: Boolean(registrationRequired),
+            paymentRequired: Boolean(paymentRequired),
+            amount,
+            eventDate,
+            venue,
+            deadline,
+            rules,
+            images: eventImage,
+            backgroundImage: eventBackground,
+            eligibility: {
+                schoolOrCollege,
+                schoolClass,
+                collegeClass
+            },
+        });
+
+        res.status(StatusCodes.CREATED).json({
+            success: true,
+            message: "Event created successfully",
+            event,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+const deleteOldImage = async (imageUrl: string, folder: string) => {
+    if (imageUrl && imageUrl.length > 0) {
+        const basename = imageUrl.split('/').pop() || "";
+        const imagePath = path.join(`./public/${folder}`, basename);
+
+        try {
+            if (fs.existsSync(imagePath)) {
+                await fs.promises.unlink(imagePath);
+            }
+        } catch (error) {
+            console.error(`Error deleting ${folder} image:`, error);
+        }
+    }
+};
+
+export const updateEventDetails = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const event = await Event.findById(req.params.id);
+        if (!event) {
+            return next(new ErrorHandler(`Event not found with id ${req.params.id}`, StatusCodes.NOT_FOUND));
+        }
+
+        const {
             title,
             subTitle,
             description,
@@ -116,45 +169,78 @@ export const createEvent = async (req: CustomRequest, res: Response, next: NextF
             venue,
             deadline,
             rules,
-            images: filename,
-            eligibility: {
-                schoolOrCollege,
-                schoolClass,
-                collegeClass
-            },
-            creator: req.user?._id,
-        });
+            schoolOrCollege,
+            schoolClass,
+            collegeClass
+        } = req.body;
 
-        res.status(StatusCodes.CREATED).json({
-            success: true,
-            message: "Event created successfully",
-            event,
-        });
-    } catch (error) {
-        next(error);
-    }
-}
-
-export const updateEventDetails = async (req: CustomRequest, res: Response, next: NextFunction) => {
-    try {
-        const event = await Event.findById(req.params.id);
-        if (!event) {
-            return next(new ErrorHandler(`Event not found with id ${req.params.id}`, StatusCodes.NOT_FOUND));
+        if (rules && !Array.isArray(rules)) {
+            return next(new ErrorHandler("Rules should be an array", StatusCodes.BAD_REQUEST));
+        }
+        if (rules && !rules.every((rule: any) => typeof rule === 'string')) {
+            return next(new ErrorHandler("All rules should be strings", StatusCodes.BAD_REQUEST));
+        }
+        if (schoolOrCollege && !Object.values(schoolEnum).includes(schoolOrCollege)) {
+            return next(new ErrorHandler("Invalid field SchoolOrCollege", 400));
+        }
+        if (schoolClass && !Object.values(schoolClassEnum).includes(schoolClass)) {
+            return next(new ErrorHandler("Invalid field SchoolClass", 400));
+        }
+        if (collegeClass && !Object.values(collegeClassEnum).includes(collegeClass)) {
+            return next(new ErrorHandler("Invalid field CollegeClass", 400));
         }
 
-        const { title } = req.body;
+        const eventImage = req.files && !Array.isArray(req.files) && req.files["image"]
+            ? `${process.env.SERVER_URL}/events/${(req.files["image"] as Express.Multer.File[])[0].filename}`
+            : "";
+
+        const eventBackground = req.files && !Array.isArray(req.files) && req.files["event"]
+            ? `${process.env.SERVER_URL}/events/${(req.files["event"] as Express.Multer.File[])[0].filename}`
+            : "";
+
+        if (eventImage && event?.image && event?.image.length > 0) {
+            await deleteOldImage(event?.image, 'events');
+        }
+
+        if (eventBackground && event?.backgroundImage && event?.backgroundImage.length > 0) {
+            await deleteOldImage(event?.backgroundImage, 'events');
+        }
+
+        console.log(eventImage);
+        console.log(eventBackground);
 
         const updatedData = {
-			title: title || event.title,
-            // description: description || event.description,
+            title: title || event.title,
+            subTitle: subTitle || event.subTitle,
+            description: description || event.description,
+            category: category || event.category,
+            participation: participation || event.participation,
+            maxGroup: maxGroup || event.maxGroup,
+            isVisible: Boolean(isVisible) || event.isVisible,
+            canRegister: Boolean(canRegister) || event.canRegister,
+            externalRegistration: Boolean(externalRegistration) || event.externalRegistration,
+            extrenalRegistrationLink: extrenalRegistrationLink || event.extrenalRegistrationLink,
+            externalLink: externalLink || event.externalLink,
+            registrationRequired: Boolean(registrationRequired) || event.registrationRequired,
+            paymentRequired: Boolean(paymentRequired) || event.paymentRequired,
+            amount: amount || event.amount,
+            eventDate: eventDate || event.eventDate,
+            venue: venue || event.venue,
+            deadline: deadline || event.deadline,
+            rules: rules || event.rules,
+            schoolOrCollege: event?.eligibility?.schoolOrCollege,
+            schoolClass: event?.eligibility?.schoolClass,
+            collegeClass: event?.eligibility?.collegeClass,
+            image: eventImage || event.image,
+            backgroundImage: eventBackground || event.backgroundImage,
         };
-	
-		const updatedEvent = await User.findByIdAndUpdate(
-			req.user?._id,
-			updatedData,
-			{ new: true, runValidators: true, useFindAndModify: false }
-		);
-        
+
+        const updatedEvent = await Event.findByIdAndUpdate(
+            event._id,
+            updatedData,
+            { new: true, runValidators: true, useFindAndModify: false }
+        );
+
         res.status(StatusCodes.OK).json({
             success: true,
             message: "Event updated successfully",
@@ -173,7 +259,7 @@ export const deleteEventById = async (req: CustomRequest, res: Response, next: N
         }
 
         await Event.findByIdAndDelete(req.params.id);
-        
+
         res.status(StatusCodes.OK).json({
             success: true,
             message: "Event deleted successfully",
@@ -186,7 +272,7 @@ export const deleteEventById = async (req: CustomRequest, res: Response, next: N
 export const deleteAllEvents = async (req: Request, res: Response, next: NextFunction) => {
     try {
         await Event.deleteMany();
-        
+
         res.status(StatusCodes.OK).json({
             success: true,
             message: "All Events deleted successfully",
@@ -205,7 +291,7 @@ export const addEventDetailsArray = async (req: Request, res: Response, next: Ne
         }
 
         const events = await Event.insertMany(data);
-        
+
         res.status(StatusCodes.CREATED).json({
             success: true,
             count: events.length,
@@ -225,28 +311,28 @@ export const updateEventBackGroundImages = async (req: Request, res: Response, n
 
         const filename = req.file ? `${process.env.SERVER_URL}/events/${req.file.filename}` : "";
         if (req.file && event?.backgroundImage && event?.backgroundImage?.length > 0) {
-			const basename = event?.backgroundImage?.split('/').pop() || "";
-			const imagePath = path.join('./public/events', basename);
-			try {
-				if (fs.existsSync(imagePath)) {
-					await fs.promises.unlink(imagePath);
-				}
-			} catch (error) {
-				console.error('Error deleting image:', error);
-			}
-		}
+            const basename = event?.backgroundImage?.split('/').pop() || "";
+            const imagePath = path.join('./public/events', basename);
+            try {
+                if (fs.existsSync(imagePath)) {
+                    await fs.promises.unlink(imagePath);
+                }
+            } catch (error) {
+                console.error('Error deleting image:', error);
+            }
+        }
 
         const updatedEvent = await Event.findByIdAndUpdate(
-			event._id,
-			{ backgroundImage: filename },
-			{ new: true, runValidators: true, useFindAndModify: false }
-		);
+            event._id,
+            { backgroundImage: filename },
+            { new: true, runValidators: true, useFindAndModify: false }
+        );
 
         res.status(200).json({
-			success: true,
-			event: updatedEvent,
-			message: "BackGround Image updated successfully"
-		});
+            success: true,
+            event: updatedEvent,
+            message: "BackGround Image updated successfully"
+        });
     } catch (error) {
         next(error);
     }
@@ -256,7 +342,7 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
     try {
         const event = await Event.findById(req.params.id);
         if (!event) {
-            return next(new ErrorHandler(`Event not found with id ${req.params.id}`, StatusCodes.NOT_FOUND))
+            return next(new ErrorHandler(`Event not found with id ${req.params.id}`, StatusCodes.NOT_FOUND));
         }
 
         const user = await User.findById(req.user?._id);
@@ -312,21 +398,21 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
         }
 
         const updateUserEvent = await User.findByIdAndUpdate(
-			user._id,
-			{
+            user._id,
+            {
                 $push: {
                     events: eventObject,
                 }
             },
-			{ new: true, runValidators: true, useFindAndModify: false }
-		);
+            { new: true, runValidators: true, useFindAndModify: false }
+        );
 
         res.status(200).json({
-			success: true,
-			event: eventObject,
+            success: true,
+            event: eventObject,
             user: updateUserEvent,
-			message: "Event registered successfully"
-		});
+            message: "Event registered successfully"
+        });
     } catch (error) {
         next(error);
     }
@@ -334,7 +420,7 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
 
 export const unenrollEvent = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-        
+
     } catch (error) {
         next(error);
     }
@@ -342,7 +428,7 @@ export const unenrollEvent = async (req: CustomRequest, res: Response, next: Nex
 
 export const updatePaymentDetails = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-        
+
     } catch (error) {
         next(error);
     }

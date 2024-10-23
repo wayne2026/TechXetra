@@ -10,13 +10,14 @@ import LoginPage from "./pages/login";
 import EventsPage from "./pages/events";
 import NotFound from "./pages/not-found";
 import PageTitle from "./components/custom/page-title";
+import Navbar from "./components/custom/navbar";
 
 const App = () => {
     const userContext = useUser();
     return userContext?.loading ? (
         <Loader />
     ) : (
-        <div>
+        <div className="flex justify-center items-center">
             <ToastContainer
                 position="top-center"
                 autoClose={5000}
@@ -30,6 +31,7 @@ const App = () => {
                 theme="dark"
             />
             <ErrorBoundary>
+                <Navbar />
                 <Routes>
                     <Route
                         path="/"

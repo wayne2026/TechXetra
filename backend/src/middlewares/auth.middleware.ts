@@ -34,8 +34,8 @@ export const verifyToken = async (req: CustomRequest, res: Response, next: NextF
                 const decodedRefresh = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!) as JwtPayload & { id: string };
                 const user = await User.findById(decodedRefresh.id);
 
-                if (!user || user.refreshToken !== refreshToken) {
-					return next(new ErrorHandler("Invalid refresh token", StatusCodes.FORBIDDEN));
+                if (!user) {
+					return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
                 }
 				if (user.isBlocked) {
 					return next(new ErrorHandler("Your account has been blocked", StatusCodes.FORBIDDEN));

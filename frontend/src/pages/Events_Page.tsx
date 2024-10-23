@@ -52,7 +52,7 @@ const Hackathon = () => {
         <div className='flex justify-center items-center'>
             <h1 className='text-xl font-semibold'>Loading...</h1>
         </div>
-    ) : (event && (!event.isVisible || !event.canRegister)) ? (
+    ) : (event && !event.isVisible) ? (
         <div className='bg-black w-full lg:h-screen md:h-full h-full lg::py-0 py-4 flex justify-center items-center'>
             <h1 className='text-5xl font-semibold text-white'>Comming Soon</h1>
         </div>
@@ -91,7 +91,7 @@ const Hackathon = () => {
                             {event?.subTitle && (
                                 <p className="mt-2 text-gray-400">{event.subTitle}</p>
                             )}
-                            <p className="mt-4 text-white">Date: <span className="text-pink-500">{new Date(event?.eventDate!).toLocaleDateString()}</span></p>
+                            <p className="mt-4 text-white">Date: <span className="text-pink-500">{new Date(event?.eventDate!).toLocaleDateString('en-GB')}</span></p>
                             <p className="text-white">Time: <span className="text-pink-500">{new Date(event?.eventDate!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })} onwards</span></p>
                             <p className='text-white'>Venue: <span className="text-pink-500">{event?.venue}</span></p>
                             {event?.rules && event?.rules?.length > 0 ? (

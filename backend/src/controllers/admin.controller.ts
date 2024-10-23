@@ -196,3 +196,23 @@ export const getUsersParticularEvent = async (req: Request, res: Response, next:
         next(error);
     }
 }
+
+export const toggleAllIsVisible = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+        const { isVisible } = req.body;
+
+        if (typeof isVisible !== 'boolean') {
+            return next(new ErrorHandler("'isVisible' is required and should be a boolean", StatusCodes.BAD_REQUEST));
+        }
+        
+        const result = await Event.updateMany({}, { isVisible });
+
+        res.status(StatusCodes.OK).json({
+            success: true,
+            result,
+            message: `All events have been updated to isVisible = ${isVisible}`,
+        });
+    } catch (error) {
+        next(error);
+    }
+}

@@ -7,6 +7,7 @@ import helmet from "helmet";
 import ErrorMiddleware from "./middlewares/error.js";
 import userRouter from "./routes/user.routes.js";
 import eventRouter from "./routes/event.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 
 const app: Application = express();
 
@@ -42,6 +43,7 @@ app.use(express.static("public"));
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/events", eventRouter);
+app.use("/api/v1/admins", adminRoutes);
 
 app.use(ErrorMiddleware);
 
