@@ -42,7 +42,7 @@ const Hackathon = () => {
 
     const enrollEvent = async () => {
         try {
-            
+
         } catch (error: any) {
             toast.error(error.response.data.message);
         }
@@ -92,7 +92,14 @@ const Hackathon = () => {
                                 <p className="mt-2 text-gray-400">{event.subTitle}</p>
                             )}
                             <p className="mt-4 text-white">Date: <span className="text-pink-500">{new Date(event?.eventDate!).toLocaleDateString('en-GB')}</span></p>
-                            <p className="text-white">Time: <span className="text-pink-500">{new Date(event?.eventDate!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })} onwards</span></p>
+                            <p className="text-white">Time: <span className="text-pink-500">
+                                {new Date(event?.eventDate!).toLocaleTimeString('en-GB', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: true,
+                                    timeZone: 'Asia/Kolkata'
+                                })} onwards
+                            </span></p>
                             <p className='text-white'>Venue: <span className="text-pink-500">{event?.venue}</span></p>
                             {event?.rules && event?.rules?.length > 0 ? (
                                 <div className="2xl:mt-8 mt-4 text-white">
