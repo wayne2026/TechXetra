@@ -36,14 +36,35 @@ const Events: React.FC = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [hoveredEventId, setHoveredEventId] = useState<string | null>(null);
     const [events, setEvents] = useState<AllEventCarousel[]>();
+    const [loading, setLoading] = useState(false);
 
     const fetchEvents = async () => {
+        setLoading(true);
+        const cachedEvents = window.sessionStorage.getItem('events');
+        if (cachedEvents) {
+            const { data, expires} = JSON.parse(cachedEvents);
+
+            if (Date.now() < expires) {
+                setEvents(data);
+                setLoading(false);
+                return;
+            }
+        }
+
+        window.sessionStorage.removeItem('events');
+
         try {
             const { data }: { data: AllEventDetailsResponse } = await axios.get(`${import.meta.env.VITE_BASE_URL}/events/all`);
             setEvents(data.events);
-            console.log(data.events);
+            const payload = {
+                data: data.events,
+                expires: Date.now() + 5 * 60 * 1000
+            }
+            window.sessionStorage.setItem("events", JSON.stringify(payload));
         } catch (error: any) {
             toast.error(error.response.data.message);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -109,49 +130,55 @@ const Events: React.FC = () => {
                 </div>
 
                 <div className='w-full md:w-[90%] mx-auto pt-20 pb-20'>
-                    <Slider {...settings} className=''>
-                        {filteredData?.map((data, index) => (
-                            <div
-                                key={index}
-                                onClick={() => navigate(`/event?id=${data._id}`)}
-                                className='px-4 py-16 '
-                                onMouseEnter={() => {
-                                    setHoveredEventId(data._id);
-                                }}
-                                onMouseLeave={() => setHoveredEventId(null)}
-                            >
-                                <div className=''>
-                                    <BackgroundGradient className={`flex relative flex-col w-104 bg-black rounded-3xl transform transition-transform duration-300`}>
-                                        <div className='flex justify-between pt-8 '>
-                                            <h1 className={`bg-gradient-radial from-[#ffffff] to-[#da9276] bg-clip-text text-transparent font-manrope ${hoveredEventId === data._id ? 'text-white' : ''} pl-14`}>{data.participation === "HYBRID" ? "SOLO/TEAM" : data.participation}</h1>
-                                            <img src="./arrow.svg" width={230} alt="" className='mr-9' />
-                                        </div>
-                                        <div className='flex pl-8 flex-col'>
-                                            <h1 className='text-white font-manrope w-fit ml-5 pl-4 pr-4 mt-3 mb-3 rounded-[10px] bg-gradient-radial from-[#cb0044] to-[#e7551b] '>{index + 1}</h1>
-                                            <div className='bg-[#2b2b2b] rounded-[25px] ml-4 mb-7 h-fit w-fit pr-5 pl-5  flex items-center '>
-                                                <h1 className={`font-bold font-manrope text-2xl bg-gradient-radial from-[#EA1B60] to-[#FD7844] bg-clip-text text-transparent ${hoveredEventId === data._id ? 'bg-gradient-radial from-[#EA1B60] to-[#FD7844]' : ''} `}>
-                                                    {data.title.length > 15 ? `${data.title.slice(0, 15)}...` : data.title}
-                                                </h1>
+                    {loading ? (
+                        <div className='flex justify-center items-center'>
+                            <h1 className='text-xl font-semibold'>Loading...</h1>
+                        </div>
+                    ) : (
+                        <Slider {...settings} className=''>
+                            {filteredData?.map((data, index) => (
+                                <div
+                                    key={index}
+                                    onClick={() => navigate(`/event?id=${data._id}`)}
+                                    className='px-4 py-16 '
+                                    onMouseEnter={() => {
+                                        setHoveredEventId(data._id);
+                                    }}
+                                    onMouseLeave={() => setHoveredEventId(null)}
+                                >
+                                    <div className=''>
+                                        <BackgroundGradient className={`flex relative flex-col w-104 bg-black rounded-3xl transform transition-transform duration-300`}>
+                                            <div className='flex justify-between pt-8 '>
+                                                <h1 className={`bg-gradient-radial from-[#ffffff] to-[#da9276] bg-clip-text text-transparent font-manrope ${hoveredEventId === data._id ? 'text-white' : ''} pl-14`}>{data.participation === "HYBRID" ? "SOLO/TEAM" : data.participation}</h1>
+                                                <img src="./arrow.svg" width={230} alt="" className='mr-9' />
                                             </div>
-                                        </div>
-                                        <p className={`text-slate-400 h-[300px] ${hoveredEventId === data._id ? 'text-white' : ''} font-manrope text-lg pl-14 pr-12 text-left`}>
-                                            {data.description.length > 200 ? `${data.description.slice(0, 200)}...` : data.description}
-                                        </p>
-                                        <div className='flex justify-center mt-auto'>
-                                            <img src="./line.svg" width={170} alt="" className='w-fit  pt-4 pl-8 pr-8' />
-                                        </div>
-                                        <p className='text-[#808080] font-manrope w-fit pl-8 pt-4 pb-4'>Know More</p>
+                                            <div className='flex pl-8 flex-col'>
+                                                <h1 className='text-white font-manrope w-fit ml-5 pl-4 pr-4 mt-3 mb-3 rounded-[10px] bg-gradient-radial from-[#cb0044] to-[#e7551b] '>{index + 1}</h1>
+                                                <div className='bg-[#2b2b2b] rounded-[25px] ml-4 mb-7 h-fit w-fit pr-5 pl-5  flex items-center '>
+                                                    <h1 className={`font-bold font-manrope text-2xl bg-gradient-radial from-[#EA1B60] to-[#FD7844] bg-clip-text text-transparent ${hoveredEventId === data._id ? 'bg-gradient-radial from-[#EA1B60] to-[#FD7844]' : ''} `}>
+                                                        {data?.title?.length > 15 ? `${data?.title?.slice(0, 15)}...` : data?.title}
+                                                    </h1>
+                                                </div>
+                                            </div>
+                                            <p className={`text-slate-400 h-[300px] ${hoveredEventId === data._id ? 'text-white' : ''} font-manrope text-lg pl-14 pr-12 text-left`}>
+                                                {data?.description?.length > 200 ? `${data?.description?.slice(0, 200)}...` : data?.description}
+                                            </p>
+                                            <div className='flex justify-center mt-auto'>
+                                                <img src="./line.svg" width={170} alt="" className='w-fit  pt-4 pl-8 pr-8' />
+                                            </div>
+                                            <p className='text-[#808080] font-manrope w-fit pl-8 pt-4 pb-4'>Know More</p>
 
-                                        {hoveredEventId === data._id && (
-                                            <div className='absolute inset-0 transition-opacity duration-[500ms] opacity-0 hover:opacity-35'>
-                                                <img src={data.backgroundImage} alt={data.title} className='object-cover w-full h-full rounded-3xl' />
-                                            </div>
-                                        )}
-                                    </BackgroundGradient>
+                                            {hoveredEventId === data._id && (
+                                                <div className='absolute inset-0 transition-opacity duration-[500ms] opacity-0 hover:opacity-35'>
+                                                    <img src={data.backgroundImage} alt={data.title} className='object-cover w-full h-full rounded-3xl' />
+                                                </div>
+                                            )}
+                                        </BackgroundGradient>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </Slider>
+                            ))}
+                        </Slider>
+                    )}
                 </div>
             </div>
         </div>

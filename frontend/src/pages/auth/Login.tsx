@@ -18,10 +18,11 @@ const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const userContext = useUser();
-  const from = location.state?.from?.pathname || "/profile";
   const [loginLoading, setLoginLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-
+  
+  const from = location.state?.from?.pathname || "/profile";
+  
   useEffect(() => {
     gsap.to("img.animate", {
       y: "random(-20,20)",

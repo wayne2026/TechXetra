@@ -9,14 +9,12 @@ export interface CustomRequest extends Request {
 }
 
 export const verifyToken = async (req: CustomRequest, res: Response, next: NextFunction): Promise<void> => {
-    // const accessToken = req.headers.authorization?.split(" ")[1];
-	// const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
 	const accessToken = req.cookies.accessToken as string | undefined;
     const refreshToken = req.cookies.refreshToken as string | undefined;
 
-    // if (!accessToken) {
-	// 	return next(new ErrorHandler("Access token required", StatusCodes.FORBIDDEN));
-	// }
+	if (!accessToken) {
+		return next(new ErrorHandler("Unauthorised access", StatusCodes.FORBIDDEN));
+	}
 
     try {
         const decoded = jwt.verify(accessToken!, process.env.ACCESS_TOKEN_SECRET!) as JwtPayload & { id: string, email: string, role: string };
@@ -26,13 +24,12 @@ export const verifyToken = async (req: CustomRequest, res: Response, next: NextF
 		}
 		if (user.isBlocked) {
 			return next(new ErrorHandler("Your account has been blocked", StatusCodes.FORBIDDEN));
-		}	
+		}
 	
 		req.user = user;
 		next();
     } catch (err) {
-        // if (err instanceof jwt.TokenExpiredError && refreshToken) {
-		if (refreshToken) {
+		if (err instanceof jwt.TokenExpiredError && refreshToken) {
             try {
                 const decodedRefresh = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!) as JwtPayload & { id: string };
                 const user = await User.findById(decodedRefresh.id);
@@ -45,19 +42,16 @@ export const verifyToken = async (req: CustomRequest, res: Response, next: NextF
 				}
 
 				const newAccessToken = user.generateAccessToken();
-				const expireTime = Number(process.env.ACCESS_COOKIE_EXPIRE) * 60 * 1000;
+				const expireTime = Number(process.env.ACCESS_COOKIE_EXPIRE) * 24 * 60 * 60 * 1000;
 
 				const options: CookieOptions = {
-					expires: new Date(
-						Date.now() + expireTime
-					),
+					expires: new Date(Date.now() + expireTime),
 					httpOnly: true,
-					secure: true,
+					secure: process.env.NODE_ENV === "production",
 					sameSite: 'strict',
 				};
 
 				res.cookie("accessToken", newAccessToken, options);
-                // res.setHeader("Authorization", `Bearer ${newAccessToken}`);
 
                 req.user = user;
                 next();

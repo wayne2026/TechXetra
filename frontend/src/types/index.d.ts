@@ -36,18 +36,24 @@ interface UserResponse {
 interface EventDetails {
 	_id: string;
     title: string;
+    subTitle?: string;
     description: string;
-    description?: string;
     category: string;
     participation: string;
     maxGroup?: number;
+    isVisible: boolean;
+    canRegister: boolean;
+    externalRegistration: boolean;
+    extrenalRegistrationLink?: string;
+    externalLink?: string;
     registrationRequired: boolean;
     paymentRequired: boolean;
     amount?: number;
     eventDate: Date;
     venue?: string;
     deadline?: Date;
-    images?: string[];
+    image?: string;
+    rules?: string[];
     backgroundImage?: string;
     eligibility?: {
         schoolOrCollege: string;
@@ -69,10 +75,10 @@ interface AllEventCarousel {
 
 interface EventDetailsResponse {
 	success: boolean;
-	events: EventDetails[]
+	event: EventDetails;
 }
 
 interface AllEventDetailsResponse {
 	success: boolean;
-	events: AllEventCarousel[]
+	events: AllEventCarousel[];
 }

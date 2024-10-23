@@ -26,9 +26,6 @@ export const getEventById = async (req: Request, res: Response, next: NextFuncti
         if (!event) {
             return next(new ErrorHandler(`Event not found with id ${req.params.id}`, StatusCodes.NOT_FOUND))
         }
-        if (!event.isVisible) {
-            return next(new ErrorHandler(`Event not available with id ${req.params.id}`, StatusCodes.NOT_FOUND));
-        }
 
         res.status(StatusCodes.OK).json({
             success: true,

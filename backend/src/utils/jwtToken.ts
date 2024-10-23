@@ -7,14 +7,12 @@ const generateOptions = (expireTime: number) => {
     }
 
     const options: CookieOptions = {
-        expires: new Date(
-            Date.now() + expireTime
-        ),
+        expires: new Date(Date.now() + (expireTime * 24 * 60 * 60 * 1000)),
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: 'strict',
     };
-
+    
     return options;
 }
 
@@ -24,11 +22,8 @@ const sendToken = async (user: IUser, statusCode: number, res: Response) => {
 
     await user.save({ validateBeforeSave: false });
 
-    const accessTokenExpireTime = Number(process.env.ACCESS_COOKIE_EXPIRE) * 60 * 1000;
-    const refreshTokenExpireTime = Number(process.env.REFRESH_COOKIE_EXPIRE) * 24 * 60 * 60 * 1000;
-
-    const accessTokenOptions = generateOptions(accessTokenExpireTime);
-    const refreshTokenOptions = generateOptions(refreshTokenExpireTime);
+    const accessTokenOptions = generateOptions(Number(process.env.ACCESS_COOKIE_EXPIRE));
+    const refreshTokenOptions = generateOptions(Number(process.env.REFRESH_COOKIE_EXPIRE));
 
     res
         .status(statusCode)

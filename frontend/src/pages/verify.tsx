@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import axios from "axios";
@@ -7,10 +7,13 @@ import { useUser } from "../context/user_context";
 
 const Verify = () => {
 
-    const navigate = useNavigate();
     const userContext = useUser();
+    const location = useLocation();
+    const navigate = useNavigate();
     const [verifyLoading, setVerifyLoading] = useState(false);
     const [requestLoading, setRequestLoading] = useState(false);
+
+    const from = location.state?.from?.pathname || "/profile";
 
     const onOtpSubmit = async (otp: string) => {
         setVerifyLoading(true);
@@ -18,7 +21,7 @@ const Verify = () => {
             const { data }: { data: UserResponse } = await axios.put(`${import.meta.env.VITE_BASE_URL}/users/verify`, { otp }, { withCredentials: true });
             userContext?.setUser(data.user);
             toast.success("User Verified!");
-            navigate("/profile");
+            navigate(from, { replace: true });
         } catch (error: any) {
             userContext?.setUser(null);
             toast.error(error.response.data.message);

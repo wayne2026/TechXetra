@@ -25,7 +25,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
         setTimeout(() => {
             window.location.reload();
-        }, 3000);  // Adjust timeout as needed
+        }, 1000);  // Adjust timeout as needed
     }
 
     render() {

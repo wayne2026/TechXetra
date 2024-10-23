@@ -68,7 +68,7 @@ function App() {
 						<Route path="/verify" element={<Verify />} />
 					</Route>
 					<Route
-						element={<ProtectedRoute isAuthenticated={userContext?.user && userContext?.user?.isVerified ? true : false} redirect="/login" />}
+						element={<ProtectedRoute isAuthenticated={userContext?.user && userContext?.user?.isVerified ? true : false} redirect="/verify" />}
 					>
 						<Route path="/event" element={<Events_Page />} />
 						<Route path="/profile" element={<Profile />} />
