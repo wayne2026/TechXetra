@@ -235,8 +235,6 @@ export const updateEventDetails = async (req: Request, res: Response, next: Next
             backgroundImage: eventBackground || event.backgroundImage,
         };
 
-        console.log(updatedData)
-
         const updatedEvent = await Event.findByIdAndUpdate(
             event._id,
             updatedData,

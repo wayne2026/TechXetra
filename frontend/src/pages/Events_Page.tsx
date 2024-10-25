@@ -184,6 +184,7 @@ const Hackathon = () => {
                             </span></p>
                             <p className="text-white">Time: <span className="text-pink-500">
                                 10:30 AM onwards
+                                {userContext?.user?.role === "ADMIN" && String(event.eventDate.getTime())}
                                 {userContext?.user?.role === "ADMIN" && (moment.utc(event.eventDate)).tz(moment.tz.guess()).format('hh:mm A')}
                                 {userContext?.user?.role === "ADMIN" && moment.utc(event.eventDate).local().format('hh:mm A')}
                             </span></p>
@@ -258,7 +259,7 @@ const Hackathon = () => {
                                     target="_blank"
                                 >
                                     <button className="2xl:mt-8 mt-5 px-4 py-3 mr-4 bg-pink-500 rounded-lg text-white hover:bg-pink-600">
-                                        Register Now + →
+                                        Register Now →
                                     </button>
                                 </Link>
                             ) : (
