@@ -1,41 +1,70 @@
-import { Button } from "@/components/ui/button"
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
+const formSchema = z.object({
+    email: z.string().email().min(2).max(50),
+    password: z.string().min(8).max(50),
+});
 const LoginPage = () => {
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            email: "",
+            password: "",
+        },
+    });
+
+    function onSubmit(values: z.infer<typeof formSchema>) {
+        console.log(values)
+    }
+
     return (
-        <Card className="w-[350px]">
-            <CardHeader>
-                <CardTitle>TechXetra Admin Pannel</CardTitle>
-                <CardDescription>Only Admins are allowed here.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <form>
-                    <div className="grid w-full items-center gap-4">
-                        <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="email">Email</Label>
-                            <Input placeholder="Enter your Email" />
-                        </div>
-                        <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="password">Password</Label>
-                            <Input placeholder="Enter your Password" />
-                        </div>
-                    </div>
+        <div className="w-[90%] md:w-[60%] lg:w-[50%] mt-24 bg-white p-6 rounded-lg">
+            <h1 className="text-3xl font-semibold py-6">Admin Login</h1>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Email</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="shadcn@gmail.com" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Password</FormLabel>
+                                <FormControl>
+                                    <Input type="password" placeholder="*********" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <Button type="submit">Login</Button>
                 </form>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-                {/* <Button variant="outline">Cancel</Button> */}
-                <Button>Login</Button>
-            </CardFooter>
-        </Card>
+            </Form>
+        </div>
     )
 }
 

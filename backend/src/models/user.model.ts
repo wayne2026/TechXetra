@@ -31,9 +31,15 @@ export const collegeClassEnum = {
 } as const;
 
 export const paymentStatusEnum = {
-	NOT_SUBMITTED: "NOT_SUBMITTED",
+	PENDING: "PENDING",
 	SUBMITTED: "SUBMITTED",
 	VERIFIED: "VERIFIED",
+} as const;
+
+export const invitationStatusEnum = {
+	ACCEPTED: "ACCEPTED",
+    REJECTED: "REJECTED",
+    PENDING: "PENDING",
 } as const;
 
 export interface IUserEvent extends Document {
@@ -41,11 +47,17 @@ export interface IUserEvent extends Document {
     paymentRequired: boolean;
 	eligible: boolean;
 	isGroup: boolean;
-	members?: mongoose.Schema.Types.ObjectId[];
+	group?: {
+		leader?: mongoose.Schema.Types.ObjectId;
+		members?: {
+			status: typeof invitationStatusEnum[keyof typeof invitationStatusEnum];
+			user: mongoose.Schema.Types.ObjectId;
+		}[];
+	}
 	payment?: {
 		status: typeof paymentStatusEnum[keyof typeof paymentStatusEnum];
-		transactionId: string;
-		paymentImage: string;
+		transactionId?: string;
+		paymentImage?: string;
 		amount: number;
 		verifierId?: mongoose.Schema.Types.ObjectId;
 	}
@@ -110,12 +122,24 @@ const EventSchema: Schema<IUserEvent> = new Schema(
             required: true,
             default: false,
 		},
-		members: [
-			{
+		group: {
+			leader: {
 				type: mongoose.Schema.Types.ObjectId,
 				ref: "User",
 			},
-		],
+			members: [
+				{
+					status: {
+						type: String,
+						enum: Object.values(invitationStatusEnum),
+					},
+					user: {
+						type: mongoose.Schema.Types.ObjectId,
+						ref: "User",
+					},
+				}
+			],
+		},
 		payment: {
 			status: {
 				type: String,
@@ -127,13 +151,13 @@ const EventSchema: Schema<IUserEvent> = new Schema(
 			transactionId: {
 				type: String,
 				required: function (this: IUserEvent) {
-					return this.paymentRequired;
+					return this.payment?.status === paymentStatusEnum.SUBMITTED;
 				},
 			},
 			paymentImage: {
 				type: String,
 				required: function (this: IUserEvent) {
-					return this.paymentRequired;
+					return this.payment?.status === paymentStatusEnum.SUBMITTED;
 				},
 			},
 			amount: {
@@ -146,7 +170,7 @@ const EventSchema: Schema<IUserEvent> = new Schema(
 				type: mongoose.Schema.Types.ObjectId,
 				ref: "User",
 				required: function (this: IUserEvent) {
-					return this.paymentRequired;
+					return this.payment?.status === paymentStatusEnum.SUBMITTED;
 				},
 			},
 		},

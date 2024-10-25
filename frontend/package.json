@@ -23,6 +23,7 @@
     "date-fns-tz": "^3.2.0",
     "framer-motion": "^11.7.0",
     "install": "^0.13.0",
+    "moment-timezone": "^0.5.46",
     "npm": "^10.8.3",
     "qr-code-styling": "^1.7.2",
     "react": "^18.3.1",

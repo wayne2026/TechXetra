@@ -1,18 +1,20 @@
 import { Route, Routes } from "react-router-dom";
 import ErrorBoundary from "../components/better/error-boundary";
 import ProtectedRoute from "../components/better/protected-routes";
-// import ChatAssistant from "../components/better/assitant";
 import { useUser } from "./context/user_context";
 import { ToastContainer } from "react-toastify";
-import Profile from "./pages/Profile";
-import Landing from "./pages/Landing";
+import { lazy, Suspense, useEffect, useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
+
+import Events_Page from './pages/Events_Page'
+import Verify from "./pages/verify";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
-import Events_Page from './pages/Events_Page'
 import NotFound from "./pages/not-found";
-import Verify from "./pages/verify";
-import "react-toastify/dist/ReactToastify.css";
-import { useEffect, useState } from "react";
+import Landing from "./pages/Landing";
+import Profile from "./pages/Profile";
+
+const ChatAssistant = lazy(() => import("../components/better/assitant"));
 
 function App() {
 	const userContext = useUser();
@@ -52,25 +54,31 @@ function App() {
 				theme="dark"
 			/>
 			<ErrorBoundary>
-				{/* <div
-					className="z-[60] fixed bottom-8 right-8 bg-gray-900 text-white p-2 rounded-md"
-				>
-					<ChatAssistant />
-				</div> */}
-				<Routes>
-					<Route path="/" element={<Landing />} />
-					<Route path="/login" element={<Login />} />
-					<Route path="/register" element={<Register />} />
-
-					<Route
-						element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}
+				<Suspense fallback={(
+					<div className="bg-black h-screen flex justify-center items-center">
+						<img src="/TechXetraLogo1.png" width={400} />
+					</div>
+				)}>
+					<div
+						className="z-[60] fixed bottom-8 right-8 bg-gray-900 text-white p-2 rounded-md"
 					>
-						<Route path="/verify" element={<Verify />} />
-						<Route path="/event" element={<Events_Page />} />
-						<Route path="/profile" element={<Profile />} />
-					</Route>
-					<Route path="*" element={<NotFound />} />
-				</Routes>
+						<ChatAssistant />
+					</div>
+					<Routes>
+						<Route path="/" element={<Landing />} />
+						<Route path="/login" element={<Login />} />
+						<Route path="/register" element={<Register />} />
+
+						<Route
+							element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}
+						>
+							<Route path="/verify" element={<Verify />} />
+							<Route path="/event" element={<Events_Page />} />
+							<Route path="/profile" element={<Profile />} />
+						</Route>
+						<Route path="*" element={<NotFound />} />
+					</Routes>
+				</Suspense>
 			</ErrorBoundary>
 		</div>
 	);

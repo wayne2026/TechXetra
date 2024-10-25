@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "../context/user_context";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -8,9 +8,9 @@ import { FaCamera } from "react-icons/fa";
 
 export const createQRCode = (data: string) => {
 	return new QRCodeStyling({
-		width: 300,
-		height: 300,
-		margin: 10,
+		width: 1000,
+		height: 1000,
+		margin: 0,
 		data: `${window.location.protocol}//${window.location.host}/profile?id=${data}`,
 		qrOptions: {
 			typeNumber: 0,
@@ -167,7 +167,7 @@ const Profile = () => {
 
 	return (
 		<div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b] text-white">
-			<div className="bg-gray-900 rounded-lg shadow-lg p-8">
+			<div className="bg-gray-900 rounded-lg shadow-lg p-8 border border-gray-400">
 				<h1 className="sm:text-5xl max-sm:pt-12 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:text-5xl font-extrabold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#FD8444] to-[#7527ED]">
 					Profile
 				</h1>
@@ -208,8 +208,8 @@ const Profile = () => {
 							<div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
 								<div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[80%] lg:w-[60%]">
 									<div className='flex justify-between items-center'>
-										<h1 className='text-3xl font-semibold'>Update Profile</h1>
-										<button className='border-2 rounded-lg px-3 py-1 text-lg' onClick={() => setOpen(false)}>Close</button>
+										<h1 className='text-xl md:text-2xl font-semibold'>Update Profile</h1>
+										<button className='border-2 rounded-lg px-2 py-1 text-lg' onClick={() => setOpen(false)}>Close</button>
 									</div>
 									<form className='mt-8 max-h-[70vh] overflow-y-scroll hide-scrollbar' onSubmit={handleUpdateProfile}>
 										<div className="flex flex-col justify-center space-y-2">
@@ -236,8 +236,8 @@ const Profile = () => {
 							<div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
 								<div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[80%] lg:w-[60%]">
 									<div className='flex justify-between items-center'>
-										<h1 className='text-3xl font-semibold'>Reset Password</h1>
-										<button className='border-2 rounded-lg px-3 py-1 text-lg' onClick={() => setOpenReset(false)}>Close</button>
+										<h1 className='text-xl md:text-2xl font-semibold'>Reset Password</h1>
+										<button className='border-2 rounded-lg px-2 py-1 text-lg' onClick={() => setOpenReset(false)}>Close</button>
 									</div>
 									<form className='mt-8 flex flex-col justify-center space-y-2' onSubmit={handleResetPassword}>
 										<div className="flex flex-col gap-4">
@@ -322,17 +322,18 @@ const Profile = () => {
 						Registered Events
 					</h2>
 					{userContext?.user?.events && userContext?.user?.events?.length > 0 ? (
-						<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+						<div className="w-full flex flex-col justify-center items-center gap-2">
 							{userContext?.user?.events.map((event, index) => (
-								<div
+								<Link
 									key={index}
-									className="bg-gradient-to-r from-[#1f021c] via-[#190341] to-[#22071b] p-4 rounded-lg shadow-md"
+									to={`/event?id=${event.eventId}`}
+									className="w-full bg-gradient-to-r from-[#6b3065] via-[#42129c] to-[#812368] p-6 rounded-xl shadow-md"
 								>
 									<h3 className="text-xl font-semibold">
 										Event {index + 1}
 									</h3>
 									<p className="mt-2">Event Name: {event.eventId}</p>
-								</div>
+								</Link>
 							))}
 						</div>
 					) : (

@@ -2,10 +2,11 @@ import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import Event, { participationEnum } from '../models/event.model.js';
 import { CustomRequest } from '../middlewares/auth.middleware.js';
-import User, { collegeClassEnum, schoolClassEnum, schoolEnum } from '../models/user.model.js';
+import User, { collegeClassEnum, invitationStatusEnum, paymentStatusEnum, schoolClassEnum, schoolEnum } from '../models/user.model.js';
 import ErrorHandler from '../utils/errorHandler.js';
 import path from 'path';
 import fs from "fs";
+import ApiFeatures from '../utils/apiFeatures.js';
 
 export const getAllEvents = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -206,9 +207,6 @@ export const updateEventDetails = async (req: Request, res: Response, next: Next
             await deleteOldImage(event?.backgroundImage, 'events');
         }
 
-        console.log(eventImage);
-        console.log(eventBackground);
-
         const updatedData = {
             title: title || event.title,
             subTitle: subTitle || event.subTitle,
@@ -228,12 +226,16 @@ export const updateEventDetails = async (req: Request, res: Response, next: Next
             venue: venue || event.venue,
             deadline: deadline || event.deadline,
             rules: rules || event.rules,
-            schoolOrCollege: event?.eligibility?.schoolOrCollege,
-            schoolClass: event?.eligibility?.schoolClass,
-            collegeClass: event?.eligibility?.collegeClass,
+            eligibility: {
+                schoolOrCollege: schoolOrCollege || event?.eligibility?.schoolOrCollege,
+                schoolClass: schoolClass || event?.eligibility?.schoolClass,
+                collegeClass: collegeClass || event?.eligibility?.collegeClass,
+            },
             image: eventImage || event.image,
             backgroundImage: eventBackground || event.backgroundImage,
         };
+
+        console.log(updatedData)
 
         const updatedEvent = await Event.findByIdAndUpdate(
             event._id,
@@ -372,29 +374,42 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
         if (memberEmails && !Array.isArray(memberEmails)) {
             return next(new ErrorHandler("Data should be an array of events", StatusCodes.BAD_REQUEST));
         }
-        if (memberEmails && memberEmails.length > event.maxGroup!) {
+        if (memberEmails && memberEmails.length > (event.maxGroup! - 1)) {
             return next(new ErrorHandler("Data exceeded limit", StatusCodes.BAD_REQUEST));
         }
-        if ([participationEnum.HYBRID, participationEnum.TEAM].includes(event.participation as any) && (!memberEmails || memberEmails.length === 0)) {
+        if ((event.participation === participationEnum.TEAM) && (!memberEmails || memberEmails.length === 0)) {
             return next(new ErrorHandler("Group members are required", StatusCodes.BAD_REQUEST));
         }
 
         const groupMembers = await User.find({ email: memberEmails }).select('email isVerified');
-        const teamMembersArray = groupMembers.map(member => member._id);
-        const unverifiedMembers = groupMembers.filter(member => !member.isVerified);
-        if (unverifiedMembers.length > 0) {
-            const unverifiedEmails = unverifiedMembers.map(member => member.email);
-            return next(new ErrorHandler(`The following users are not verified: ${unverifiedEmails.join(', ')}`, StatusCodes.BAD_REQUEST));
-        }
+        const teamMembersArray = groupMembers.map(member => ({
+            status: invitationStatusEnum.PENDING,
+            user: member._id, 
+        }));
 
-        const isGroup = [participationEnum.HYBRID, participationEnum.TEAM].includes(event.participation as any) ? true : false;
+        // const unverifiedMembers = groupMembers.filter(member => !member.isVerified);
+        // if (unverifiedMembers.length > 0) {
+        //     const unverifiedEmails = unverifiedMembers.map(member => member.email);
+        //     return next(new ErrorHandler(`The following users are not verified: ${unverifiedEmails.join(', ')}`, StatusCodes.BAD_REQUEST));
+        // }
+
+        // membert check if not already in same event and not confirm
+
+        const isGroup = ((event.participation === participationEnum.TEAM) || ((event.participation === participationEnum.HYBRID) && teamMembersArray.length > 0)) ? true : false;
 
         const eventObject = {
             eventId: event._id,
             paymentRequired: event.paymentRequired,
             eligible,
             isGroup,
-            members: isGroup ? teamMembersArray : undefined,
+            group: {
+                leader: user._id,
+                members: isGroup ? teamMembersArray : undefined,
+            },
+            payment: {
+                status: paymentStatusEnum.PENDING,
+                amount: event.amount || 400,
+            }
         }
 
         const updateUserEvent = await User.findByIdAndUpdate(
@@ -407,11 +422,47 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
             { new: true, runValidators: true, useFindAndModify: false }
         );
 
+        // send inivitation emails to all members 
+
         res.status(200).json({
             success: true,
             event: eventObject,
             user: updateUserEvent,
             message: "Event registered successfully"
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const checkOutInvitation = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+        
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const searchUsers = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+    
+        const resultPerPage = 10;
+        const count = await User.countDocuments();
+    
+        const apiFeatures = new ApiFeatures(User.find().select("email").sort({ $natural: -1 }), req.query).searchUser().filter();
+    
+        let filteredUsers = await apiFeatures.query;
+        let filteredUsersCount = filteredUsers.length;
+    
+        apiFeatures.pagination(resultPerPage);
+        filteredUsers = await apiFeatures.query.clone();
+    
+        res.status(200).json({
+            success: true,
+            count,
+            resultPerPage,
+            users: filteredUsers,
+            filteredUsersCount
         });
     } catch (error) {
         next(error);

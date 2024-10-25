@@ -31,8 +31,6 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
 
 		const filename = req?.file ? `${process.env.SERVER_URL}/avatars/${req?.file?.filename}` : "";
 
-		console.log(process.env.ADMIN_EMAIL)
-
 		const user = await User.create({
 			firstName,
 			lastName,

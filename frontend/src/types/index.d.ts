@@ -3,7 +3,14 @@ interface UserEvent {
     paymentRequired: boolean;
 	eligible: boolean;
 	isGroup: boolean;
-	members: string[];
+    group?: {
+		leader?: string;
+		members?: {
+			status: string;
+			user: string;
+		}[];
+	}
+	// members: string[];
 	payment: {
 		status: string;
 		transactionId: string;

@@ -7,10 +7,12 @@ import { Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/custom/protected-route";
 import HomePage from "./pages/home";
 import LoginPage from "./pages/login";
-import EventsPage from "./pages/events";
+import EventsPage from "./pages/events/events";
 import NotFound from "./pages/not-found";
 import PageTitle from "./components/custom/page-title";
 import Navbar from "./components/custom/navbar";
+import UsersPage from "./pages/users";
+import CreateEvent from "./pages/events/create";
 
 const App = () => {
     const userContext = useUser();
@@ -53,14 +55,32 @@ const App = () => {
                     />
 
                     <Route
-                        element={<ProtectedRoute isAuthenticated={userContext?.user && ["ADMIN", "MODERATOR"].includes(userContext.user.role) ? true : false} redirect="/login" />}
+                        element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}
                     >
+                        <Route
+                            path="/users"
+                            element={
+                                <>
+                                    <PageTitle title="Users | TechXetra Admin" />
+                                    <UsersPage />
+                                </>
+                            }
+                        />
                         <Route
                             path="/events"
                             element={
                                 <>
                                     <PageTitle title="Events | TechXetra Admin" />
                                     <EventsPage />
+                                </>
+                            }
+                        />
+                        <Route
+                            path="/events/create"
+                            element={
+                                <>
+                                    <PageTitle title="New Event | TechXetra Admin" />
+                                    <CreateEvent />
                                 </>
                             }
                         />
