@@ -3,20 +3,24 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import moment from 'moment-timezone';
 
 interface FormData {
     subTitle: string;
-    // externalRegistration: boolean;
-    // extrenalRegistrationLink: string;
+    isVisible: boolean;
+    category: string;
+    participation: string;
+    externalRegistration: boolean;
+    extrenalRegistrationLink: string;
     // externalLink: string;
     eventDate: string;
     venue: string;
     rules: string[];
     deadline: string;
     image: File | null;
-    schoolOrCollege: string;
-    schoolClass: string;
-    collegeClass: string;
+    // schoolOrCollege: string;
+    // schoolClass: string;
+    // collegeClass: string;
 }
 
 const EventsPage = () => {
@@ -26,26 +30,37 @@ const EventsPage = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState<FormData>({
         subTitle: "in collaboration with GDGC Tezpur University",
-        // externalRegistration: true,
-        // extrenalRegistrationLink: "https://unstop.com/p/hack-tezpur-university-tezu-tezpur-1191456",
+        isVisible: true,
+        category: "TECHNICAL",
+        participation: "SOLO",
+        externalRegistration: true,
+        extrenalRegistrationLink: "https://unstop.com/competitions/frontend-frenzy-tezpur-university-tezu-tezpur-1196458",
         // externalLink: "https://drive.google.com/file/d/1JTK1bLQrvt6ILMT-RIF1hg9mKoc1fAr8/view?usp=drivesdk",
         eventDate: "",
         venue: "Dean's Gallery",
         deadline: "",
         image: null,
         rules: [
-            "Event Duration: 48-hour hackathon; daytime presence required.",
-            "Accommodation: Provided; work from rooms outside scheduled venue hours.",
-            "Problem Statements: Revealed in the first hour; develop based on theme/problem.",
-            "Team Composition: 2-5 members; all must be registered and present during required hours.",
-            "Development Rules: All work within event period; any tech stack allowed.",
-            "Submission Requirements: Submit project on GitHub and provide a workable link (optional) and PPT.",
-            "Presentation: Demo and present solution on the 3rd day, covering tech stack and approach."
+            "The competition lasts 4 hours; no time extensions will be provided.",
+            "Submit your project on GitHub as a repository; late submissions won't be accepted.",
+            "You may use external UI libraries and ChatGPT for design enhancement.",
+            "Emphasis is on design and visual appeal; functionality is secondary.",
+            "Platforms like Codepen and CodeSandbox are prohibited, with disqualification for violations.",
+            "Only individual entries are allowed.",
+            "Design three essential pages based on the theme provided at the start; bonus points for additional pages and full responsiveness.",
+            "Based on creativity, responsiveness, UX, detail, and bonus pages."
         ],
-        schoolOrCollege: "COLLEGE",
-        schoolClass: "",
-        collegeClass: "UG",
+        // schoolOrCollege: "COLLEGE",
+        // schoolClass: "",
+        // collegeClass: "UG",
     });
+
+    // const eventDateUTC = formData.eventDate;
+    // const localEventDate = moment.utc(eventDateUTC).local().format('YYYY-MM-DDTHH:mm');
+    // setFormData({
+    //     ...formData,
+    //     eventDate: localEventDate,
+    // });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -71,28 +86,38 @@ const EventsPage = () => {
             headers: { "Content-Type": "multipart/form-data" },
             withCredentials: true,
         };
-        
+
         const form = new FormData();
         form.append('subTitle', formData.subTitle);
-        // form.append('externalRegistration', formData.externalRegistration ? 'true' : 'false');
-        // form.append('extrenalRegistrationLink', formData.extrenalRegistrationLink);
+        form.append('isVisible', formData.isVisible ? 'true' : 'false');
+        form.append('category', formData.category);
+        form.append('participation', formData.participation);
+        form.append('externalRegistration', formData.externalRegistration ? 'true' : 'false');
+        form.append('extrenalRegistrationLink', formData.extrenalRegistrationLink);
         // form.append('externalLink', formData.externalLink);
-        form.append('eventDate', formData.eventDate);
+        const eventDateUTC = moment(formData.eventDate).utc().format();
+        form.append('eventDate', eventDateUTC);
+        // form.append('eventDate', formData.eventDate);
         form.append('venue', formData.venue);
-        form.append('deadline', formData.deadline);
+        const deadlineDateUTC = moment(formData.deadline).utc().format();
+        form.append('deadline', deadlineDateUTC);
         if (formData.image) {
             form.append('image', formData.image);
         }
         form.append('rules', JSON.stringify(formData.rules));
-        form.append('schoolOrCollege', formData.schoolOrCollege);
-        if (formData.schoolOrCollege === "COLLEGE") {
-            form.append('collegeClass', formData.collegeClass);
-        } else {
-            form.append('schoolClass', formData.schoolClass);
-        }
+        // form.append('schoolOrCollege', formData.schoolOrCollege);
+        // if (formData.schoolOrCollege === "COLLEGE") {
+        //     form.append('collegeClass', formData.collegeClass);
+        // } else {
+        //     form.append('schoolClass', formData.schoolClass);
+        // }
         try {
-            await axios.put(`${import.meta.env.VITE_BASE_URL}/events/byId/${id}`, formData, config);
-            toast.success("Updated");
+            if (id) {
+                await axios.put(`${import.meta.env.VITE_BASE_URL}/events/byId/${id}`, formData, config);
+                toast.success("Updated");
+            } else {
+                toast.info("Can fetch ID directly enter the link, don't edit")
+            }
         } catch (error: any) {
             toast.error(error.response.data.message);
         }

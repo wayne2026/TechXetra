@@ -178,10 +178,14 @@ const Hackathon = () => {
                             {event?.subTitle && (
                                 <p className="mt-2 text-gray-400">{event.subTitle}</p>
                             )}
-                            <p className="mt-4 text-white">Date: <span className="text-pink-500">{new Date(event?.eventDate!).toLocaleDateString('en-GB')}</span></p>
+                            <p className="mt-4 text-white">Date: <span className="text-pink-500">
+                                {new Date(event?.eventDate!).toLocaleDateString('en-GB')}
+                                {userContext?.user?.role === "ADMIN" && (moment.utc(event.eventDate)).tz(moment.tz.guess()).format('dd.MM.yyyy')}
+                            </span></p>
                             <p className="text-white">Time: <span className="text-pink-500">
                                 10:30 AM onwards
                                 {userContext?.user?.role === "ADMIN" && (moment.utc(event.eventDate)).tz(moment.tz.guess()).format('hh:mm A')}
+                                {userContext?.user?.role === "ADMIN" && moment.utc(event.eventDate).local().format('hh:mm A')}
                             </span></p>
                             <p className='text-white'>Venue: <span className="text-pink-500">{event?.venue}</span></p>
                             {event?.rules && event?.rules?.length > 0 ? (
