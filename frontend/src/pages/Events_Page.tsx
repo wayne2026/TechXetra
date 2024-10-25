@@ -94,6 +94,7 @@ const Hackathon = () => {
             setEvent(data.event);
             console.log(moment.utc(data.event.eventDate).tz(moment.tz.guess()).format('hh:mm A'));
             console.log(moment.utc(data.event.eventDate).tz('America/New_York').format('hh:mm A'));
+            console.log(moment.utc(data.event.eventDate).tz('Asia/Kolkata').format('hh:mm A'));
         } catch (error: any) {
             toast.error(error.response.data.message);
         } finally {
