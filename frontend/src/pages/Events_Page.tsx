@@ -128,12 +128,12 @@ const Hackathon = () => {
     }
 
     useEffect(() => {
-		if (open) {
-			document.body.classList.add('no-scroll');
-		} else {
-			document.body.classList.remove('no-scroll');
-		}
-	}, [open]);
+        if (open) {
+            document.body.classList.add('no-scroll');
+        } else {
+            document.body.classList.remove('no-scroll');
+        }
+    }, [open]);
 
     return loading ? (
         <div className='flex justify-center items-center'>
@@ -184,9 +184,10 @@ const Hackathon = () => {
                             </span></p>
                             <p className="text-white">Time: <span className="text-pink-500">
                                 10:30 AM onwards
-                                {userContext?.user?.role === "ADMIN" && String(new Date(event.eventDate).getTime())}
-                                {userContext?.user?.role === "ADMIN" && (moment.utc(event.eventDate)).tz(moment.tz.guess()).format('hh:mm A')}
-                                {userContext?.user?.role === "ADMIN" && moment.utc(event.eventDate).local().format('hh:mm A')}
+                                {userContext?.user?.role === "ADMIN" && (
+                                    new Date(event.eventDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
+                                )}
+                                {userContext?.user?.role === "ADMIN" && moment.utc(event.eventDate).tz(moment.tz.guess()).format('hh:mm A')}
                             </span></p>
                             <p className='text-white'>Venue: <span className="text-pink-500">{event?.venue}</span></p>
                             {event?.rules && event?.rules?.length > 0 ? (
