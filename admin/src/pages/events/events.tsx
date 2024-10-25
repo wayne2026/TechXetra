@@ -97,7 +97,6 @@ const EventsPage = () => {
         // form.append('externalLink', formData.externalLink);
         const eventDateUTC = moment(formData.eventDate).utc().format();
         form.append('eventDate', eventDateUTC);
-        // form.append('eventDate', formData.eventDate);
         form.append('venue', formData.venue);
         const deadlineDateUTC = moment(formData.deadline).utc().format();
         form.append('deadline', deadlineDateUTC);
