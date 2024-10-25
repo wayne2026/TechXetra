@@ -92,6 +92,7 @@ const Hackathon = () => {
         try {
             const { data }: { data: EventDetailsResponse } = await axios.get(`${import.meta.env.VITE_BASE_URL}/events/byId/${id}`, { withCredentials: true });
             setEvent(data.event);
+            console.log(moment.utc(data.event.eventDate).tz(moment.tz.guess()).format('hh:mm A'));
         } catch (error: any) {
             toast.error(error.response.data.message);
         } finally {
