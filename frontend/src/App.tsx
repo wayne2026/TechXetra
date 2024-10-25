@@ -3,7 +3,7 @@ import ErrorBoundary from "../components/better/error-boundary";
 import ProtectedRoute from "../components/better/protected-routes";
 import { useUser } from "./context/user_context";
 import { ToastContainer } from "react-toastify";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 
 import Events_Page from './pages/Events_Page'
@@ -14,7 +14,7 @@ import NotFound from "./pages/not-found";
 import Landing from "./pages/Landing";
 import Profile from "./pages/Profile";
 
-const ChatAssistant = lazy(() => import("../components/better/assitant"));
+// const ChatAssistant = lazy(() => import("../components/better/assitant"));
 
 function App() {
 	const userContext = useUser();
@@ -59,11 +59,11 @@ function App() {
 						<img src="/TechXetraLogo1.png" width={400} />
 					</div>
 				)}>
-					<div
+					{/* <div
 						className="z-[60] fixed bottom-8 right-8 bg-gray-900 text-white p-2 rounded-md"
 					>
 						<ChatAssistant />
-					</div>
+					</div> */}
 					<Routes>
 						<Route path="/" element={<Landing />} />
 						<Route path="/login" element={<Login />} />
