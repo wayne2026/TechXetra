@@ -5,9 +5,6 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { RxCross2 } from "react-icons/rx";
 import axios from 'axios';
 import moment from 'moment-timezone';
-import { useUser } from '../context/user_context';
-// import { format, toZonedTime } from 'date-fns-tz';
-// const timeZone = 'Asia/Kolkata';
 
 interface SearchEmail {
     _id: string;
@@ -28,7 +25,6 @@ const Hackathon = () => {
     const [memberEmails, setMemberEmails] = useState<string[]>([]);
     const [open, setOpen] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
-    const userContext = useUser();
     const [users, setUsers] = useState<SearchEmail[]>();
     const [keyword, setKeyword] = useState("");
     // const [counts, setCounts] = useState({
@@ -92,7 +88,6 @@ const Hackathon = () => {
         try {
             const { data }: { data: EventDetailsResponse } = await axios.get(`${import.meta.env.VITE_BASE_URL}/events/byId/${id}`, { withCredentials: true });
             setEvent(data.event);
-            console.log(moment.utc(data.event.eventDate).format('hh:mm A'))
         } catch (error: any) {
             toast.error(error.response.data.message);
         } finally {
@@ -142,7 +137,7 @@ const Hackathon = () => {
         </div>
     ) : (event && !event.isVisible) ? (
         <div className='bg-black w-full lg:h-screen md:h-full h-full lg::py-0 py-4 flex justify-center items-center'>
-            <h1 className='text-5xl font-semibold text-white'>Comming Soon</h1>
+            <h1 className='text-5xl font-semibold text-white'>Coming Soon...</h1>
         </div>
     ) : event ? (
         <div className='bg-black w-full lg:h-screen md:h-full h-full lg::py-0 py-4 flex justify-center items-center'>
@@ -183,12 +178,7 @@ const Hackathon = () => {
                                 {new Date(event?.eventDate!).toLocaleDateString('en-GB')}
                             </span></p>
                             <p className="text-white">Time: <span className="text-pink-500">
-                                10:30 AM onwards
-                                {userContext?.user?.role === "ADMIN" && String(event.eventDate)}
-                                {userContext?.user?.role === "ADMIN" && (
-                                    new Date(event.eventDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
-                                )}
-                                {userContext?.user?.role === "ADMIN" && moment.utc(event.eventDate).tz(moment.tz.guess()).format('hh:mm A')}
+                                {moment.utc(event.eventDate).format('hh:mm A')} onwards
                             </span></p>
                             <p className='text-white'>Venue: <span className="text-pink-500">{event?.venue}</span></p>
                             {event?.rules && event?.rules?.length > 0 ? (
