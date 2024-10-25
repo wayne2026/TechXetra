@@ -141,7 +141,7 @@ const Hackathon = () => {
         </div>
     ) : event ? (
         <div className='bg-black w-full lg:h-screen md:h-full h-full lg::py-0 py-4 flex justify-center items-center'>
-            <div className='w-[90%] h-[85%] bg-slate-950 shadow-2xl shadow-purple-800 rounded-xl border border-dashed border-pink-600 '>
+            <div className='w-[90%] h-[85vh] bg-slate-950 shadow-2xl shadow-purple-800 rounded-xl border border-dashed border-pink-600 '>
                 <div className='lg:flex justify-center items-center h-full rounded-lg'>
                     <div className='basis-1/2 h-full'>
                         <div
@@ -168,7 +168,7 @@ const Hackathon = () => {
                             )}
                         </div>
                     </div>
-                    <div className='basis-1/2 h-full'>
+                    <div className='basis-1/2 max-h-full overflow-y-scroll hide-scrollbar'>
                         <div className='m-8'>
                             <h1 className="text-4xl font-bold text-pink-500">{event?.title}</h1>
                             {event?.subTitle && (
