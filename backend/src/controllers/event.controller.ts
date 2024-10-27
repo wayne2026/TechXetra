@@ -6,7 +6,7 @@ import User, { collegeClassEnum, invitationStatusEnum, paymentStatusEnum, school
 import ErrorHandler from '../utils/errorHandler.js';
 import path from 'path';
 import fs from "fs";
-import ApiFeatures from '../utils/apiFeatures.js';
+import { addEmailToQueue } from '../utils/emailQueue.js';
 
 export const getAllEvents = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -350,6 +350,10 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
             return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
         }
 
+        if (user.events.some(userEvent => userEvent.eventId === event._id)) {
+            return next(new ErrorHandler("Already registered for this event", StatusCodes.FORBIDDEN));
+        }
+
         if (!event.canRegister || !event.isVisible) {
             return next(new ErrorHandler("Registration is not allowed for this event", StatusCodes.FORBIDDEN));
         }
@@ -379,19 +383,38 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
             return next(new ErrorHandler("Group members are required", StatusCodes.BAD_REQUEST));
         }
 
-        const groupMembers = await User.find({ email: memberEmails }).select('email isVerified');
+        const groupMembers = await User.find({ email: memberEmails }).select('email isVerified events');
         const teamMembersArray = groupMembers.map(member => ({
             status: invitationStatusEnum.PENDING,
-            user: member._id, 
+            user: member._id,
         }));
 
-        // const unverifiedMembers = groupMembers.filter(member => !member.isVerified);
-        // if (unverifiedMembers.length > 0) {
-        //     const unverifiedEmails = unverifiedMembers.map(member => member.email);
-        //     return next(new ErrorHandler(`The following users are not verified: ${unverifiedEmails.join(', ')}`, StatusCodes.BAD_REQUEST));
-        // }
+        let alreadyJoinedMembers: string[] = [];
+        groupMembers.forEach(user => {
+            if (user.events.some(userEvent => userEvent.eventId === event._id)) {
+                alreadyJoinedMembers.push(user.email);
+            }
+        });
+        if (alreadyJoinedMembers.length > 0) {
+            return next(new ErrorHandler(`The following users have already participated in the event: ${alreadyJoinedMembers.join(', ')}`, StatusCodes.BAD_REQUEST));
+        }
 
-        // membert check if not already in same event and not confirm
+        const unverifiedMembers = groupMembers.filter(member => !member.isVerified);
+        if (unverifiedMembers.length > 0) {
+            const unverifiedEmails = unverifiedMembers.map(member => member.email);
+            return next(new ErrorHandler(`The following users are not verified: ${unverifiedEmails.join(', ')}`, StatusCodes.BAD_REQUEST));
+        }
+
+        let notEligibleMembers: string[] = []
+        groupMembers.forEach(user => {
+            const eligible = (event.eligibility?.schoolOrCollege === user?.schoolOrCollege) && (event.eligibility?.schoolClass === user?.schoolClass) && (event.eligibility?.collegeClass === user?.collegeClass);
+            if (!eligible) {
+                notEligibleMembers.push(user.email);
+            }
+        });
+        if (notEligibleMembers.length > 0) {
+            return next(new ErrorHandler(`The following users are not eligible to participate in the event: ${notEligibleMembers.join(', ')}`, StatusCodes.BAD_REQUEST));
+        }
 
         const isGroup = ((event.participation === participationEnum.TEAM) || ((event.participation === participationEnum.HYBRID) && teamMembersArray.length > 0)) ? true : false;
 
@@ -420,7 +443,35 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
             { new: true, runValidators: true, useFindAndModify: false }
         );
 
-        // send inivitation emails to all members 
+        groupMembers.forEach(async (member) => {
+            try {
+                const message = `${process.env.CLIENT_URL}/invites?event=${event._id}&user=${user._id}`;
+
+                await addEmailToQueue({
+                    email: member.email,
+                    subject: `Email Veification`,
+                    message,
+                });
+
+                const inviteObject = {
+                    eventId: event._id,
+                    userId: user._id,
+                    status: invitationStatusEnum.PENDING,
+                }
+
+                await User.findByIdAndUpdate(
+                    member._id,
+                    {
+                        $push: {
+                            invites: inviteObject,
+                        }
+                    },
+                    { new: true, runValidators: true, useFindAndModify: false }
+                );
+            } catch (error) {
+                console.error('Error sending email:', error);
+            }
+        });
 
         res.status(200).json({
             success: true,
@@ -433,9 +484,127 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
     }
 };
 
+export const addMembers = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+        const event = await Event.findById(req.params.id);
+        if (!event) {
+            return next(new ErrorHandler(`Event not found with id ${req.params.id}`, StatusCodes.NOT_FOUND));
+        }
+
+        const user = await User.findById(req.user?._id);
+        if (!user) {
+            return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
+        }
+
+        if (!user.events.some(userEvent => userEvent.eventId === event._id)) {
+            return next(new ErrorHandler(`Event is not regostered yet`, StatusCodes.BAD_REQUEST));
+        }
+
+        if (event.participation === participationEnum.SOLO) {
+            return next(new ErrorHandler("Solo event cannot be registered with members", StatusCodes.BAD_REQUEST));
+        }
+
+        if (event.deadline && event.deadline.getTime() <= Date.now()) {
+            return next(new ErrorHandler("Registration deadline has passed", StatusCodes.FORBIDDEN));
+        }
+
+        const prevMembers = user.events.filter(userEvent => userEvent.eventId === event._id)[0].group?.members?.length || 0;
+
+        const { memberEmails } = req.body;
+        if (memberEmails && !Array.isArray(memberEmails)) {
+            return next(new ErrorHandler("Data should be an array of events", StatusCodes.BAD_REQUEST));
+        }
+        if (memberEmails && memberEmails.length > (event.maxGroup! - (1 + prevMembers))) {
+            return next(new ErrorHandler("Data exceeded limit", StatusCodes.BAD_REQUEST));
+        }
+        if ((event.participation === participationEnum.TEAM) && (!memberEmails || memberEmails.length === 0)) {
+            return next(new ErrorHandler("Group members are required", StatusCodes.BAD_REQUEST));
+        }
+
+        const groupMembers = await User.find({ email: memberEmails }).select('email isVerified events');
+        const teamMembersArray = groupMembers.map(member => ({
+            status: invitationStatusEnum.PENDING,
+            user: member._id,
+        }));
+
+        let alreadyJoinedMembers: string[] = [];
+        groupMembers.forEach(user => {
+            if (user.events.some(userEvent => userEvent.eventId === event._id)) {
+                alreadyJoinedMembers.push(user.email);
+            }
+        });
+        if (alreadyJoinedMembers.length > 0) {
+            return next(new ErrorHandler(`The following users have already participated in the event: ${alreadyJoinedMembers.join(', ')}`, StatusCodes.BAD_REQUEST));
+        }
+
+        const unverifiedMembers = groupMembers.filter(member => !member.isVerified);
+        if (unverifiedMembers.length > 0) {
+            const unverifiedEmails = unverifiedMembers.map(member => member.email);
+            return next(new ErrorHandler(`The following users are not verified: ${unverifiedEmails.join(', ')}`, StatusCodes.BAD_REQUEST));
+        }
+
+        let notEligibleMembers: string[] = []
+        groupMembers.forEach(user => {
+            const eligible = (event.eligibility?.schoolOrCollege === user?.schoolOrCollege) && (event.eligibility?.schoolClass === user?.schoolClass) && (event.eligibility?.collegeClass === user?.collegeClass);
+            if (!eligible) {
+                notEligibleMembers.push(user.email);
+            }
+        });
+        if (notEligibleMembers.length > 0) {
+            return next(new ErrorHandler(`The following users are not eligible to participate in the event: ${notEligibleMembers.join(', ')}`, StatusCodes.BAD_REQUEST));
+        }
+
+        const updateUserEvent = await User.findOneAndUpdate(
+            { _id: user._id, 'events._id': event._id },
+            {
+                $push: { 'events.$.group.members': teamMembersArray }
+            },
+            { new: true, runValidators: true, useFindAndModify: false }
+        );
+
+        groupMembers.forEach(async (member) => {
+            try {
+                const message = `${process.env.CLIENT_URL}/invites?event=${event._id}&user=${user._id}`;
+
+                await addEmailToQueue({
+                    email: member.email,
+                    subject: `Email Veification`,
+                    message,
+                });
+
+                const inviteObject = {
+                    eventId: event._id,
+                    userId: user._id,
+                    status: invitationStatusEnum.PENDING,
+                }
+
+                await User.findByIdAndUpdate(
+                    member._id,
+                    {
+                        $push: {
+                            invites: inviteObject,
+                        }
+                    },
+                    { new: true, runValidators: true, useFindAndModify: false }
+                );
+            } catch (error) {
+                console.error('Error sending email:', error);
+            }
+        });
+
+        res.status(200).json({
+            success: true,
+            event: updateUserEvent,
+            message: "Event members added successfully"
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const checkOutInvitation = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-        
+        const user = await User.findById(req.params.id);
     } catch (error) {
         next(error);
     }
@@ -443,37 +612,20 @@ export const checkOutInvitation = async (req: CustomRequest, res: Response, next
 
 export const searchUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
-    
-        const resultPerPage = 10;
-        const count = await User.countDocuments();
-    
-        const apiFeatures = new ApiFeatures(User.find().select("email").sort({ $natural: -1 }), req.query).searchUser().filter();
-    
-        let filteredUsers = await apiFeatures.query;
-        let filteredUsersCount = filteredUsers.length;
-    
-        apiFeatures.pagination(resultPerPage);
-        filteredUsers = await apiFeatures.query.clone();
-    
-        res.status(200).json({
+        const { keyword } = req.query;
+        const query = keyword ? { username: { $regex: keyword, $options: 'i' } } : {};
+
+        const users = await User.find(query).select("email").sort({ $natural: -1 }).limit(5);
+
+        res.status(StatusCodes.OK).json({
             success: true,
-            count,
-            resultPerPage,
-            users: filteredUsers,
-            filteredUsersCount
+            users,
+            count: users.length
         });
     } catch (error) {
         next(error);
     }
 };
-
-export const unenrollEvent = async (req: CustomRequest, res: Response, next: NextFunction) => {
-    try {
-
-    } catch (error) {
-        next(error);
-    }
-}
 
 export const updatePaymentDetails = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {

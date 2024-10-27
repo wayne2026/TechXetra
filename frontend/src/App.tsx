@@ -3,7 +3,7 @@ import ErrorBoundary from "../components/better/error-boundary";
 import ProtectedRoute from "../components/better/protected-routes";
 import { useUser } from "./context/user_context";
 import { ToastContainer } from "react-toastify";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
 import "react-toastify/dist/ReactToastify.css";
 
 import Events_Page from './pages/Events_Page'
@@ -18,24 +18,8 @@ import Profile from "./pages/Profile";
 
 function App() {
 	const userContext = useUser();
-	const [fontLoaded, setFontLoaded] = useState(false);
 
-	useEffect(() => {
-		const font = new FontFace(
-			'AutoTechno',
-			'/auto-techno.ttf'
-		);
-
-		font.load().then(() => {
-			document.fonts.add(font);
-			setFontLoaded(true);
-		}).catch((error) => {
-			console.error('Font loading failed:', error);
-			setFontLoaded(true);
-		});
-	}, []);
-
-	return userContext?.loading || !fontLoaded ? (
+	return userContext?.loading ? (
 		<div className="bg-black h-screen flex justify-center items-center">
 			<img src="/TechXetraLogo1.png" width={400} />
 		</div>
@@ -53,6 +37,9 @@ function App() {
 				pauseOnHover
 				theme="dark"
 			/>
+			{/* <div>
+				hello
+			</div> */}
 			<ErrorBoundary>
 				<Suspense fallback={(
 					<div className="bg-black h-screen flex justify-center items-center">

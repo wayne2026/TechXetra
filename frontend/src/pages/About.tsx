@@ -1,8 +1,9 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, lazy } from 'react';
 import { gsap } from 'gsap'
 import { StarsBackground } from '../../components/StarBackground';
 import { ShootingStars } from '../../components/ShootingStars';
-import SpaceShip from '../../components/SpaceShip'
+
+const SpaceShip = lazy(() => import("../../components/SpaceShip"));
 
 const About: React.FC = () => {
   const imageRef = useRef<HTMLImageElement | null>(null);

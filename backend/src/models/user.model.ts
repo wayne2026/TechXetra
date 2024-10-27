@@ -40,6 +40,7 @@ export const invitationStatusEnum = {
 	ACCEPTED: "ACCEPTED",
     REJECTED: "REJECTED",
     PENDING: "PENDING",
+	NOT_AVAILABLE: "NOT_AVAILABLE",
 } as const;
 
 export interface IUserEvent extends Document {
@@ -67,6 +68,12 @@ export interface IUserEvent extends Document {
 	}
 }
 
+export interface IUserInvites extends Document {
+	eventId: mongoose.Schema.Types.ObjectId;
+	userId: mongoose.Schema.Types.ObjectId;
+	status: typeof invitationStatusEnum[keyof typeof invitationStatusEnum];
+}
+
 export interface IUser extends Document {
 	_id: mongoose.Schema.Types.ObjectId;
 	firstName: string;
@@ -85,6 +92,7 @@ export interface IUser extends Document {
 	isVerified: boolean;
 	isBlocked: boolean;
 	events: IUserEvent[];
+	invites: IUserInvites[];
 	refreshToken?: string;
 	oneTimePassword?: string;
 	oneTimeExpire?: Date;
@@ -192,6 +200,29 @@ const EventSchema: Schema<IUserEvent> = new Schema(
 	{
 		_id: false
 	}
+);
+
+const InvitesSchema: Schema<IUserInvites> = new Schema(
+	{
+		eventId: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Event",
+			required: true,
+		},
+		userId: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User",
+			required: true,
+		},
+		status: {
+			type: String,
+			enum: Object.values(invitationStatusEnum),
+			default: invitationStatusEnum.PENDING
+		}
+	},
+	{
+		_id: false
+	}
 )
 
 const UserSchema: Schema<IUser> = new Schema(
@@ -267,6 +298,7 @@ const UserSchema: Schema<IUser> = new Schema(
 			default: false
 		},
 		events: [EventSchema],
+		invites: [InvitesSchema],
 		refreshToken: String,
 		oneTimePassword: String,
 		oneTimeExpire: Date,

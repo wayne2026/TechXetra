@@ -72,6 +72,13 @@ const Events: React.FC = () => {
         fetchEvents();
     }, []);
 
+    useEffect(() => {
+        const data = window.sessionStorage.getItem("selected_category");
+        if (data) {
+            setSelectedCategory(JSON.parse(data));
+        }
+    }, [selectedCategory]);
+
     const settings = {
         infinite: true,
         speed: 500,
@@ -108,6 +115,11 @@ const Events: React.FC = () => {
 
     const filteredData = selectedCategory === 'All' ? events : events?.filter((event) => event.category.toLowerCase() === selectedCategory.toLowerCase());
 
+    const handleCategory = (category: string) => {
+        setSelectedCategory(category)
+        window.sessionStorage.setItem("selected_category", JSON.stringify(category));
+    }
+
     return (
         <div className='overflow-x-hidden relative'>
             <div className="w-full z-50 pt-14 mx-auto bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b]">
@@ -120,13 +132,13 @@ const Events: React.FC = () => {
                 <h1 className="text-center md:text-left md:pl-20 font-semibold font-technoHideo text-4xl md:text-7xl text-transparent bg-clip-text bg-gradient-radial from-[#FD8444] to-[#7527ED]">Events</h1>
 
                 <div className='list-none text-lg md:text-xl max-sm:justify-center md:pl-20 absolute z-10 font-manrope container flex flex-wrap text-white px-6'>
-                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'All' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('All')}>All</li>
-                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'TECHNICAL' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('TECHNICAL')}>Technical</li>
-                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'GENERAL' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('GENERAL')}>General</li>
-                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'SPORTS' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('SPORTS')}>Sports</li>
-                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'ESPORTS' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('ESPORTS')}>E-Sports</li>
-                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'CULTURAL' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('CULTURAL')}>Cultural</li>
-                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'MISCELLANEOUS' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => setSelectedCategory('MISCELLANEOUS')}>Miscellaneous</li>
+                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'All' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => handleCategory('All')}>All</li>
+                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'TECHNICAL' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => handleCategory('TECHNICAL')}>Technical</li>
+                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'GENERAL' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => handleCategory('GENERAL')}>General</li>
+                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'SPORTS' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => handleCategory('SPORTS')}>Sports</li>
+                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'ESPORTS' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => handleCategory('ESPORTS')}>E-Sports</li>
+                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'CULTURAL' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => handleCategory('CULTURAL')}>Cultural</li>
+                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'MISCELLANEOUS' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => handleCategory('MISCELLANEOUS')}>Miscellaneous</li>
                 </div>
 
                 <div className='w-full md:w-[90%] mx-auto pt-20 pb-20'>
