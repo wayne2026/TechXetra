@@ -613,7 +613,7 @@ export const checkOutInvitation = async (req: CustomRequest, res: Response, next
 export const searchUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { keyword } = req.query;
-        const query = keyword ? { username: { $regex: keyword, $options: 'i' } } : {};
+        const query = keyword ? { email: { $regex: keyword, $options: 'i' } } : {};
 
         const users = await User.find(query).select("email").sort({ $natural: -1 }).limit(5);
 

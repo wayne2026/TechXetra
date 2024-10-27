@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import QRCodeStyling from "qr-code-styling";
 import { useEffect, useRef, useState } from "react";
 import { FaCamera } from "react-icons/fa";
+import { RxCross2 } from "react-icons/rx";
 
 export const createQRCode = (data: string) => {
 	return new QRCodeStyling({
@@ -206,10 +207,10 @@ const Profile = () => {
 
 						{open && (
 							<div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
-								<div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[80%] lg:w-[60%]">
+								<div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[40%]">
 									<div className='flex justify-between items-center'>
 										<h1 className='text-xl md:text-2xl font-semibold'>Update Profile</h1>
-										<button className='border-2 rounded-lg px-2 py-1 text-lg' onClick={() => setOpen(false)}>Close</button>
+										<button className='border-2 rounded-lg px-2 py-1 text-lg' onClick={() => setOpen(false)}><RxCross2 size={20} /></button>
 									</div>
 									<form className='mt-8 max-h-[70vh] overflow-y-scroll hide-scrollbar' onSubmit={handleUpdateProfile}>
 										<div className="flex flex-col justify-center space-y-2">
@@ -234,10 +235,10 @@ const Profile = () => {
 
 						{openReset && (
 							<div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
-								<div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[80%] lg:w-[60%]">
+								<div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[40%]">
 									<div className='flex justify-between items-center'>
 										<h1 className='text-xl md:text-2xl font-semibold'>Reset Password</h1>
-										<button className='border-2 rounded-lg px-2 py-1 text-lg' onClick={() => setOpenReset(false)}>Close</button>
+										<button className='border-2 rounded-lg px-2 py-1 text-lg' onClick={() => setOpenReset(false)}><RxCross2 size={20} /></button>
 									</div>
 									<form className='mt-8 flex flex-col justify-center space-y-2' onSubmit={handleResetPassword}>
 										<div className="flex flex-col gap-4">

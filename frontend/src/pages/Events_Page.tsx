@@ -27,24 +27,12 @@ const Hackathon = () => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [users, setUsers] = useState<SearchEmail[]>();
     const [keyword, setKeyword] = useState("");
-    // const [counts, setCounts] = useState({
-    //     currentPage: 1,
-    //     resultPerPage: 1,
-    //     filteredUsers: 1,
-    //     totalUsers: 1
-    // });
     const [searchLoading, setSearchLoading] = useState(false);
 
     const gotUsers = async (url: string) => {
         try {
             const { data }: { data: SearchEmailResponse } = await axios.get(url, { withCredentials: true });
             setUsers(data.users);
-            // setCounts(prev => ({
-            //     ...prev,
-            //     resultPerPage: data.resultPerPage,
-            //     filteredUsers: data.filteredUsersCount,
-            //     totalUsers: data.count
-            // }));
         } catch (error: any) {
             toast.error(error.response.data.message);
             setUsers([]);
@@ -52,22 +40,19 @@ const Hackathon = () => {
     }
 
     useEffect(() => {
-        const queryParams = [
-            `keyword=${keyword}`,
-            // `page=${counts.currentPage}`,
-        ].filter(Boolean).join("&");
-
-        setSearchLoading(true);
-
-        const delayDebounce = setTimeout(() => {
-            const link = `${import.meta.env.VITE_BASE_URL}/events/search/users/all?${queryParams}`;
-            gotUsers(link);
-            setSearchLoading(false);
-        }, 2000);
-
-
-        return () => clearTimeout(delayDebounce);
-
+        if (keyword && keyword.length > 3) {
+            setSearchLoading(true);
+    
+            const delayDebounce = setTimeout(() => {
+                const link = `${import.meta.env.VITE_BASE_URL}/events/search/users/all?keyword=${keyword}`;
+                gotUsers(link);
+                setSearchLoading(false);
+            }, 2000);
+    
+            return () => clearTimeout(delayDebounce);
+        } else {
+            setUsers([]);
+        }
     }, [keyword]);
 
     useEffect(() => {
@@ -200,7 +185,15 @@ const Hackathon = () => {
                                     <div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[40%]">
                                         <div className='flex justify-between items-center'>
                                             <h1 className='text-xl md:text-2xl font-semibold'>Add Members</h1>
-                                            <button className='border-2 rounded-lg px-2 py-1 text-lg' onClick={() => setOpen(false)}>Close</button>
+                                            <button 
+                                                className='border-2 rounded-lg px-2 py-1 text-lg' 
+                                                onClick={() => {
+                                                    setOpen(false);
+                                                    setKeyword("");
+                                                }}
+                                            >
+                                                <RxCross2 size={20} />
+                                            </button>
                                         </div>
                                         <div className='mt-8'>
                                             <div className='flex flex-wrap gap-2'>
