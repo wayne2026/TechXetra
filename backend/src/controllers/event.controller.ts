@@ -376,7 +376,7 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
         if (memberEmails && !Array.isArray(memberEmails)) {
             return next(new ErrorHandler("Data should be an array of events", StatusCodes.BAD_REQUEST));
         }
-        if (memberEmails && memberEmails.length > (event.maxGroup! - 1)) {
+        if (memberEmails.length > (event.maxGroup! - 1)) {
             return next(new ErrorHandler("Data exceeded limit", StatusCodes.BAD_REQUEST));
         }
         if ((event.participation === participationEnum.TEAM) && (!memberEmails || memberEmails.length === 0)) {
@@ -441,15 +441,32 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
                 }
             },
             { new: true, runValidators: true, useFindAndModify: false }
-        );
+        ).select("events")
+            .populate("events.eventId", "title eventDate venue")
+            .populate({
+                path: 'events.group.leader', // Populate the leader field in events.group
+                select: 'firstName lastName email' // Select the fields you want from the populated User document
+            })
+            .populate({
+                path: 'events.group.members.user', // Populate the members' user field in events.group
+                select: 'firstName lastName email' // Select the fields you want from the populated User documents
+            })
+            .populate({
+                path: 'events.payment.verifierId', // Populate the verifierId field in events.payment
+                select: 'firstName lastName email' // Select the fields you want from the populated User document
+            })
+            .populate({
+                path: 'events.physicalVerification.verifierId', // Populate verifierId in physicalVerification
+                select: 'firstName lastName email' // Select the fields you want from the populated User document
+            });
 
         groupMembers.forEach(async (member) => {
             try {
-                const message = `${process.env.CLIENT_URL}/invites?event=${event._id}&user=${user._id}`;
+                const message = `${user.firstName} has sent you an invite to participate in ${event.title} \n\n Please check you profile and click on ✉ \n\n ${process.env.CLIENT_URL}/profile`;
 
                 await addEmailToQueue({
                     email: member.email,
-                    subject: `Email Veification`,
+                    subject: `TechXetra | Event Invitation`,
                     message,
                 });
 
@@ -475,7 +492,6 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
 
         res.status(200).json({
             success: true,
-            event: eventObject,
             user: updateUserEvent,
             message: "Event registered successfully"
         });
@@ -513,7 +529,7 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
         const { memberEmails } = req.body;
         if (memberEmails && !Array.isArray(memberEmails)) {
             return next(new ErrorHandler("Data should be an array of events", StatusCodes.BAD_REQUEST));
-        }        
+        }
 
         if (memberEmails && memberEmails.length > (event.maxGroup! - (1 + prevMembers?.length))) {
             return next(new ErrorHandler("Data exceeded limit", StatusCodes.BAD_REQUEST));
@@ -531,11 +547,11 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
         const newMembers = teamMembersArray.filter(newMember => {
             return !prevMembers.some(prevMember => prevMember.user.toString() === newMember.user.toString());
         });
-        
+
         if (newMembers.length === 0) {
             return next(new ErrorHandler("No new members to add", StatusCodes.BAD_REQUEST));
         }
-        
+
         let alreadyJoinedMembers: string[] = [];
         groupMembers.forEach(user => {
             if (user.events.some(userEvent => userEvent.eventId.toString() === event._id.toString())) {
@@ -573,11 +589,11 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
 
         groupMembers.forEach(async (member) => {
             try {
-                const message = `${process.env.CLIENT_URL}/invites?event=${event._id}&user=${user._id}`;
+                const message = `${user.firstName} has sent you an invite to participate in ${event.title} \n\n Please check you profile and click on ✉ \n\n ${process.env.CLIENT_URL}/profile`;
 
                 await addEmailToQueue({
                     email: member.email,
-                    subject: `Email Veification`,
+                    subject: `TechXetra | Event Invitation`,
                     message,
                 });
 
@@ -743,6 +759,16 @@ export const checkOutInvitation = async (req: CustomRequest, res: Response, next
             return next(new ErrorHandler("Failed to update inviter", StatusCodes.BAD_REQUEST));
         }
 
+        try {
+            await addEmailToQueue({
+                email: inviter.email,
+                subject: `TechXetra | Event Invitation`,
+                message: `${user.firstName} has accepted your Invitation for ${event.title}`,
+            });
+        } catch (error) {
+            console.error('Error sending email:', error);
+        }
+
         const updatedUser = await User.findByIdAndUpdate(
             user._id,
             {
@@ -812,11 +838,11 @@ export const updatePaymentDetails = async (req: CustomRequest, res: Response, ne
         }
 
         if (userEvent?.payment && userEvent.payment.status !== paymentStatusEnum.PENDING) {
-            return  next(new ErrorHandler("Payment already done", StatusCodes.BAD_REQUEST));
+            return next(new ErrorHandler("Payment already done", StatusCodes.BAD_REQUEST));
         }
 
         if (userEvent.group?.leader?.toString() !== user._id.toString()) {
-            return  next(new ErrorHandler("Only leader can make payment", StatusCodes.BAD_REQUEST));
+            return next(new ErrorHandler("Only leader can make payment", StatusCodes.BAD_REQUEST));
         }
 
         if (!req.file || !req.file.filename) {
@@ -830,8 +856,8 @@ export const updatePaymentDetails = async (req: CustomRequest, res: Response, ne
         }
 
         const updatedUser = await User.findOneAndUpdate(
-            { _id: req.user?._id, 'events.eventId': event._id },  
-            { 
+            { _id: req.user?._id, 'events.eventId': event._id },
+            {
                 $set: {
                     'events.$.payment.status': paymentStatusEnum.SUBMITTED,
                     'events.$.payment.transactionId': transactionId,
@@ -839,7 +865,24 @@ export const updatePaymentDetails = async (req: CustomRequest, res: Response, ne
                 }
             },
             { new: true, runValidators: true, useFindAndModify: false }
-        );
+        ).select("events")
+            .populate("events.eventId", "title eventDate venue")
+            .populate({
+                path: 'events.group.leader', // Populate the leader field in events.group
+                select: 'firstName lastName email' // Select the fields you want from the populated User document
+            })
+            .populate({
+                path: 'events.group.members.user', // Populate the members' user field in events.group
+                select: 'firstName lastName email' // Select the fields you want from the populated User documents
+            })
+            .populate({
+                path: 'events.payment.verifierId', // Populate the verifierId field in events.payment
+                select: 'firstName lastName email' // Select the fields you want from the populated User document
+            })
+            .populate({
+                path: 'events.physicalVerification.verifierId', // Populate verifierId in physicalVerification
+                select: 'firstName lastName email' // Select the fields you want from the populated User document
+            });
 
         if (!updatedUser) {
             return next(new ErrorHandler("Failed to update inviter", StatusCodes.BAD_REQUEST));

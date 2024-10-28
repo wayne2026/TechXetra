@@ -12,7 +12,7 @@ interface FormData {
     participation: string;
     externalRegistration: boolean;
     extrenalRegistrationLink: string;
-    // externalLink: string;
+    externalLink: string;
     eventDate: string;
     venue: string;
     rules: string[];
@@ -34,8 +34,8 @@ const EventsPage = () => {
         category: "TECHNICAL",
         participation: "SOLO",
         externalRegistration: true,
-        extrenalRegistrationLink: "https://unstop.com/competitions/frontend-frenzy-tezpur-university-tezu-tezpur-1196458",
-        // externalLink: "https://drive.google.com/file/d/1JTK1bLQrvt6ILMT-RIF1hg9mKoc1fAr8/view?usp=drivesdk",
+        extrenalRegistrationLink: "https://unstop.com/p/frontend-frenzy-tezpur-university-tezu-tezpur-1201757",
+        externalLink: "https://drive.google.com/file/d/1OpX-swKaqB_qF1AX252Y5AEfDT-dr5Sl/view?usp=sharing",
         eventDate: "",
         venue: "Dean's Gallery",
         deadline: "",

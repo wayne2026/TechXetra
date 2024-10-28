@@ -62,9 +62,9 @@ const formSchema = z.object({
         .refine((files) => ['image/*'].includes(files[0]?.type), {
             message: "Only Image files are allowed",
         }),
-    schoolOrCollege: z.string().min(2).max(50),
-    collegeClass: z.string().min(2).max(50),
-    schoolClass: z.string().min(2).max(50),
+    schoolOrCollege: z.string().min(2).max(50).optional(),
+    collegeClass: z.string().min(2).max(50).optional(),
+    schoolClass: z.string().min(2).max(50).optional(),
 });
 
 const CreateEvent = () => {
@@ -297,17 +297,16 @@ const CreateEvent = () => {
                             control={form.control}
                             name="schoolOrCollege"
                             render={({ field }) => (
-                                <FormItem className="w-1/3">
-                                    <FormLabel>Category</FormLabel>
+                                <FormItem className="w-1/2">
+                                    <FormLabel>School or College</FormLabel>
                                     <FormControl>
                                         <Select>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="School or College" {...field} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="TECHNICAL">TECHNICAL</SelectItem>
-                                                <SelectItem value="GENERAL">GENERAL</SelectItem>
-                                                <SelectItem value="CULTURAL">CULTURAL</SelectItem>
+                                                <SelectItem value="SCHOOL">SCHOOL</SelectItem>
+                                                <SelectItem value="COLLEGE">COLLEGE</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </FormControl>
@@ -319,17 +318,17 @@ const CreateEvent = () => {
                             control={form.control}
                             name="schoolClass"
                             render={({ field }) => (
-                                <FormItem className="w-1/3">
-                                    <FormLabel>Category</FormLabel>
+                                <FormItem className="w-1/2">
+                                    <FormLabel>School Class</FormLabel>
                                     <FormControl>
                                         <Select>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="School Class" {...field} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="TECHNICAL">TECHNICAL</SelectItem>
-                                                <SelectItem value="GENERAL">GENERAL</SelectItem>
-                                                <SelectItem value="CULTURAL">CULTURAL</SelectItem>
+                                                <SelectItem value="ONE_TO_FOUR">ONE_TO_FOURL</SelectItem>
+                                                <SelectItem value="FIVE_TO_EIGHT">FIVE_TO_EIGHT</SelectItem>
+                                                <SelectItem value="NINE_TO_TWELVE">NINE_TO_TWELVE</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </FormControl>
@@ -341,17 +340,16 @@ const CreateEvent = () => {
                             control={form.control}
                             name="collegeClass"
                             render={({ field }) => (
-                                <FormItem className="w-1/3">
-                                    <FormLabel>Category</FormLabel>
+                                <FormItem className="w-1/2">
+                                    <FormLabel>College Class</FormLabel>
                                     <FormControl>
                                         <Select>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="College Class" {...field} />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="TECHNICAL">TECHNICAL</SelectItem>
-                                                <SelectItem value="GENERAL">GENERAL</SelectItem>
-                                                <SelectItem value="CULTURAL">CULTURAL</SelectItem>
+                                                <SelectItem value="UG">UG</SelectItem>
+                                                <SelectItem value="PG">PG</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </FormControl>

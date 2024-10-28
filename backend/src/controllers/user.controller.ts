@@ -58,7 +58,7 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
 		try {
 			await addEmailToQueue({
 				email: user.email,
-				subject: `Email Veification`,
+				subject: `TechXetra | Email Veification`,
 				message,
 			});
 		} catch (error) {
@@ -88,7 +88,7 @@ export const requestVerification = async (req: CustomRequest, res: Response, nex
 		try {
 			await addEmailToQueue({
 				email: user.email,
-				subject: `Email Veification`,
+				subject: `TechXetra | Email Veification`,
 				message,
 			});
 	
@@ -137,21 +137,7 @@ export const verifyUser = async (req: CustomRequest, res: Response, next: NextFu
 		user.oneTimeExpire = undefined;
 	
 	
-		const savedUser = await user.save();
-	
-		const message = savedUser
-			? "Account Verified Successfully!!"
-			: "Account Verification Failed, Please try again later.";
-	
-		try {
-			await addEmailToQueue({
-				email: user.email,
-				subject: `Account Verification Update`,
-				message,
-			});
-		} catch (error) {
-			console.log((error as Error).message);
-		}
+		await user.save();
 	
 		sendToken(user, StatusCodes.OK, res);
 	} catch (error) {
@@ -247,7 +233,7 @@ export const requestForgot = async (req: Request, res: Response, next: NextFunct
 		try {
 			await addEmailToQueue({
 				email: user.email,
-				subject: `Password Recovery`,
+				subject: `TechXetra | Password Recovery`,
 				message,
 			});
 	

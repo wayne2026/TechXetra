@@ -37,9 +37,11 @@ function App() {
 				pauseOnHover
 				theme="dark"
 			/>
-			<div>
-				hello
-			</div>
+			{/* {!userContext?.user?.isVerified && (
+				<div className="text-md">
+					Please verify your email, an OTP was sent to your email address (check spam if not)
+				</div>
+			)} */}
 			<ErrorBoundary>
 				<Suspense fallback={null}>
 					{/* <div

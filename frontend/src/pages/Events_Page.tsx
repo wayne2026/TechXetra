@@ -34,6 +34,14 @@ const Hackathon = () => {
     const [events, setEvents] = useState<UserEvent[]>([]);
     const [paymentFile, setPaymentFile] = useState<File>();
     const [paymentId, setPaymentId] = useState("");
+    const [userEvent, setUserEvent] = useState<UserEvent>();
+
+    useEffect(() => {
+        if (events && event) {
+            const foundUserEvent = events.find(userEvent => userEvent?.eventId?._id?.toString() === event?._id.toString());
+            setUserEvent(foundUserEvent);
+        }
+    }, [events, event]);
 
     const gotUsers = async (url: string) => {
         try {
@@ -75,7 +83,8 @@ const Hackathon = () => {
 
         try {
             if (id) {
-                await axios.post(`${import.meta.env.VITE_BASE_URL}/events/payment/${id}`, formData, config);
+                const { data }: { data: any } = await axios.post(`${import.meta.env.VITE_BASE_URL}/events/payment/${id}`, formData, config);
+                setEvents(data.user.events);
                 toast.success("Payment details successfully submitted");
             }
         } catch (error: any) {
@@ -121,9 +130,28 @@ const Hackathon = () => {
 
     const fetchEvent = async () => {
         setLoading(true);
+
+        const cachedEvent = window.sessionStorage.getItem('event');
+        if (cachedEvent) {
+            const { data, expires } = JSON.parse(cachedEvent);
+
+            if (Date.now() < expires) {
+                setEvent(data);
+                setLoading(false);
+                return;
+            }
+        }
+
+        window.sessionStorage.removeItem('event');
+
         try {
             const { data }: { data: EventDetailsResponse } = await axios.get(`${import.meta.env.VITE_BASE_URL}/events/byId/${id}`, { withCredentials: true });
             setEvent(data.event);
+            const payload = {
+                data: data.event,
+                expires: Date.now() + 1 * 60 * 1000
+            }
+            window.sessionStorage.setItem("event", JSON.stringify(payload));
         } catch (error: any) {
             toast.error(error.response.data.message);
         } finally {
@@ -147,14 +175,16 @@ const Hackathon = () => {
             }
         }
         try {
-            const { data }: { data: any } = await axios.put(`${import.meta.env.VITE_BASE_URL}/events/enroll/${id}`, { memberEmails }, { withCredentials: true });
-            console.log(data);
-            setMemberEmails([]);
-            if (open) {
-                setOpen(false);
+            if (id) {
+                const { data }: { data: any } = await axios.put(`${import.meta.env.VITE_BASE_URL}/events/enroll/${id}`, { memberEmails }, { withCredentials: true });
+                setEvents(data.user.events);
+                setMemberEmails([]);
+                if (open) {
+                    setOpen(false);
+                }
+                setOpenPaymemt(true);
+                toast.success("Successfully registered event.");
             }
-            setOpenPaymemt(true);
-            toast.success("Successfully registered event.")
         } catch (error: any) {
             toast.error(error.response.data.message);
         } finally {
@@ -293,7 +323,7 @@ const Hackathon = () => {
                                                     )}
                                                 </div>
                                             </div>
-                                            <button className="w-full mt-2 px-4 py-3 mr-4 bg-pink-500 rounded-lg text-white hover:bg-pink-600" disabled={memberEmails.length === 0} onClick={enrollEvent}>Register</button>
+                                            <button className="w-full mt-2 px-4 py-3 mr-4 bg-pink-500 rounded-lg text-white hover:bg-pink-600" disabled={event?.participation === "TEAM" && memberEmails.length === 0} onClick={enrollEvent}>Register</button>
                                         </div>
                                     </div>
                                 </div>
@@ -322,58 +352,49 @@ const Hackathon = () => {
                                     </div>
                                 </div>
                             )}
-                            {events && event && (() => {
-                                const userEvent = events.find(userEvent => userEvent?.eventId?._id?.toString() === event._id.toString());
-                                    
-                                if (userEvent) {
-                                    return (
-                                        <div className='mt-6'>
-                                            {event.paymentRequired && !["SUBMITTED", "VERIFIED"].includes(userEvent?.payment?.status) && (userEvent.group?.leader?._id?.toString() == userContext?.user?._id.toString()) && (
-                                                <button
-                                                    onClick={() => setOpenPaymemt(true)}
-                                                    className="px-4 py-3 mr-4 bg-green-500 rounded-lg text-white hover:bg-green-600"
-                                                >
-                                                    Pay Now →
-                                                </button>
-                                            )}
-                                            <p className="mt-2 text-slate-400 italic text-sm">You have already registered for this event.</p>
-                                        </div>
-                                    );
-                                }
 
-                                return (
-                                    <>
-                                        {event?.externalRegistration ? (
-                                            <Link
-                                                to={event.extrenalRegistrationLink!}
-                                                target="_blank"
+                            {userEvent ? (
+                                <div className='mt-6'>
+                                    {event.paymentRequired && !["SUBMITTED", "VERIFIED"].includes(userEvent?.payment?.status) &&
+                                        (userEvent.group?.leader?._id?.toString() === userContext?.user?._id.toString()) && (
+                                            <button
+                                                onClick={() => setOpenPaymemt(true)}
+                                                className="px-4 py-3 mr-4 bg-green-500 rounded-lg text-white hover:bg-green-600"
                                             >
-                                                <button className="2xl:mt-8 mt-5 px-4 py-3 mr-4 bg-pink-500 rounded-lg text-white hover:bg-pink-600">
+                                                Pay Now →
+                                            </button>
+                                        )}
+                                    <p className="mt-2 text-slate-400 italic text-sm">You have already registered for this event.</p>
+                                </div>
+                            ) : (
+                                <>
+                                    {event?.externalRegistration ? (
+                                        <Link to={event.extrenalRegistrationLink!} target="_blank">
+                                            <button className="2xl:mt-8 mt-5 px-4 py-3 mr-4 bg-pink-500 rounded-lg text-white hover:bg-pink-600">
+                                                Register Now →
+                                            </button>
+                                        </Link>
+                                    ) : (
+                                        <>
+                                            {(event?.canRegister || event?.registrationRequired) && (
+                                                <button
+                                                    disabled={!event?.canRegister || !event?.registrationRequired}
+                                                    onClick={() => {
+                                                        if (["HYBRID", "TEAM"].includes(event?.participation)) {
+                                                            setOpen(true);
+                                                        } else {
+                                                            enrollEvent(); // Call enrollEvent when the user registers
+                                                        }
+                                                    }}
+                                                    className="2xl:mt-8 mt-5 px-4 py-3 mr-4 bg-pink-500 rounded-lg text-white hover:bg-pink-600"
+                                                >
                                                     Register Now →
                                                 </button>
-                                            </Link>
-                                        ) : (
-                                            <>
-                                                {(event?.canRegister || event?.registrationRequired) && (
-                                                    <button
-                                                        disabled={!event?.canRegister || !event?.registrationRequired}
-                                                        onClick={() => {
-                                                            if (["HYBRID", "TEAM"].includes(event?.participation)) {
-                                                                setOpen(true);
-                                                            } else {
-                                                                enrollEvent();
-                                                            }
-                                                        }}
-                                                        className="2xl:mt-8 mt-5 px-4 py-3 mr-4 bg-pink-500 rounded-lg text-white hover:bg-pink-600"
-                                                    >
-                                                        Register Now →
-                                                    </button>
-                                                )}
-                                            </>
-                                        )}
-                                    </>
-                                );
-                            })()}
+                                            )}
+                                        </>
+                                    )}
+                                </>
+                            )}
 
                             {event?.externalLink && (
                                 <Link

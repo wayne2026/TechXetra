@@ -2,6 +2,7 @@ import { Job, Queue, Worker } from "bullmq";
 import { emailQueueName, jobOptions, redisConnection } from "../config/queue.js";
 import sendEmail from "./sendEmail.js";
 import { redis } from "../index.js";
+import EmailModel from "../models/email.model.js";
 
 interface EmailData {
     email: string;
@@ -56,10 +57,19 @@ const worker = new Worker<EmailReturnData>(
     { connection: redisConnection }
 );
 
-worker.on('completed', (job: Job) => {
+worker.on('completed', async (job: Job) => {
     console.log(`Job ${job?.id} has completed!`);
+    await EmailModel.create({
+        email: job.data.email,
+        status: 'SUCCESS',
+    });
 });
 
 worker.on('failed', async (job: Job<EmailReturnData> | undefined, err: Error) => {
     console.log(`${job?.id} has failed with ${err.message}`);
+    await EmailModel.create({
+        email: job?.data.email,
+        status: 'SUCCESS',
+        error: err.message,
+    });
 });
