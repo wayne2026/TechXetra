@@ -43,6 +43,7 @@ export const createEvent = async (req: Request, res: Response, next: NextFunctio
         const {
             title,
             subTitle,
+            note,
             description,
             category,
             participation,
@@ -94,6 +95,7 @@ export const createEvent = async (req: Request, res: Response, next: NextFunctio
         const event = await Event.create({
             title,
             subTitle,
+            note,
             description,
             category,
             participation,
@@ -154,6 +156,7 @@ export const updateEventDetails = async (req: Request, res: Response, next: Next
         const {
             title,
             subTitle,
+            note,
             description,
             category,
             participation,
@@ -210,6 +213,7 @@ export const updateEventDetails = async (req: Request, res: Response, next: Next
         const updatedData = {
             title: title || event.title,
             subTitle: subTitle || event.subTitle,
+            note: note || event.note,
             description: description || event.description,
             category: category || event.category,
             participation: participation || event.participation,

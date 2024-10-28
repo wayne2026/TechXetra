@@ -20,6 +20,7 @@ interface IEvent extends Document {
     _id: mongoose.Schema.Types.ObjectId;
     title: string;
     subTitle?: string;
+    note?: string;
     description: string;
     category: typeof categoryEnum[keyof typeof categoryEnum];
     participation: typeof participationEnum[keyof typeof participationEnum];
@@ -54,6 +55,7 @@ const EventSchema: Schema<IEvent> = new Schema(
             required: true,
         },
         subTitle: String,
+        note: String,
         description: {
             type: String,
             required: true,

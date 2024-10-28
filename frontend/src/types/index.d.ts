@@ -93,6 +93,7 @@ interface EventDetails {
 	_id: string;
     title: string;
     subTitle?: string;
+	note?: string;
     description: string;
     category: string;
     participation: string;

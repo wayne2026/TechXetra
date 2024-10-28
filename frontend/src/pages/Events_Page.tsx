@@ -237,6 +237,9 @@ const Hackathon = () => {
                                 {moment.utc(event.eventDate).format('hh:mm A')} onwards
                             </span></p>
                             <p className='text-white'>Venue: <span className="text-pink-500">{event?.venue}</span></p>
+                            {event?.note && (
+                                <p className='mt-4 text-red-500 text-xl'>Note: {event?.note}</p>
+                            )}
                             {event?.rules && event?.rules?.length > 0 ? (
                                 <div className="2xl:mt-8 mt-4 text-white">
                                     <h2 className="text-2xl font-semibold text-pink-500">Rules</h2>

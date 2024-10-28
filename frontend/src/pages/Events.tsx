@@ -42,7 +42,7 @@ const Events: React.FC = () => {
         setLoading(true);
         const cachedEvents = window.sessionStorage.getItem('events');
         if (cachedEvents) {
-            const { data, expires} = JSON.parse(cachedEvents);
+            const { data, expires } = JSON.parse(cachedEvents);
 
             if (Date.now() < expires) {
                 setEvents(data);
@@ -180,11 +180,9 @@ const Events: React.FC = () => {
                                             </div>
                                             <p className='text-[#808080] font-manrope w-fit pl-8 pt-4 pb-4'>Know More</p>
 
-                                            {hoveredEventId === data._id && (
-                                                <div className='absolute inset-0 transition-opacity duration-[500ms] opacity-0 hover:opacity-35'>
-                                                    <img src={data.backgroundImage} alt={data.title} className='object-cover w-full h-full rounded-3xl' />
-                                                </div>
-                                            )}
+                                            <div className='absolute inset-0 opacity-35'>
+                                                <img src={data.backgroundImage} alt={data.title} className='object-cover w-full h-full rounded-3xl' />
+                                            </div>
                                         </BackgroundGradient>
                                     </div>
                                 </div>
