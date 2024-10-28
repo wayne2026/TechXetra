@@ -3,7 +3,7 @@ import ErrorBoundary from "../components/better/error-boundary";
 import ProtectedRoute from "../components/better/protected-routes";
 import { useUser } from "./context/user_context";
 import { ToastContainer } from "react-toastify";
-import { Suspense } from "react";
+// import { Suspense } from "react";
 import "react-toastify/dist/ReactToastify.css";
 
 import Events_Page from './pages/Events_Page'
@@ -43,7 +43,7 @@ function App() {
 				</div>
 			)} */}
 			<ErrorBoundary>
-				<Suspense fallback={null}>
+				{/* <Suspense fallback={null}> */}
 					{/* <div
 						className="z-[60] fixed bottom-8 right-8 bg-gray-900 text-white p-2 rounded-md"
 					>
@@ -63,7 +63,7 @@ function App() {
 						</Route>
 						<Route path="*" element={<NotFound />} />
 					</Routes>
-				</Suspense>
+				{/* </Suspense> */}
 			</ErrorBoundary>
 		</div>
 	);
