@@ -372,6 +372,8 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
         }
 
         console.log(event?.eligibility)
+        console.log(user?.schoolOrCollege === 'SCHOOL' && event.eligibility?.schoolClass === user?.schoolClass)
+        console.log(user?.schoolOrCollege === 'COLLEGE' && event.eligibility?.collegeClass === user?.collegeClass)
         const eligible = event?.eligibility && (
             (user?.schoolOrCollege === 'SCHOOL' && event.eligibility?.schoolClass === user?.schoolClass) ||
             (user?.schoolOrCollege === 'COLLEGE' && event.eligibility?.collegeClass === user?.collegeClass)
