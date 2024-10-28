@@ -52,9 +52,13 @@ const EventsPage = () => {
 
         const form = new FormData();
         const eventDateUTC = moment(formData.eventDate).utc().format();
-        form.append('eventDate', eventDateUTC);
         const deadlineDateUTC = moment(formData.deadline).utc().format();
-        form.append('deadline', deadlineDateUTC);
+        if (formData.eventDate) {
+            form.append('eventDate', eventDateUTC);
+        }
+        if (formData.deadline) {
+            form.append('deadline', deadlineDateUTC);
+        }
         if (formData.image) {
             form.append('image', formData.image);
         }
@@ -85,7 +89,6 @@ const EventsPage = () => {
                         name="eventDate"
                         value={formData.eventDate}
                         onChange={handleInputChange}
-                        required
                     />
                 </div>
 
@@ -97,7 +100,6 @@ const EventsPage = () => {
                         name="deadline"
                         value={formData.deadline}
                         onChange={handleInputChange}
-                        required
                     />
                 </div>
 

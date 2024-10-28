@@ -371,10 +371,10 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
             return next(new ErrorHandler("Registration deadline has passed", StatusCodes.FORBIDDEN));
         }
 
-        const eligible = event.eligibility &&
-            (event.eligibility.schoolOrCollege === user?.schoolOrCollege) &&
-            (event.eligibility.schoolClass === user?.schoolClass) &&
-            (event.eligibility.collegeClass === user?.collegeClass);
+        const eligible = event?.eligibility &&
+            (event?.eligibility?.schoolOrCollege === user?.schoolOrCollege) &&
+            (event?.eligibility?.schoolClass === user?.schoolClass) &&
+            (event?.eligibility?.collegeClass === user?.collegeClass);
         if (!eligible) {
             return next(new ErrorHandler("User's eligibility does not match with the event", StatusCodes.FORBIDDEN));
         }
@@ -414,10 +414,10 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
 
         let notEligibleMembers: string[] = []
         groupMembers.forEach(member => {
-            const eligible = event.eligibility &&
-                (event.eligibility.schoolOrCollege === member?.schoolOrCollege) &&
-                (event.eligibility.schoolClass === member?.schoolClass) &&
-                (event.eligibility.collegeClass === member?.collegeClass);
+            const eligible = event?.eligibility &&
+                (event?.eligibility?.schoolOrCollege === member?.schoolOrCollege) &&
+                (event?.eligibility?.schoolClass === member?.schoolClass) &&
+                (event?.eligibility?.collegeClass === member?.collegeClass);
             if (!eligible) {
                 notEligibleMembers.push(member.email);
             }
