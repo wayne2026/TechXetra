@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addEventDetailsArray, createEvent, getAllEvents, updateEventBackGroundImages, deleteAllEvents, enrollEvent, getEventById, updateEventDetails, searchUsers, checkOutInvitation, updatePaymentDetails } from "../controllers/event.controller.js";
+import { addEventDetailsArray, createEvent, getAllEvents, updateEventBackGroundImages, deleteAllEvents, enrollEvent, getEventById, updateEventDetails, searchUsers, checkOutInvitation, updatePaymentDetails, deleteUserEvent } from "../controllers/event.controller.js";
 import { authorizeRoles, isUserVerified, verifyToken } from "../middlewares/auth.middleware.js";
 import { uploadEvents, uploadPayments } from "../middlewares/multer.middlware.js";
 import { roleEnum } from "../models/user.model.js";
@@ -15,7 +15,8 @@ router.route("/new").post(verifyToken, isUserVerified, authorizeRoles(roleEnum.A
 router.route("/search/users/all").get(verifyToken, isUserVerified, searchUsers);
 router.route("/byId/:id")
     .get(verifyToken, isUserVerified, getEventById)
-    .put(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), uploadMultiple, updateEventDetails);
+    .put(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), uploadMultiple, updateEventDetails)
+    .delete(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), deleteUserEvent);
 router.route("/all").get(getAllEvents);
 router.route("/array").post(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), addEventDetailsArray);
 router.route("/delete/all").delete(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), deleteAllEvents);

@@ -917,3 +917,48 @@ export const updatePaymentDetails = async (req: CustomRequest, res: Response, ne
         next(error);
     }
 }
+
+export const deleteUserEvent = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+        const user = await User.findById(req.user?._id);
+        if (!user) {
+            return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
+        }
+
+        const event = await Event.findById(req.params.id);
+        if (!event) {
+            return next(new ErrorHandler(`Event not found with id ${req.params.id}`, StatusCodes.NOT_FOUND));
+        }
+
+        const userEvent = user.events.find(userEvent => userEvent.eventId.toString() === event._id.toString());
+        if (!userEvent) {
+            return next(new ErrorHandler("Event isn't registered yet", StatusCodes.BAD_REQUEST));
+        }
+
+        const eventId = event._id;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            user._id,
+            {
+                $pull: {
+                    events: {
+                        eventId
+                    },
+                },
+            },
+            { new: true, runValidators: true, useFindAndModify: false }
+        ).select("events invites");
+
+        if (!updatedUser) {
+            return next(new ErrorHandler("Failed to update user", StatusCodes.BAD_REQUEST));
+        }
+
+        res.status(200).json({
+            success: true,
+            user: updatedUser,
+            message: "Delete UserEvent successfully"
+        });
+    } catch (error) {
+        next(error);
+    }
+}

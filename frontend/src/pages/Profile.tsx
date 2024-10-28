@@ -210,6 +210,17 @@ const Profile = () => {
 		}
 	}, [open, openReset, openInvites, openEventDetails]);
 
+	const handleDelteUserEvent = async (eventId: string) => {
+		try {
+            const { data } = await axios.delete(`${import.meta.env.VITE_BASE_URL}/events/byId/${eventId}`, { withCredentials: true });
+            setEvents(data.user.events);
+            toast.success("Event deleted successfully");
+            setOpenEventDetails(false);
+        } catch (error: any) {
+            toast.error(error.response.data.message);
+        }
+	}
+
 	return (
 		<div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b] text-white">
 			<div className="bg-gray-900 rounded-lg shadow-lg p-8 my-6 border border-gray-400">
@@ -475,6 +486,18 @@ const Profile = () => {
 												<p>Event Time: {moment.utc(event.eventId.eventDate).format('hh:mm A')} onwards</p>
 											</div>
 										</div>
+										{userContext?.user?.role === "ADMIN" && (
+											<div>
+												<button 
+													onClick={(e) => {
+														handleDelteUserEvent(event.eventId._id);
+														e.stopPropagation();
+													}}
+												>
+													Delete
+												</button>
+											</div>
+										)}
 										<div>
 											<h3 className="text-xl font-semibold">
 												Status: {event.payment.status}
