@@ -234,6 +234,7 @@ const Hackathon = () => {
                             )}
                             <p className="mt-4 text-white">Date: <span className="text-pink-500">
                                 {new Date(event?.eventDate!).toLocaleDateString('en-GB')}
+                                {userContext?.user?.role === "ADMIN" && moment.utc(event.eventDate).format('DD MM yyyy')}
                             </span></p>
                             <p className="text-white">Time: <span className="text-pink-500">
                                 {moment.utc(event.eventDate).format('hh:mm A')} onwards
