@@ -163,7 +163,9 @@ const Hackathon = () => {
                 if (open) {
                     setOpen(false);
                 }
-                setOpenPaymemt(true);
+                if (event?.paymentRequired) {
+                    setOpenPaymemt(true);
+                }
                 toast.success("Successfully registered event.");
             }
         } catch (error: any) {

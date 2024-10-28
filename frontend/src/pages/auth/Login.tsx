@@ -79,6 +79,7 @@ const Login = () => {
       );
       userContext?.setUser(data.user);
       toast.success("Logged In!");
+      userContext?.setUser(data.user)
       navigate(from, { replace: true });
     } catch (error: any) {
       userContext?.setUser(null);

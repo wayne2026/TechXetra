@@ -224,7 +224,7 @@ export const updateEventDetails = async (req: Request, res: Response, next: Next
             extrenalRegistrationLink: extrenalRegistrationLink || event.extrenalRegistrationLink,
             externalLink: externalLink || event.externalLink,
             registrationRequired: Boolean(registrationRequired) || event.registrationRequired,
-            paymentRequired: Boolean(paymentRequired) || event.paymentRequired,
+            paymentRequired: typeof paymentRequired === 'string' ? paymentRequired === 'true' : event.paymentRequired,
             amount: amount || event.amount,
             eventDate: eventDate || event.eventDate,
             venue: venue || event.venue,
@@ -433,7 +433,7 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
             },
             payment: {
                 status: paymentStatusEnum.PENDING,
-                amount: Number(event.amount) | 400,
+                amount: event.amount ? Number(event.amount) : 100,
             }
         }
 

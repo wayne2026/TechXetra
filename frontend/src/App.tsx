@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Link, Route, Routes, useLocation } from "react-router-dom";
 import ErrorBoundary from "../components/better/error-boundary";
 import ProtectedRoute from "../components/better/protected-routes";
 import { useUser } from "./context/user_context";
@@ -18,6 +18,7 @@ import Profile from "./pages/Profile";
 
 function App() {
 	const userContext = useUser();
+	const location = useLocation();
 
 	return userContext?.loading ? (
 		<div className="bg-black h-screen flex justify-center items-center">
@@ -37,11 +38,16 @@ function App() {
 				pauseOnHover
 				theme="dark"
 			/>
-			{/* {!userContext?.user?.isVerified && (
-				<div className="text-md">
-					Please verify your email, an OTP was sent to your email address (check spam if not)
+			{!["/login", "/register", "/verify"].includes(location.pathname) && !userContext?.user?.isVerified && (
+				<div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
+					<div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[40%]">
+						<div className='flex flex-col justify-center items-center text-xl'>
+							<p>Please verify your email to access resources.</p>
+							<Link className="underline italic text-blue-500" to="/verify">Verify Here</Link>
+						</div>
+					</div>
 				</div>
-			)} */}
+			)}
 			<ErrorBoundary>
 				{/* <Suspense fallback={null}> */}
 					{/* <div
@@ -58,6 +64,11 @@ function App() {
 							element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}
 						>
 							<Route path="/verify" element={<Verify />} />
+						</Route>
+
+						<Route
+							element={<ProtectedRoute isAuthenticated={(userContext?.user && userContext.user.isVerified) ? true : false} redirect="/verify" />}
+						>
 							<Route path="/event" element={<Events_Page />} />
 							<Route path="/profile" element={<Profile />} />
 						</Route>

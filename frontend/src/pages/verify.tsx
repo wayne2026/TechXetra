@@ -44,7 +44,7 @@ const Verify = () => {
         <div className="w-full max-w-md px-12 p-4 m-auto mx-auto mt-32 mb-16 bg-white rounded-lg shadow-md dark:bg-gray-800">
             <div className="flex flex-col items-center justify-center space-y-3 mt-4 mx-auto">
                 <h1 className='text-4xl font-bold'>Verify OTP</h1>
-                <p className='text-md text-gray-600 italic'>OTP was sent to {userContext?.user?.email}</p>
+                {/* <p className='text-md text-gray-600 italic'>OTP was sent to {userContext?.user?.email}</p> */}
             </div>
             <div className="max-h-screen mt-8 flex justify-center items-center space-x-2">
                 <OtpInput length={6} disabled={verifyLoading} onOtpSubmit={onOtpSubmit} />
