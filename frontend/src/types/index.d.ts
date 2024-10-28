@@ -1,26 +1,64 @@
+interface UserEventPopulatedData {
+	_id: string;
+	firstName: string;
+	lastName: string;
+	email: string;
+}
+
 interface UserEvent {
-	eventId: string;
+	eventId: {
+		_id: string;
+		title: string;
+		eventDate: Date;
+		venue: string;
+	}
     paymentRequired: boolean;
 	eligible: boolean;
 	isGroup: boolean;
     group?: {
-		leader?: string;
+		leader?: UserEventPopulatedData;
 		members?: {
 			status: string;
-			user: string;
+			user: UserEventPopulatedData;
 		}[];
 	}
-	// members: string[];
 	payment: {
 		status: string;
 		transactionId: string;
 		paymentImage: string;
 		amount: number;
-		verifierId: string;
+		verifierId: UserEventPopulatedData;
 	}
 	physicalVerification: {
 		status: boolean;
-		verifierId: string;
+		verifierId: UserEventPopulatedData;
+	}
+}
+
+interface UserInvite {
+	eventId: {
+		_id: string;
+		title: string;
+		eventDate: Date;
+		venue: string;
+	}
+	userId: UserEventPopulatedData;
+	status: string;
+}
+
+interface UserInviteResponse {
+    success: boolean;
+	user: {
+		_id: string;
+        invites: UserInvite[];
+	}
+}
+
+interface UserEventResponse {
+	success: boolean;
+	user: {
+		_id: string;
+        events: UserEvent[];
 	}
 }
 
@@ -41,7 +79,7 @@ interface User {
 	phoneNumber: string;
 	isVerified: boolean;
 	isBlocked: boolean;
-	events: UserEvent[] | [];
+	// events: UserEvent[] | [];
 	googleId: string;
 }
 

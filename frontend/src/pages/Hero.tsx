@@ -2,10 +2,10 @@ import { useGSAP } from "@gsap/react";
 import { StarsBackground } from "../../components/StarBackground";
 import { ShootingStars } from '../../components/ShootingStars';
 import gsap from "gsap";
-import { lazy, useRef } from "react";
+import { useRef } from "react";
 import Navbar from "../components/Navbar";
-
-const RotatingPlanet = lazy(() => import("../../components/Planet"));
+import RotatingPlanet from "../../components/Planet";
+// const RotatingPlanet = lazy(() => import("../../components/Planet"));
 
 const Hero: React.FC = () => {
   const starsBg = useRef<HTMLDivElement>(null);

@@ -37,15 +37,11 @@ function App() {
 				pauseOnHover
 				theme="dark"
 			/>
-			{/* <div>
+			<div>
 				hello
-			</div> */}
+			</div>
 			<ErrorBoundary>
-				<Suspense fallback={(
-					<div className="bg-black h-screen flex justify-center items-center">
-						<img src="/TechXetraLogo1.png" width={400} />
-					</div>
-				)}>
+				<Suspense fallback={null}>
 					{/* <div
 						className="z-[60] fixed bottom-8 right-8 bg-gray-900 text-white p-2 rounded-md"
 					>

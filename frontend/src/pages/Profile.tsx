@@ -6,6 +6,8 @@ import QRCodeStyling from "qr-code-styling";
 import { useEffect, useRef, useState } from "react";
 import { FaCamera } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
+import moment from 'moment-timezone';
+import { MdForwardToInbox } from "react-icons/md";
 
 export const createQRCode = (data: string) => {
 	return new QRCodeStyling({
@@ -47,7 +49,7 @@ const Profile = () => {
 	const id = search.get("id");
 	const userContext = useUser();
 	const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
-
+	const [openInvites, setOpenInvites] = useState(false);
 	const [open, setOpen] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [selectedFile, setSelectedFile] = useState<string | null>(null);
@@ -62,6 +64,10 @@ const Profile = () => {
 		newPassword: "",
 		confirmPassword: ""
 	});
+	const [events, setEvents] = useState<UserEvent[]>();
+	const [invites, setInvites] = useState<UserInvite[]>();
+	const [openEventDetails, setOpenEventDetails] = useState(false);
+	const [currentEvent, setCurrentEvent] = useState<UserEvent | null>()
 
 	const handleLogOut = async () => {
 		try {
@@ -85,6 +91,26 @@ const Profile = () => {
 		}
 	}
 
+	const fetchEvents = async () => {
+		try {
+			const { data }: { data: UserEventResponse } = await axios.get(`${import.meta.env.VITE_BASE_URL}/users/events`, { withCredentials: true });
+			setEvents(data.user.events);
+		} catch (error: any) {
+			toast.error(error.response.data.message);
+			console.log(error.response.data.message);
+		}
+	}
+
+	const fetchInvites = async () => {
+		try {
+			const { data }: { data: UserInviteResponse } = await axios.get(`${import.meta.env.VITE_BASE_URL}/users/invites`, { withCredentials: true });
+			setInvites(data.user.invites);
+		} catch (error: any) {
+			toast.error(error.response.data.message);
+			console.log(error.response.data.message);
+		}
+	}
+
 	useEffect(() => {
 		if (userContext?.user) {
 			const qrCode = createQRCode(userContext?.user?._id);
@@ -97,6 +123,11 @@ const Profile = () => {
 			});
 		}
 	}, [userContext?.user]);
+
+	useEffect(() => {
+		fetchInvites();
+		fetchEvents();
+	}, []);
 
 	const handleIconClick = () => {
 		if (fileInputRef.current) {
@@ -158,20 +189,41 @@ const Profile = () => {
 		}
 	}
 
+	const handleCheckoutInvitation = async (choice: string, userId: string, eventId: string) => {
+		try {
+            const { data } = await axios.put(`${import.meta.env.VITE_BASE_URL}/events/invite/${userId}/${eventId}`, { choice }, { withCredentials: true });
+            setEvents(data.user.events);
+			setInvites(data.user.invites);
+            toast.success("Invite checked out successfully");
+        } catch (error: any) {
+			toast.error(error.response.data.message);
+        } finally {
+            setOpenInvites(false);
+		}
+	}
+
 	useEffect(() => {
-		if (open || openReset) {
+		if (open || openReset || openInvites || openEventDetails) {
 			document.body.classList.add('no-scroll');
 		} else {
 			document.body.classList.remove('no-scroll');
 		}
-	}, [open, openReset]);
+	}, [open, openReset, openInvites, openEventDetails]);
 
 	return (
 		<div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b] text-white">
-			<div className="bg-gray-900 rounded-lg shadow-lg p-8 border border-gray-400">
-				<h1 className="sm:text-5xl max-sm:pt-12 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:text-5xl font-extrabold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#FD8444] to-[#7527ED]">
-					Profile
-				</h1>
+			<div className="bg-gray-900 rounded-lg shadow-lg p-8 my-6 border border-gray-400">
+				<div className="flex justify-center items-center gap-6">
+					<h1 className="sm:text-5xl max-sm:pt-12 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:text-5xl font-extrabold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#FD8444] to-[#7527ED]">
+						Profile
+					</h1>
+					<button className="relative mb-4" onClick={() => setOpenInvites(true)}>
+						<MdForwardToInbox className="" size={40} />
+						<p className="absolute bottom-0 right-0 bg-red-500 text-white w-6 h-6 flex items-center justify-center text-xs rounded-full">
+							{invites?.length || 0}
+						</p>
+					</button>
+				</div>
 
 				{id && userContext?.user && ["ADMIN", "MODERATOR"].includes(userContext?.user?.role) && (
 					<div>
@@ -190,7 +242,7 @@ const Profile = () => {
 								/>
 							) : (
 								<div className="flex justify-center items-center w-32 h-32 rounded-full shadow-md border-4 border-purple-500">
-									<p className="text-center text-4xl font-semibold">{`${userContext?.user?.firstName[0]} ${userContext?.user?.lastName[0]}`}</p>
+									<p className="text-center text-4xl font-semibold">{`${userContext?.user?.firstName[0]}${userContext?.user?.lastName[0]}`}</p>
 								</div>
 							)}
 							<div onClick={handleIconClick} className="absolute border border-slate-300 bottom-0 right-0 bg-slate-200 text-black rounded-full p-2">
@@ -259,6 +311,68 @@ const Profile = () => {
 							</div>
 						)}
 
+						{openInvites && (
+							<div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
+								<div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[50%]">
+									<div className='flex justify-between items-center'>
+										<h1 className='text-xl md:text-2xl font-semibold'>Invites</h1>
+										<button className='border-2 rounded-lg px-2 py-1 text-lg' onClick={() => setOpenInvites(false)}><RxCross2 size={20} /></button>
+									</div>
+									<div className="mt-8 flex flex-col justify-center space-y-2">
+										{invites ? (
+											<>
+												{invites?.map((invite, index) => (
+													<div key={index} className="flex flex-col md:flex-row justify-between items-center bg-slate-200 p-2 rounded-lg">
+														<div>
+															<Link className="underline" to={`/event?id=${invite?.eventId._id}`}>Event: {invite.eventId.title}</Link>
+															<p>Inviter: {invite.userId.email}</p>
+														</div>
+														<div className="flex flex-row md:flex-col">
+															<p className="underline">Status</p>
+															<p>{invite.status}</p>
+														</div>
+														<div className="flex gap-2 text-white">
+															<button onClick={() => handleCheckoutInvitation("ACCEPTED", invite.userId._id, invite.eventId._id)} className="bg-green-500 px-3 py-2 rounded-lg">ACCEPT</button>
+															<button onClick={() => handleCheckoutInvitation("REJECTED", invite.userId._id, invite.eventId._id)} className="bg-red-500 px-3 py-2 rounded-lg">REJECT</button>
+														</div>
+													</div>
+												))}
+											</>
+										) : (
+											<p>No Invites Yet.</p>
+										)}
+									</div>
+								</div>
+							</div>
+						)}
+
+						{openEventDetails && (
+							<div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
+								<div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[50%]">
+									<div className='flex justify-between items-center'>
+										<h1 className='text-xl md:text-2xl font-semibold'>Event Details</h1>
+										<button
+											className='border-2 rounded-lg px-2 py-1 text-lg'
+											onClick={() => {
+												setOpenEventDetails(false);
+												setCurrentEvent(null);
+											}}
+										>
+											<RxCross2 size={20} />
+										</button>
+									</div>
+									{currentEvent && (
+										<div className="mt-8 flex flex-col justify-center space-y-2">
+											<div>
+												<p>{currentEvent?.eventId.title}</p>
+												<Link to={`/event?id=${currentEvent?.eventId._id}`} className="underline">Link</Link>
+											</div>
+										</div>
+									)}
+								</div>
+							</div>
+						)}
+
 						<div className="max-sm:flex max-sm:flex-col max-sm:gap-1">
 							<h1 className="text-4xl py-2 capitalize font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-[#FD8444] to-[#7527ED]">
 								{userContext?.user?.firstName}{" "}{userContext?.user?.lastName}
@@ -320,21 +434,28 @@ const Profile = () => {
 
 				<div className="sm:mt-8 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:pt-10 ">
 					<h2 className="text-2xl font-bold mb-4">
-						Registered Events
+						Registered Events ({events?.length})
 					</h2>
-					{userContext?.user?.events && userContext?.user?.events?.length > 0 ? (
+					{events && events?.length > 0 ? (
 						<div className="w-full flex flex-col justify-center items-center gap-2">
-							{userContext?.user?.events.map((event, index) => (
-								<Link
+							{events?.map((event, index) => (
+								<div
 									key={index}
-									to={`/event?id=${event.eventId}`}
+									onClick={() => {
+										setOpenEventDetails(true);
+										setCurrentEvent(event)
+									}}
 									className="w-full bg-gradient-to-r from-[#6b3065] via-[#42129c] to-[#812368] p-6 rounded-xl shadow-md"
 								>
 									<h3 className="text-xl font-semibold">
-										Event {index + 1}
+										Event: {event.eventId.title}
 									</h3>
-									<p className="mt-2">Event Name: {event.eventId}</p>
-								</Link>
+									<div className="mt-2 text-sm">
+										<p>Venue: {event.eventId.title}</p>
+										<p>Event Date: {new Date(event?.eventId.eventDate!).toLocaleDateString('en-GB')}</p>
+										<p>Event Time: {moment.utc(event.eventId.eventDate).format('hh:mm A')} onwards</p>
+									</div>
+								</div>
 							))}
 						</div>
 					) : (

@@ -62,9 +62,9 @@ const formSchema = z.object({
         .refine((files) => ['image/*'].includes(files[0]?.type), {
             message: "Only Image files are allowed",
         }),
-    // schoolOrCollege: z.string().min(2).max(50),
-    // collegeClass: z.string().min(2).max(50),
-    // schoolClass: z.string().min(2).max(50),
+    schoolOrCollege: z.string().min(2).max(50),
+    collegeClass: z.string().min(2).max(50),
+    schoolClass: z.string().min(2).max(50),
 });
 
 const CreateEvent = () => {
@@ -86,6 +86,9 @@ const CreateEvent = () => {
             eventDate: "",
             deadline: "",
             rules: [""],
+            schoolOrCollege: "",
+            schoolClass: "",
+            collegeClass: ""
         },
     });
 
@@ -99,7 +102,7 @@ const CreateEvent = () => {
     }
 
     return (
-        <div className="w-[90%] md:w-[60%] lg:w-[50%] mt-24 mb-6 bg-white p-6 rounded-lg">
+        <div className="w-[90%] md:w-[60%] lg:w-[50%] mt-24 mb-6 bg-white py-6 px-12 rounded-lg">
             <h1 className="text-3xl font-semibold py-6">{id ? "Edit" : "Create"} Event</h1>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -183,7 +186,7 @@ const CreateEvent = () => {
                             </FormItem>
                         )}
                     />
-                    
+
                     <div className="w-full flex items-center gap-4">
                         <FormField
                             control={form.control}
@@ -275,6 +278,75 @@ const CreateEvent = () => {
                                         <Select>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Category" {...field} />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="TECHNICAL">TECHNICAL</SelectItem>
+                                                <SelectItem value="GENERAL">GENERAL</SelectItem>
+                                                <SelectItem value="CULTURAL">CULTURAL</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    <div className="w-full flex items-center gap-4">
+                        <FormField
+                            control={form.control}
+                            name="schoolOrCollege"
+                            render={({ field }) => (
+                                <FormItem className="w-1/3">
+                                    <FormLabel>Category</FormLabel>
+                                    <FormControl>
+                                        <Select>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="School or College" {...field} />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="TECHNICAL">TECHNICAL</SelectItem>
+                                                <SelectItem value="GENERAL">GENERAL</SelectItem>
+                                                <SelectItem value="CULTURAL">CULTURAL</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="schoolClass"
+                            render={({ field }) => (
+                                <FormItem className="w-1/3">
+                                    <FormLabel>Category</FormLabel>
+                                    <FormControl>
+                                        <Select>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="School Class" {...field} />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="TECHNICAL">TECHNICAL</SelectItem>
+                                                <SelectItem value="GENERAL">GENERAL</SelectItem>
+                                                <SelectItem value="CULTURAL">CULTURAL</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="collegeClass"
+                            render={({ field }) => (
+                                <FormItem className="w-1/3">
+                                    <FormLabel>Category</FormLabel>
+                                    <FormControl>
+                                        <Select>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="College Class" {...field} />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="TECHNICAL">TECHNICAL</SelectItem>

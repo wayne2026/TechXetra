@@ -178,7 +178,7 @@ const EventSchema: Schema<IUserEvent> = new Schema(
 				type: mongoose.Schema.Types.ObjectId,
 				ref: "User",
 				required: function (this: IUserEvent) {
-					return this.payment?.status === paymentStatusEnum.SUBMITTED;
+					return this.payment?.status === paymentStatusEnum.VERIFIED;
 				},
 			},
 		},

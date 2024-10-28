@@ -4,6 +4,41 @@ import User, { roleEnum } from '../models/user.model.js';
 import { CustomRequest } from '../middlewares/auth.middleware.js';
 import Event from '../models/event.model.js';
 import ErrorHandler from '../utils/errorHandler.js';
+import sendToken from '../utils/jwtToken.js';
+
+export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const { email, password } = req.body;
+
+		if (!email || !password) {
+			return next(new ErrorHandler("Please enter Email and Password", StatusCodes.NOT_FOUND));
+		}
+	
+		const user = await User.findOne({ email }).select("+password");
+	
+		if (!user) {
+			return next(new ErrorHandler("Invalid Credentials", StatusCodes.UNAUTHORIZED));
+		}
+
+        if (user.role === roleEnum.USER) {
+            return next(new ErrorHandler("Unauthorized accesss", StatusCodes.UNAUTHORIZED));
+        }
+	
+		if (user.isBlocked) {
+			return next(new ErrorHandler("Account is blocked", StatusCodes.FORBIDDEN));
+		}
+	
+		const isPasswordMatched = await user.comparePassword(password);
+	
+		if (!isPasswordMatched) {
+			return next(new ErrorHandler("Invalid Credentials", StatusCodes.UNAUTHORIZED));
+		}
+	
+		sendToken(user, StatusCodes.OK, res);
+	} catch (error) {
+		next(error);
+	}
+};
 
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
 	try {

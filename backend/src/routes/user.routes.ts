@@ -1,6 +1,8 @@
 import { Router } from "express";
 import {
 	getUser,
+	getUserEvents,
+	getUserInvites,
 	loginUser,
 	logoutUser,
 	registerUser,
@@ -19,6 +21,8 @@ router.route("/register").post(uploadAvatar.single("avatar"), registerUser);
 router.route("/request/verify").get(verifyToken, requestVerification);
 router.route("/login").post(loginUser);
 router.route("/me").get(verifyToken, getUser);
+router.route("/events").get(verifyToken, getUserEvents);
+router.route("/invites").get(verifyToken, getUserInvites);
 router.route("/verify").put(verifyToken, verifyUser);
 router.route("/logout").get(verifyToken, logoutUser);
 router.route("/update/password").put(verifyToken, resetPassword);

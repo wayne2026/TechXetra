@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { addEventDetailsArray, createEvent, getAllEvents, updateEventBackGroundImages, deleteAllEvents, enrollEvent, getEventById, updateEventDetails, searchUsers } from "../controllers/event.controller.js";
+import { addEventDetailsArray, createEvent, getAllEvents, updateEventBackGroundImages, deleteAllEvents, enrollEvent, getEventById, updateEventDetails, searchUsers, checkOutInvitation, updatePaymentDetails } from "../controllers/event.controller.js";
 import { authorizeRoles, verifyToken } from "../middlewares/auth.middleware.js";
-import { uploadEvents } from "../middlewares/multer.middlware.js";
+import { uploadEvents, uploadPayments } from "../middlewares/multer.middlware.js";
 import { roleEnum } from "../models/user.model.js";
 
 const router = Router();
@@ -20,6 +20,8 @@ router.route("/all").get(getAllEvents);
 router.route("/array").post(verifyToken, authorizeRoles(roleEnum.ADMIN), addEventDetailsArray);
 router.route("/delete/all").delete(verifyToken, authorizeRoles(roleEnum.ADMIN), deleteAllEvents);
 router.route("/enroll/:id").put(verifyToken, enrollEvent);
+router.route("/invite/:userId/:eventId").put(verifyToken, checkOutInvitation);
+router.route("/payment/:id").post(verifyToken, uploadPayments.single("image"), updatePaymentDetails);
 router.route("/edit/background/:id").put(verifyToken, authorizeRoles(roleEnum.ADMIN), uploadEvents.single("image"), updateEventBackGroundImages);
 
 export default router;

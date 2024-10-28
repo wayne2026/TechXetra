@@ -5,6 +5,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { RxCross2 } from "react-icons/rx";
 import axios from 'axios';
 import moment from 'moment-timezone';
+import { useUser } from '../context/user_context';
 
 interface SearchEmail {
     _id: string;
@@ -19,36 +20,86 @@ interface SearchEmailResponse {
 const Hackathon = () => {
     const [search] = useSearchParams();
     const id = search.get("id");
+    const userContext = useUser();
     const [event, setEvent] = useState<EventDetails>();
     const [loading, setLoading] = useState(false);
     const imageRef = useRef<HTMLImageElement | null>(null);
     const [memberEmails, setMemberEmails] = useState<string[]>([]);
     const [open, setOpen] = useState(false);
+    const [openPaymemt, setOpenPaymemt] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [users, setUsers] = useState<SearchEmail[]>();
     const [keyword, setKeyword] = useState("");
     const [searchLoading, setSearchLoading] = useState(false);
+    const [events, setEvents] = useState<UserEvent[]>([]);
+    const [paymentFile, setPaymentFile] = useState<File>();
+    const [paymentId, setPaymentId] = useState("");
 
     const gotUsers = async (url: string) => {
         try {
             const { data }: { data: SearchEmailResponse } = await axios.get(url, { withCredentials: true });
-            setUsers(data.users);
+            const filteredUsers = data.users?.filter(user => user._id !== userContext?.user?._id)
+            setUsers(filteredUsers);
         } catch (error: any) {
             toast.error(error.response.data.message);
             setUsers([]);
         }
     }
 
+    const fetchEvents = async () => {
+        try {
+            const { data }: { data: UserEventResponse } = await axios.get(`${import.meta.env.VITE_BASE_URL}/users/events`, { withCredentials: true });
+            setEvents(data.user.events);
+            console.log(data.user.events);
+        } catch (error: any) {
+            toast.error(error.response.data.message);
+            console.log(error.response.data.message);
+        }
+    }
+
+    const handlePaymentSubmision = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!paymentId || !paymentFile) {
+            toast.error("Please provide both Payment ID and Payment file.");
+            return;
+        }
+
+        const config = {
+            headers: { "Content-Type": "multipart/form-data" },
+            withCredentials: true,
+        };
+
+        const formData = new FormData();
+        formData.append('image', paymentFile);
+        formData.append("transactionId", paymentId);
+
+        try {
+            if (id) {
+                await axios.post(`${import.meta.env.VITE_BASE_URL}/events/payment/${id}`, formData, config);
+                toast.success("Payment details successfully submitted");
+            }
+        } catch (error: any) {
+            toast.error(error.response.data.message);
+        } finally {
+            setOpenPaymemt(false);
+            setPaymentId("");
+        }
+    }
+
+    useEffect(() => {
+        fetchEvents();
+    }, []);
+
     useEffect(() => {
         if (keyword && keyword.length > 3) {
             setSearchLoading(true);
-    
+
             const delayDebounce = setTimeout(() => {
                 const link = `${import.meta.env.VITE_BASE_URL}/events/search/users/all?keyword=${keyword}`;
                 gotUsers(link);
                 setSearchLoading(false);
             }, 2000);
-    
+
             return () => clearTimeout(delayDebounce);
         } else {
             setUsers([]);
@@ -102,6 +153,8 @@ const Hackathon = () => {
             if (open) {
                 setOpen(false);
             }
+            setOpenPaymemt(true);
+            toast.success("Successfully registered event.")
         } catch (error: any) {
             toast.error(error.response.data.message);
         } finally {
@@ -115,6 +168,13 @@ const Hackathon = () => {
             document.body.classList.remove('no-scroll');
         }
     }, [open]);
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setPaymentFile(file);
+        }
+    };
 
     return loading ? (
         <div className='flex justify-center items-center'>
@@ -185,8 +245,8 @@ const Hackathon = () => {
                                     <div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[40%]">
                                         <div className='flex justify-between items-center'>
                                             <h1 className='text-xl md:text-2xl font-semibold'>Add Members</h1>
-                                            <button 
-                                                className='border-2 rounded-lg px-2 py-1 text-lg' 
+                                            <button
+                                                className='border-2 rounded-lg px-2 py-1 text-lg'
                                                 onClick={() => {
                                                     setOpen(false);
                                                     setKeyword("");
@@ -238,34 +298,83 @@ const Hackathon = () => {
                                     </div>
                                 </div>
                             )}
-                            {event?.externalRegistration ? (
-                                <Link
-                                    to={event.extrenalRegistrationLink!}
-                                    target="_blank"
-                                >
-                                    <button className="2xl:mt-8 mt-5 px-4 py-3 mr-4 bg-pink-500 rounded-lg text-white hover:bg-pink-600">
-                                        Register Now →
-                                    </button>
-                                </Link>
-                            ) : (
-                                <>
-                                    {(event?.canRegister || event?.registrationRequired) && (
-                                        <button
-                                            disabled={!event?.canRegister || !event?.registrationRequired}
-                                            onClick={() => {
-                                                if (["HYBRID", "TEAM"].includes(event?.participation as any)) {
-                                                    setOpen(true);
-                                                } else {
-                                                    enrollEvent
-                                                }
-                                            }}
-                                            className="2xl:mt-8 mt-5 px-4 py-3 mr-4 bg-pink-500 rounded-lg text-white hover:bg-pink-600"
-                                        >
-                                            Register Now →
-                                        </button>
-                                    )}
-                                </>
+                            {openPaymemt && (
+                                <div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
+                                    <div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[40%]">
+                                        <div className='flex justify-between items-center'>
+                                            <h1 className='text-xl md:text-2xl font-semibold'>Event Paymnet</h1>
+                                            <button className='border-2 rounded-lg px-2 py-1 text-lg' onClick={() => setOpenPaymemt(false)}><RxCross2 size={20} /></button>
+                                        </div>
+                                        <div className='text-center h-42 w-56'>
+                                            <img src="/upi.jpg" alt="upi" />
+                                        </div>
+                                        <form className='mt-8 flex flex-col justify-center space-y-2' onSubmit={handlePaymentSubmision}>
+                                            <div className="flex flex-col gap-4">
+                                                <label htmlFor="role" className="text-lg font-semibold">Transaction Id</label>
+                                                <input type="text" value={paymentId} onChange={(e) => setPaymentId(e.target.value)} className='text-md border px-2 py-2 rounded-md' placeholder='Enter Name' />
+                                            </div>
+                                            <div className="flex flex-col gap-4">
+                                                <label htmlFor="role" className="text-lg font-semibold">Payment Screenshot</label>
+                                                <input type="file" accept='image/*' onChange={handleFileChange} className='text-md border px-2 py-2 rounded-md' placeholder='Enter Name' />
+                                            </div>
+                                            <button type='submit' className='bg-indigo-500 px-3 py-2 rounded-lg text-white'>Submit</button>
+                                        </form>
+                                    </div>
+                                </div>
                             )}
+                            {events && event && (() => {
+                                const userEvent = events.find(userEvent => userEvent?.eventId?._id?.toString() === event._id.toString());
+                                    
+                                if (userEvent) {
+                                    return (
+                                        <div className='mt-6'>
+                                            {event.paymentRequired && !["SUBMITTED", "VERIFIED"].includes(userEvent?.payment?.status) && (userEvent.group?.leader?._id?.toString() == userContext?.user?._id.toString()) && (
+                                                <button
+                                                    onClick={() => setOpenPaymemt(true)}
+                                                    className="px-4 py-3 mr-4 bg-green-500 rounded-lg text-white hover:bg-green-600"
+                                                >
+                                                    Pay Now →
+                                                </button>
+                                            )}
+                                            <p className="mt-2 text-slate-400 italic text-sm">You have already registered for this event.</p>
+                                        </div>
+                                    );
+                                }
+
+                                return (
+                                    <>
+                                        {event?.externalRegistration ? (
+                                            <Link
+                                                to={event.extrenalRegistrationLink!}
+                                                target="_blank"
+                                            >
+                                                <button className="2xl:mt-8 mt-5 px-4 py-3 mr-4 bg-pink-500 rounded-lg text-white hover:bg-pink-600">
+                                                    Register Now →
+                                                </button>
+                                            </Link>
+                                        ) : (
+                                            <>
+                                                {(event?.canRegister || event?.registrationRequired) && (
+                                                    <button
+                                                        disabled={!event?.canRegister || !event?.registrationRequired}
+                                                        onClick={() => {
+                                                            if (["HYBRID", "TEAM"].includes(event?.participation)) {
+                                                                setOpen(true);
+                                                            } else {
+                                                                enrollEvent();
+                                                            }
+                                                        }}
+                                                        className="2xl:mt-8 mt-5 px-4 py-3 mr-4 bg-pink-500 rounded-lg text-white hover:bg-pink-600"
+                                                    >
+                                                        Register Now →
+                                                    </button>
+                                                )}
+                                            </>
+                                        )}
+                                    </>
+                                );
+                            })()}
+
                             {event?.externalLink && (
                                 <Link
                                     to={event?.externalLink}

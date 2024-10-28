@@ -20,7 +20,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         setLoading(true);
         try {
             const { data }: { data: UserResponse } = await axios.get(`${import.meta.env.VITE_BASE_URL}/users/me`, { withCredentials: true });
-            setUser(data.user);
+            if (["ADMIN", "MODERATOR"].includes(data.user.role)) {
+                setUser(data.user);
+            }
         } catch (error) {
             setUser(null);
         } finally {

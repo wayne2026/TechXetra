@@ -1,13 +1,13 @@
-import { Request, Response, NextFunction } from "express";
-import { StatusCodes } from "http-status-codes";
+import fs from "fs";
+import path from "path";
 import crypto from "crypto";
-import User, { collegeClassEnum, roleEnum, schoolClassEnum, schoolEnum } from "../models/user.model.js";
+import sendToken from "../utils/jwtToken.js";
+import { StatusCodes } from "http-status-codes";
 import ErrorHandler from "../utils/errorHandler.js";
 import { addEmailToQueue } from "../utils/emailQueue.js";
-import sendToken from "../utils/jwtToken.js";
+import { Request, Response, NextFunction } from "express";
 import { CustomRequest } from "../middlewares/auth.middleware.js";
-import path from "path";
-import fs from "fs";
+import User, { collegeClassEnum, roleEnum, schoolClassEnum, schoolEnum } from "../models/user.model.js";
 
 export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -315,7 +315,41 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 
 export const getUser = async (req: CustomRequest, res: Response, next: NextFunction) => {
 	try {
-		const user = await User.findById(req.user?._id);
+		const user = await User.findById(req.user?._id).select("-events -invites").lean();
+		if (!user) {
+			return next(new ErrorHandler("User not found", 404));
+		}
+
+		res.status(200).json({
+			success: true,
+			user,
+		});
+	} catch (error) {
+		next(error);
+	}
+};
+
+export const getUserEvents = async (req: CustomRequest, res: Response, next: NextFunction) => {
+	try {
+		const user = await User.findById(req.user?._id).select("events")
+			.populate("events.eventId", "title eventDate venue")
+			.populate({
+				path: 'events.group.leader', // Populate the leader field in events.group
+				select: 'firstName lastName email' // Select the fields you want from the populated User document
+			})
+			.populate({
+				path: 'events.group.members.user', // Populate the members' user field in events.group
+				select: 'firstName lastName email' // Select the fields you want from the populated User documents
+			})
+			.populate({
+				path: 'events.payment.verifierId', // Populate the verifierId field in events.payment
+				select: 'firstName lastName email' // Select the fields you want from the populated User document
+			})
+			.populate({
+				path: 'events.physicalVerification.verifierId', // Populate verifierId in physicalVerification
+				select: 'firstName lastName email' // Select the fields you want from the populated User document
+			});
+
 		if (!user) {
 			return next(new ErrorHandler("User not found", 404));
 		}
@@ -327,7 +361,31 @@ export const getUser = async (req: CustomRequest, res: Response, next: NextFunct
 	} catch (error) {
 		next(error);
 	}
-};
+}
+
+export const getUserInvites = async (req: CustomRequest, res: Response, next: NextFunction) => {
+	try {
+		const user = await User.findById(req.user?._id).select("invites")
+			.populate({
+				path: 'invites.eventId', // Populate the leader field in events.group
+				select: 'title eventDate venue' // Select the fields you want from the populated User document
+			})
+			.populate({
+				path: 'invites.userId', // Populate the leader field in events.group
+				select: 'firstName lastName email' // Select the fields you want from the populated User document
+			})
+		if (!user) {
+			return next(new ErrorHandler("User not found", 404));
+		}
+	
+		res.status(200).json({
+			success: true,
+			user,
+		});
+	} catch (error) {
+		next(error);
+	}
+}
 
 export const updateProfileDetails = async (req: CustomRequest, res: Response, next: NextFunction) => {
 	try {

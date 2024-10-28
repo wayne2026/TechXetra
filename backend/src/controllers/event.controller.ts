@@ -350,7 +350,7 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
             return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
         }
 
-        if (user.events.some(userEvent => userEvent.eventId === event._id)) {
+        if (user.events.some(userEvent => userEvent.eventId.toString() === event._id.toString())) {
             return next(new ErrorHandler("Already registered for this event", StatusCodes.FORBIDDEN));
         }
 
@@ -383,16 +383,16 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
             return next(new ErrorHandler("Group members are required", StatusCodes.BAD_REQUEST));
         }
 
-        const groupMembers = await User.find({ email: memberEmails }).select('email isVerified events');
+        const groupMembers = await User.find({ email: memberEmails }).select('email isVerified events schoolOrCollege schoolClass collegeClass');
         const teamMembersArray = groupMembers.map(member => ({
             status: invitationStatusEnum.PENDING,
             user: member._id,
         }));
 
         let alreadyJoinedMembers: string[] = [];
-        groupMembers.forEach(user => {
-            if (user.events.some(userEvent => userEvent.eventId === event._id)) {
-                alreadyJoinedMembers.push(user.email);
+        groupMembers.forEach(userEvents => {
+            if (userEvents.events.some(userEvent => userEvent.eventId.toString() === event._id.toString())) {
+                alreadyJoinedMembers.push(userEvents.email);
             }
         });
         if (alreadyJoinedMembers.length > 0) {
@@ -406,10 +406,10 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
         }
 
         let notEligibleMembers: string[] = []
-        groupMembers.forEach(user => {
-            const eligible = (event.eligibility?.schoolOrCollege === user?.schoolOrCollege) && (event.eligibility?.schoolClass === user?.schoolClass) && (event.eligibility?.collegeClass === user?.collegeClass);
+        groupMembers.forEach(member => {
+            const eligible = (event.eligibility?.schoolOrCollege === member?.schoolOrCollege) && (event.eligibility?.schoolClass === member?.schoolClass) && (event.eligibility?.collegeClass === member?.collegeClass);
             if (!eligible) {
-                notEligibleMembers.push(user.email);
+                notEligibleMembers.push(member.email);
             }
         });
         if (notEligibleMembers.length > 0) {
@@ -429,7 +429,7 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
             },
             payment: {
                 status: paymentStatusEnum.PENDING,
-                amount: event.amount || 400,
+                amount: Number(event.amount) | 400,
             }
         }
 
@@ -496,7 +496,7 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
             return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
         }
 
-        if (!user.events.some(userEvent => userEvent.eventId === event._id)) {
+        if (!user.events.some(userEvent => userEvent.eventId.toString() === event._id.toString())) {
             return next(new ErrorHandler(`Event is not regostered yet`, StatusCodes.BAD_REQUEST));
         }
 
@@ -508,28 +508,37 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
             return next(new ErrorHandler("Registration deadline has passed", StatusCodes.FORBIDDEN));
         }
 
-        const prevMembers = user.events.filter(userEvent => userEvent.eventId === event._id)[0].group?.members?.length || 0;
+        const prevMembers = user.events.filter(userEvent => userEvent.eventId.toString() === event._id.toString())[0].group?.members || [];
 
         const { memberEmails } = req.body;
         if (memberEmails && !Array.isArray(memberEmails)) {
             return next(new ErrorHandler("Data should be an array of events", StatusCodes.BAD_REQUEST));
-        }
-        if (memberEmails && memberEmails.length > (event.maxGroup! - (1 + prevMembers))) {
+        }        
+
+        if (memberEmails && memberEmails.length > (event.maxGroup! - (1 + prevMembers?.length))) {
             return next(new ErrorHandler("Data exceeded limit", StatusCodes.BAD_REQUEST));
         }
         if ((event.participation === participationEnum.TEAM) && (!memberEmails || memberEmails.length === 0)) {
             return next(new ErrorHandler("Group members are required", StatusCodes.BAD_REQUEST));
         }
 
-        const groupMembers = await User.find({ email: memberEmails }).select('email isVerified events');
+        const groupMembers = await User.find({ email: memberEmails }).select('email isVerified events schoolOrCollege schoolClass collegeClass');
         const teamMembersArray = groupMembers.map(member => ({
             status: invitationStatusEnum.PENDING,
             user: member._id,
         }));
 
+        const newMembers = teamMembersArray.filter(newMember => {
+            return !prevMembers.some(prevMember => prevMember.user.toString() === newMember.user.toString());
+        });
+        
+        if (newMembers.length === 0) {
+            return next(new ErrorHandler("No new members to add", StatusCodes.BAD_REQUEST));
+        }
+        
         let alreadyJoinedMembers: string[] = [];
         groupMembers.forEach(user => {
-            if (user.events.some(userEvent => userEvent.eventId === event._id)) {
+            if (user.events.some(userEvent => userEvent.eventId.toString() === event._id.toString())) {
                 alreadyJoinedMembers.push(user.email);
             }
         });
@@ -544,10 +553,10 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
         }
 
         let notEligibleMembers: string[] = []
-        groupMembers.forEach(user => {
-            const eligible = (event.eligibility?.schoolOrCollege === user?.schoolOrCollege) && (event.eligibility?.schoolClass === user?.schoolClass) && (event.eligibility?.collegeClass === user?.collegeClass);
+        groupMembers.forEach(member => {
+            const eligible = (event.eligibility?.schoolOrCollege === member?.schoolOrCollege) && (event.eligibility?.schoolClass === member?.schoolClass) && (event.eligibility?.collegeClass === member?.collegeClass);
             if (!eligible) {
-                notEligibleMembers.push(user.email);
+                notEligibleMembers.push(member.email);
             }
         });
         if (notEligibleMembers.length > 0) {
@@ -602,9 +611,165 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
     }
 }
 
+export const removeMember = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+        const event = await Event.findById(req.params.id);
+        if (!event) {
+            return next(new ErrorHandler(`Event not found with id ${req.params.id}`, StatusCodes.NOT_FOUND));
+        }
+
+        const user = await User.findById(req.user?._id);
+        if (!user) {
+            return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
+        }
+
+        const userEvent = user.events.find(userEvent => userEvent.eventId.toString() === event._id.toString());
+        if (!userEvent) {
+            return next(new ErrorHandler(`User is not registered for this event`, StatusCodes.BAD_REQUEST));
+        }
+
+        if (event.participation === participationEnum.SOLO) {
+            return next(new ErrorHandler("Solo event cannot have members", StatusCodes.BAD_REQUEST));
+        }
+
+        if (event.deadline && event.deadline.getTime() <= Date.now()) {
+            return next(new ErrorHandler("Registration deadline has passed", StatusCodes.FORBIDDEN));
+        }
+
+        if (userEvent?.group?.leader && userEvent?.group?.leader?.toString() !== user._id.toString()) {
+            return next(new ErrorHandler("Only the leader can remove members", StatusCodes.FORBIDDEN));
+        }
+
+        const { memberId } = req.body;
+        if (!memberId) {
+            return next(new ErrorHandler("Member id is required", StatusCodes.BAD_REQUEST));
+        }
+
+        const member = await User.findById(memberId);
+        if (!member) {
+            return next(new ErrorHandler("Member not found", StatusCodes.NOT_FOUND));
+        }
+
+        if (!userEvent.group?.members?.length) {
+            return next(new ErrorHandler("No members to remove", StatusCodes.BAD_REQUEST));
+        }
+
+        const isMemberInGroup = userEvent.group.members.some(eventMember => eventMember.user.toString() === member._id.toString());
+        if (!isMemberInGroup) {
+            return next(new ErrorHandler("The ID provided does not belong to a member in this group", StatusCodes.BAD_REQUEST));
+        }
+
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: user._id, 'events.eventId': event._id },
+            {
+                $pull: { 'events.$.group.members': { user: member._id } }
+            },
+            { new: true, runValidators: true, useFindAndModify: false }
+        );
+
+        await User.findOneAndUpdate(
+            { _id: member._id },
+            {
+                $pull: { events: { eventId: event._id } }
+            },
+            { new: true, runValidators: true, useFindAndModify: false }
+        );
+
+        res.status(200).json({
+            success: true,
+            user: updatedUser,
+            message: "Member removed successfully"
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const checkOutInvitation = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.user?._id);
+        if (!user) {
+            return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
+        }
+
+        const { eventId, userId } = req.params;
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return next(new ErrorHandler(`Event not found with id ${eventId}`, StatusCodes.NOT_FOUND));
+        }
+        const inviter = await User.findById(userId);
+        if (!inviter) {
+            return next(new ErrorHandler("Inviter not found", StatusCodes.NOT_FOUND));
+        }
+
+        if (!inviter.events.some(inviterEvent => inviterEvent.eventId.toString() === event._id.toString())) {
+            return next(new ErrorHandler("Invalid Invite request! 1", StatusCodes.BAD_REQUEST));
+        }
+
+        if (user.events.some(userEvent => userEvent.eventId.toString() === event._id.toString())) {
+            return next(new ErrorHandler("Invalid Invite request! 2", StatusCodes.BAD_REQUEST));
+        }
+
+        if (!user.invites.some(userInvite => (userInvite.eventId.toString() === event._id.toString() && userInvite.userId.toString() === inviter._id.toString()))) {
+            return next(new ErrorHandler("Invalid Invite request! 3", StatusCodes.BAD_REQUEST));
+        }
+
+        const { choice } = req.body;
+        if (!choice) {
+            return next(new ErrorHandler("Choice is required", StatusCodes.BAD_REQUEST));
+        }
+        if (![invitationStatusEnum.ACCEPTED, invitationStatusEnum.REJECTED].includes(choice)) {
+            return next(new ErrorHandler("Choice should be either ACCEPTED or REJECTED", StatusCodes.NOT_ACCEPTABLE));
+        }
+
+        const updatedInviter = await User.findOneAndUpdate(
+            { _id: inviter._id, 'events.eventId': event._id, 'events.group.members.user': user._id },
+            {
+                $set: {
+                    'events.$[event].group.members.$[member].status': choice,
+                }
+            },
+            {
+                arrayFilters: [
+                    { 'event.eventId': event._id },
+                    { 'member.user': user._id }
+                ],
+                new: true,
+                runValidators: true
+            }
+        )
+
+        if (!updatedInviter) {
+            return next(new ErrorHandler("Failed to update inviter", StatusCodes.BAD_REQUEST));
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            user._id,
+            {
+                $pull: {
+                    invites: {
+                        eventId,
+                        // userId,
+                    },
+                },
+                ...(choice === invitationStatusEnum.ACCEPTED && {
+                    $push: {
+                        events: updatedInviter?.events.find(inviterEvent => inviterEvent.eventId.toString() === event._id.toString())
+                    }
+                })
+            },
+            { new: true, runValidators: true, useFindAndModify: false }
+        ).select("events invites");
+
+        if (!updatedUser) {
+            return next(new ErrorHandler("Failed to update user", StatusCodes.BAD_REQUEST));
+        }
+
+        res.status(200).json({
+            success: true,
+            user: updatedUser,
+            message: "Invite checked out successfully"
+        });
     } catch (error) {
         next(error);
     }
@@ -629,7 +794,78 @@ export const searchUsers = async (req: Request, res: Response, next: NextFunctio
 
 export const updatePaymentDetails = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
+        const event = await Event.findById(req.params.id);
+        if (!event) {
+            return next(new ErrorHandler(`Event not found with id ${req.params.id}`, StatusCodes.NOT_FOUND));
+        }
+        if (!event.paymentRequired) {
+            return next(new ErrorHandler("Event isn't required in this event", StatusCodes.BAD_REQUEST));
+        }
 
+        const user = await User.findById(req.user?._id);
+        if (!user) {
+            return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
+        }
+        const userEvent = user.events.find(userEvent => userEvent.eventId.toString() === event._id.toString());
+        if (!userEvent) {
+            return next(new ErrorHandler("Event isn't registered yet", StatusCodes.BAD_REQUEST));
+        }
+
+        if (userEvent?.payment && userEvent.payment.status !== paymentStatusEnum.PENDING) {
+            return  next(new ErrorHandler("Payment already done", StatusCodes.BAD_REQUEST));
+        }
+
+        if (userEvent.group?.leader?.toString() !== user._id.toString()) {
+            return  next(new ErrorHandler("Only leader can make payment", StatusCodes.BAD_REQUEST));
+        }
+
+        if (!req.file || !req.file.filename) {
+            return next(new ErrorHandler("No payment image uploaded", StatusCodes.BAD_REQUEST));
+        }
+        const filename = `${process.env.SERVER_URL}/payments/${req.file.filename}`;
+
+        const { transactionId } = req.body;
+        if (!transactionId) {
+            return next(new ErrorHandler("Transaction ID is required", StatusCodes.BAD_REQUEST));
+        }
+
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: req.user?._id, 'events.eventId': event._id },  
+            { 
+                $set: {
+                    'events.$.payment.status': paymentStatusEnum.SUBMITTED,
+                    'events.$.payment.transactionId': transactionId,
+                    'events.$.payment.paymentImage': filename,
+                }
+            },
+            { new: true, runValidators: true, useFindAndModify: false }
+        );
+
+        if (!updatedUser) {
+            return next(new ErrorHandler("Failed to update inviter", StatusCodes.BAD_REQUEST));
+        }
+
+        const members = userEvent.group?.members?.map(member => member.user);
+
+        if (members && members?.length > 0) {
+            await User.updateMany(
+                { _id: { $in: members }, 'events.eventId': event._id },
+                {
+                    $set: {
+                        'events.$.payment.status': paymentStatusEnum.SUBMITTED,
+                        'events.$.payment.transactionId': transactionId,
+                        'events.$.payment.paymentImage': filename,
+                    }
+                },
+                { new: true, runValidators: true, useFindAndModify: false }
+            );
+        }
+
+        res.status(200).json({
+            success: true,
+            user: updatedUser,
+            message: "User Payment details updated successfully"
+        });
     } catch (error) {
         next(error);
     }
