@@ -38,7 +38,7 @@ function App() {
 				pauseOnHover
 				theme="dark"
 			/>
-			{!["/login", "/register", "/verify"].includes(location.pathname) && !userContext?.user?.isVerified && (
+			{!["/login", "/register", "/verify"].includes(location.pathname) && userContext?.user && !userContext?.user?.isVerified && (
 				<div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
 					<div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[40%]">
 						<div className='flex flex-col justify-center items-center text-xl'>
