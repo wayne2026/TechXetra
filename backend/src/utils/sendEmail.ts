@@ -33,6 +33,14 @@ const sendEmail = async (options: EmailOptions) => {
         {
             email: process.env.SMTP_EMAIL_6,
             password: process.env.SMTP_PASSWORD_6
+        },
+        {
+            email: process.env.SMTP_EMAIL_7,
+            password: process.env.SMTP_PASSWORD_7
+        },
+        {
+            email: process.env.SMTP_EMAIL_8,
+            password: process.env.SMTP_PASSWORD_8
         }
     ]
     
