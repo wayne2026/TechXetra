@@ -133,9 +133,8 @@ const Hackathon = () => {
 
         const cachedEvent = window.sessionStorage.getItem('event');
         if (cachedEvent) {
-            const { data, expires } = JSON.parse(cachedEvent);
-
-            if (Date.now() < expires) {
+            const { data, expires, id: cachedId } = JSON.parse(cachedEvent);
+            if (Date.now() < expires && cachedId === id) {
                 setEvent(data);
                 setLoading(false);
                 return;
@@ -148,6 +147,7 @@ const Hackathon = () => {
             const { data }: { data: EventDetailsResponse } = await axios.get(`${import.meta.env.VITE_BASE_URL}/events/byId/${id}`, { withCredentials: true });
             setEvent(data.event);
             const payload = {
+                id,
                 data: data.event,
                 expires: Date.now() + 1 * 60 * 1000
             }

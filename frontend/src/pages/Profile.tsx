@@ -350,7 +350,7 @@ const Profile = () => {
 							<div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
 								<div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[50%]">
 									<div className='flex justify-between items-center'>
-										<h1 className='text-xl md:text-2xl font-semibold'>Event Details</h1>
+										<h1 className='text-xl md:text-2xl font-semibold'>User Event Details</h1>
 										<button
 											className='border-2 rounded-lg px-2 py-1 text-lg'
 											onClick={() => {
@@ -364,8 +364,25 @@ const Profile = () => {
 									{currentEvent && (
 										<div className="mt-8 flex flex-col justify-center space-y-2">
 											<div>
-												<p>{currentEvent?.eventId.title}</p>
-												<Link to={`/event?id=${currentEvent?.eventId._id}`} className="underline">Link</Link>
+												<p className="text-xl font-semibold">Event Title: {currentEvent?.eventId.title}</p>
+												<p>Event Date: {new Date(currentEvent?.eventId.eventDate!).toLocaleDateString('en-GB')}</p>
+												<p>Event Time: {moment.utc(currentEvent?.eventId.eventDate).format('hh:mm A')} onwards</p>
+												<p>Group Leader: {currentEvent.group?.leader?.email}</p>
+												{currentEvent.group?.members && currentEvent.group?.members?.length > 0 && (
+													<>
+														<p>Group Members: </p>
+														<ul>
+															{currentEvent.group?.members?.map((member, index) => (
+																<li key={index}>{member.user.email} - {member.status}</li>
+															))}
+														</ul>
+													</>
+												)}
+												<p>Payment Status: {currentEvent.payment.status}</p>
+												<p>TransactionId: {currentEvent.payment.transactionId}</p>
+												<Link onClick={(e) => e.stopPropagation()} to={currentEvent.payment.paymentImage} target="blank" className="mt-2 flex items-center gap-4">Payment ScreenShot: <img className="h-10 w-10 rounded-lg" src={currentEvent.payment.paymentImage} alt={currentEvent.payment.transactionId} /></Link>
+												<p>Physical Verified: {currentEvent?.physicalVerification?.status ? "TRUE" : "FALSE"}</p>
+												<Link to={`/event?id=${currentEvent?.eventId._id}`} className="underline">Go to events page</Link>
 											</div>
 										</div>
 									)}
@@ -445,15 +462,29 @@ const Profile = () => {
 										setOpenEventDetails(true);
 										setCurrentEvent(event)
 									}}
-									className="w-full bg-gradient-to-r from-[#6b3065] via-[#42129c] to-[#812368] p-6 rounded-xl shadow-md"
+									className="w-full bg-gradient-to-r from-[#6b3065] via-[#42129c] to-[#812368] py-2 px-6 rounded-xl shadow-md"
 								>
-									<h3 className="text-xl font-semibold">
-										Event: {event.eventId.title}
-									</h3>
-									<div className="mt-2 text-sm">
-										<p>Venue: {event.eventId.title}</p>
-										<p>Event Date: {new Date(event?.eventId.eventDate!).toLocaleDateString('en-GB')}</p>
-										<p>Event Time: {moment.utc(event.eventId.eventDate).format('hh:mm A')} onwards</p>
+									<div className="flex flex-col md:flex-row justify-between md:items-center space-y-4">
+										<div>
+											<h3 className="text-xl font-semibold">
+												Event: {event.eventId.title}
+											</h3>
+											<div className="mt-2 text-sm">
+												<p>Venue: {event.eventId.title}</p>
+												<p>Event Date: {new Date(event?.eventId.eventDate!).toLocaleDateString('en-GB')}</p>
+												<p>Event Time: {moment.utc(event.eventId.eventDate).format('hh:mm A')} onwards</p>
+											</div>
+										</div>
+										<div>
+											<h3 className="text-xl font-semibold">
+												Status: {event.payment.status}
+											</h3>
+											<div className="mt-2 text-sm">
+												<p>Amount: {event.payment.amount}</p>
+												<p>TransactionId: {event.payment.transactionId}</p>
+												<Link onClick={(e) => e.stopPropagation()} to={event.payment.paymentImage} target="blank" className="mt-2 flex items-center gap-4">Payment ScreenShot: <img className="h-10 w-10 rounded-lg" src={event.payment.paymentImage} alt={event.payment.transactionId} /></Link>
+											</div>
+                                        </div>
 									</div>
 								</div>
 							))}
