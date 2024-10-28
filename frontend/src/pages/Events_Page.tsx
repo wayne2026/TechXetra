@@ -130,28 +130,9 @@ const Hackathon = () => {
 
     const fetchEvent = async () => {
         setLoading(true);
-
-        const cachedEvent = window.sessionStorage.getItem('event');
-        if (cachedEvent) {
-            const { data, expires, id: cachedId } = JSON.parse(cachedEvent);
-            if (Date.now() < expires && cachedId === id) {
-                setEvent(data);
-                setLoading(false);
-                return;
-            }
-        }
-
-        window.sessionStorage.removeItem('event');
-
         try {
             const { data }: { data: EventDetailsResponse } = await axios.get(`${import.meta.env.VITE_BASE_URL}/events/byId/${id}`, { withCredentials: true });
             setEvent(data.event);
-            const payload = {
-                id,
-                data: data.event,
-                expires: Date.now() + 1 * 60 * 1000
-            }
-            window.sessionStorage.setItem("event", JSON.stringify(payload));
         } catch (error: any) {
             toast.error(error.response.data.message);
         } finally {
