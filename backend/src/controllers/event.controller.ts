@@ -372,9 +372,22 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
         }
 
         console.log(event.eligibility)
-        console.log(event.eligibility && event.eligibility.schoolOrCollege && (event.eligibility.schoolOrCollege === user.schoolOrCollege))
-        console.log(event.eligibility && event.eligibility.schoolClass && (event.eligibility.schoolClass === user.schoolClass))
-        console.log(event.eligibility && event.eligibility.collegeClass && (event.eligibility.collegeClass === user.collegeClass))
+        const schoolOrCollegeEligibilty = event.eligibility && event.eligibility.schoolOrCollege && (event.eligibility.schoolOrCollege === user.schoolOrCollege)
+        const schoolClassEligibilty =  event.eligibility && event.eligibility.schoolClass && (event.eligibility.schoolClass === user.schoolClass)
+        const collegeClassEligibilty = event.eligibility && event.eligibility.collegeClass && (event.eligibility.collegeClass === user.collegeClass)
+        console.log(schoolOrCollegeEligibilty)
+        console.log(schoolClassEligibilty)
+        console.log(collegeClassEligibilty)
+
+        console.log(Boolean(schoolOrCollegeEligibilty))
+        console.log(Boolean(schoolClassEligibilty))
+        console.log(Boolean(collegeClassEligibilty))
+
+        console.log(schoolClassEligibilty && schoolClassEligibilty && collegeClassEligibilty)
+        console.log(schoolClassEligibilty || schoolClassEligibilty || collegeClassEligibilty)
+
+        console.log(Boolean(schoolClassEligibilty) && Boolean(schoolClassEligibilty) && Boolean(collegeClassEligibilty))
+        console.log(Boolean(schoolClassEligibilty) || Boolean(schoolClassEligibilty) || Boolean(collegeClassEligibilty))
 
         const eligible = (user?.schoolOrCollege === event.eligibility?.schoolOrCollege) && (event.eligibility?.schoolClass === user?.schoolClass) && (event.eligibility?.collegeClass === user?.collegeClass);
         if (!event.eligibility && !eligible) {
