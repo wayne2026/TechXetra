@@ -43,7 +43,7 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
 
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const resultPerPage = 3;
+        const resultPerPage = 10;
         const count = await User.countDocuments();
 
         const apiFeatures = new ApiFeatures(User.find().sort({ $natural: -1 }), req.query).search().filter();
@@ -54,7 +54,7 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
         apiFeatures.pagination(resultPerPage);
         filteredUsers = await apiFeatures.query.clone();
 
-        return res.status(200).json({
+        res.status(StatusCodes.OK).json({
             success: true,
             count,
             resultPerPage,
