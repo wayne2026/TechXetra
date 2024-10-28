@@ -372,9 +372,12 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
         }
 
         const eligible = event?.eligibility &&
-            (event?.eligibility?.schoolOrCollege === user?.schoolOrCollege) &&
-            (event?.eligibility?.schoolClass === user?.schoolClass) &&
-            (event?.eligibility?.collegeClass === user?.collegeClass);
+            event.eligibility?.schoolOrCollege &&
+            event.eligibility?.schoolClass &&
+            event.eligibility?.collegeClass &&
+            (event.eligibility?.schoolOrCollege === user?.schoolOrCollege) &&
+            (event.eligibility?.schoolClass === user?.schoolClass) &&
+            (event.eligibility?.collegeClass === user?.collegeClass);
         if (!eligible) {
             return next(new ErrorHandler("User's eligibility does not match with the event", StatusCodes.FORBIDDEN));
         }
