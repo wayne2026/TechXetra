@@ -16,20 +16,7 @@ class ApiFeatures<T extends Document> {
         this.queryStr = queryStr;
     }
 
-    searchBlog() {
-        const keyword = this.queryStr.keyword
-            ? {
-                title: {
-                    $regex: this.queryStr.keyword,
-                    $options: "i",
-                },
-            } : {};
-
-        this.query = this.query.find({ ...keyword });
-        return this;
-    }
-
-    searchUser() {
+    search() {
         const keyword = this.queryStr.keyword
             ? {
                 email: {

@@ -5,53 +5,65 @@ import { CustomRequest } from '../middlewares/auth.middleware.js';
 import Event from '../models/event.model.js';
 import ErrorHandler from '../utils/errorHandler.js';
 import sendToken from '../utils/jwtToken.js';
+import ApiFeatures from '../utils/apiFeatures.js';
 
 export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
-	try {
-		const { email, password } = req.body;
+    try {
+        const { email, password } = req.body;
 
-		if (!email || !password) {
-			return next(new ErrorHandler("Please enter Email and Password", StatusCodes.NOT_FOUND));
-		}
-	
-		const user = await User.findOne({ email }).select("+password");
-	
-		if (!user) {
-			return next(new ErrorHandler("Invalid Credentials", StatusCodes.UNAUTHORIZED));
-		}
+        if (!email || !password) {
+            return next(new ErrorHandler("Please enter Email and Password", StatusCodes.NOT_FOUND));
+        }
+
+        const user = await User.findOne({ email }).select("+password");
+
+        if (!user) {
+            return next(new ErrorHandler("Invalid Credentials", StatusCodes.UNAUTHORIZED));
+        }
 
         if (user.role === roleEnum.USER) {
             return next(new ErrorHandler("Unauthorized accesss", StatusCodes.UNAUTHORIZED));
         }
-	
-		if (user.isBlocked) {
-			return next(new ErrorHandler("Account is blocked", StatusCodes.FORBIDDEN));
-		}
-	
-		const isPasswordMatched = await user.comparePassword(password);
-	
-		if (!isPasswordMatched) {
-			return next(new ErrorHandler("Invalid Credentials", StatusCodes.UNAUTHORIZED));
-		}
-	
-		sendToken(user, StatusCodes.OK, res);
-	} catch (error) {
-		next(error);
-	}
+
+        if (user.isBlocked) {
+            return next(new ErrorHandler("Account is blocked", StatusCodes.FORBIDDEN));
+        }
+
+        const isPasswordMatched = await user.comparePassword(password);
+
+        if (!isPasswordMatched) {
+            return next(new ErrorHandler("Invalid Credentials", StatusCodes.UNAUTHORIZED));
+        }
+
+        sendToken(user, StatusCodes.OK, res);
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
-	try {
-		const users = await User.find();
+    try {
+        const resultPerPage = 3;
+        const count = await User.countDocuments();
 
-		res.status(StatusCodes.OK).json({
+        const apiFeatures = new ApiFeatures(User.find().sort({ $natural: -1 }), req.query).search().filter();
+
+        let filteredUsers = await apiFeatures.query;
+        let filteredUsersCount = filteredUsers.length;
+
+        apiFeatures.pagination(resultPerPage);
+        filteredUsers = await apiFeatures.query.clone();
+
+        return res.status(200).json({
             success: true,
-            data: users,
-            count: users.length
+            count,
+            resultPerPage,
+            users: filteredUsers,
+            filteredUsersCount
         });
-	} catch (error) {
-		next(error);
-	}
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const getUserById = async (req: Request, res: Response, next: NextFunction) => {
@@ -83,7 +95,7 @@ export const toggleBlockUser = async (req: CustomRequest, res: Response, next: N
         }
 
         const newUser = await User.findById(
-            user._id, 
+            user._id,
             { isBlocked: !user.isBlocked },
             { new: true, runValidators: true, useFindAndModify: false }
         )
@@ -123,7 +135,7 @@ export const updatedUserRole = async (req: CustomRequest, res: Response, next: N
         }
 
         const updatedUser = await User.findByIdAndUpdate(
-            user._id, 
+            user._id,
             { role },
             { new: true, runValidators: true, useFindAndModify: false }
         );
@@ -134,7 +146,7 @@ export const updatedUserRole = async (req: CustomRequest, res: Response, next: N
             message: "User role updated successfully"
         });
     } catch (error) {
-        next(error);    
+        next(error);
     }
 };
 
@@ -220,7 +232,7 @@ export const getUsersParticularEvent = async (req: Request, res: Response, next:
         if (!event) {
             return next(new ErrorHandler("Event not found", 404));
         }
-        
+
         res.status(StatusCodes.OK).json({
             success: true,
             user: user,
@@ -239,7 +251,7 @@ export const toggleAllIsVisible = async (req: CustomRequest, res: Response, next
         if (typeof isVisible !== 'boolean') {
             return next(new ErrorHandler("'isVisible' is required and should be a boolean", StatusCodes.BAD_REQUEST));
         }
-        
+
         const result = await Event.updateMany({}, { isVisible });
 
         res.status(StatusCodes.OK).json({
