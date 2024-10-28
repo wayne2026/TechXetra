@@ -6,21 +6,10 @@ import { toast } from "react-toastify";
 import moment from 'moment-timezone';
 
 interface FormData {
-    subTitle: string;
-    isVisible: boolean;
-    category: string;
-    participation: string;
-    externalRegistration: boolean;
-    extrenalRegistrationLink: string;
-    externalLink: string;
     eventDate: string;
-    venue: string;
-    rules: string[];
     deadline: string;
     image: File | null;
-    // schoolOrCollege: string;
-    // schoolClass: string;
-    // collegeClass: string;
+    backgroundImage: File | null;
 }
 
 const EventsPage = () => {
@@ -29,38 +18,12 @@ const EventsPage = () => {
     const id = search.get('id');
     const navigate = useNavigate();
     const [formData, setFormData] = useState<FormData>({
-        subTitle: "in collaboration with GDGC Tezpur University",
-        isVisible: true,
-        category: "TECHNICAL",
-        participation: "SOLO",
-        externalRegistration: true,
-        extrenalRegistrationLink: "https://unstop.com/p/frontend-frenzy-tezpur-university-tezu-tezpur-1201757",
-        externalLink: "https://drive.google.com/file/d/1OpX-swKaqB_qF1AX252Y5AEfDT-dr5Sl/view?usp=sharing",
         eventDate: "",
-        venue: "Dean's Gallery",
         deadline: "",
         image: null,
-        rules: [
-            "The competition lasts 4 hours; no time extensions will be provided.",
-            "Submit your project on GitHub as a repository; late submissions won't be accepted.",
-            "You may use external UI libraries and ChatGPT for design enhancement.",
-            "Emphasis is on design and visual appeal; functionality is secondary.",
-            "Platforms like Codepen and CodeSandbox are prohibited, with disqualification for violations.",
-            "Only individual entries are allowed.",
-            "Design three essential pages based on the theme provided at the start; bonus points for additional pages and full responsiveness.",
-            "Based on creativity, responsiveness, UX, detail, and bonus pages."
-        ],
-        // schoolOrCollege: "COLLEGE",
-        // schoolClass: "",
-        // collegeClass: "UG",
+        backgroundImage: null
     });
 
-    // const eventDateUTC = formData.eventDate;
-    // const localEventDate = moment.utc(eventDateUTC).local().format('YYYY-MM-DDTHH:mm');
-    // setFormData({
-    //     ...formData,
-    //     eventDate: localEventDate,
-    // });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -88,28 +51,16 @@ const EventsPage = () => {
         };
 
         const form = new FormData();
-        form.append('subTitle', formData.subTitle);
-        form.append('isVisible', formData.isVisible ? 'true' : 'false');
-        form.append('category', formData.category);
-        form.append('participation', formData.participation);
-        form.append('externalRegistration', formData.externalRegistration ? 'true' : 'false');
-        form.append('extrenalRegistrationLink', formData.extrenalRegistrationLink);
-        // form.append('externalLink', formData.externalLink);
         const eventDateUTC = moment(formData.eventDate).utc().format();
         form.append('eventDate', eventDateUTC);
-        form.append('venue', formData.venue);
         const deadlineDateUTC = moment(formData.deadline).utc().format();
         form.append('deadline', deadlineDateUTC);
         if (formData.image) {
             form.append('image', formData.image);
         }
-        form.append('rules', JSON.stringify(formData.rules));
-        // form.append('schoolOrCollege', formData.schoolOrCollege);
-        // if (formData.schoolOrCollege === "COLLEGE") {
-        //     form.append('collegeClass', formData.collegeClass);
-        // } else {
-        //     form.append('schoolClass', formData.schoolClass);
-        // }
+        if (formData.backgroundImage) {
+            form.append('backgroundImage', formData.backgroundImage);
+        }
         try {
             if (id) {
                 await axios.put(`${import.meta.env.VITE_BASE_URL}/events/byId/${id}`, formData, config);
@@ -158,7 +109,17 @@ const EventsPage = () => {
                         name="image"
                         accept="image/*"
                         onChange={handleFileChange}
-                        required
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="backgroundImage">Event Background:</label>
+                    <input
+                        type="file"
+                        id="backgroundImage"
+                        name="backgroundImage"
+                        accept="image/*"
+                        onChange={handleFileChange}
                     />
                 </div>
 
