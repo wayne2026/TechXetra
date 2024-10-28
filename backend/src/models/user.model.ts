@@ -28,6 +28,8 @@ export const schoolClassEnum = {
 export const collegeClassEnum = {
 	UG: "UG",
 	PG: "PG",
+	PHD: "PHD",
+	OTHERS: "OTHERS",
 } as const;
 
 export const paymentStatusEnum = {

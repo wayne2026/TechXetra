@@ -302,7 +302,7 @@ const Register = () => {
                       className="w-full outline-none py-2 bg-slate-500 rounded-l-md pl-2"
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       value={confirmPassword}
-                      placeholder="*******"
+                      placeholder="******"
                     />
                     <button
                       type="button"
@@ -325,12 +325,14 @@ const Register = () => {
                     type="number"
                     id="phoneNumber"
                     className="w-full  outline-none py-2 bg-slate-500 rounded-md pl-2"
-                    placeholder="9999933333"
+                    placeholder="0123456789"
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     value={phoneNumber}
                   />
                 </div>
               </div>
+
+              <p className="mt-2 text-red-500 font-originTech">Fill the below details carefully, once done cannot be changed</p>
 
               {/* School/College Selection */}
               <div className="w-full flex flex-col pt-4">
@@ -338,7 +340,7 @@ const Register = () => {
                   htmlFor="college"
                   className="pb-1 text-white-600 font-originTech"
                 >
-                  School/College/University
+                  Institute
                 </label>
                 <select
                   name="institutionName"
@@ -421,7 +423,7 @@ const Register = () => {
                       htmlFor="collegeClass"
                       className="pb-1 text-white-600 font-originTech"
                     >
-                      Graduate level
+                      Academic Level
                     </label>
                     <div className="">
                       <select
@@ -433,9 +435,11 @@ const Register = () => {
                         }}
                         className="w-full text-slate-200 py-2.5 rounded-md bg-slate-400 pl-1"
                       >
-                        <option value="">UG/PG</option>
+                        <option value="">Choose an Option</option>
                         <option value="UG">UG</option>
                         <option value="PG">PG</option>
+                        <option value="PHD">PhD</option>
+                        <option value="OTHERS">Others</option>
                       </select>
                     </div>
                   </div>

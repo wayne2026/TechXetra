@@ -35,6 +35,7 @@ const Hackathon = () => {
     const [paymentFile, setPaymentFile] = useState<File>();
     const [paymentId, setPaymentId] = useState("");
     const [userEvent, setUserEvent] = useState<UserEvent>();
+    const [paymentLoading, setPaymentLoading] = useState(false);
 
     useEffect(() => {
         if (events && event) {
@@ -72,6 +73,8 @@ const Hackathon = () => {
             return;
         }
 
+        setPaymentLoading(true);
+
         const config = {
             headers: { "Content-Type": "multipart/form-data" },
             withCredentials: true,
@@ -90,6 +93,7 @@ const Hackathon = () => {
         } catch (error: any) {
             toast.error(error.response.data.message);
         } finally {
+            setPaymentLoading(false);
             setOpenPaymemt(false);
             setPaymentId("");
         }
@@ -333,7 +337,7 @@ const Hackathon = () => {
                                                 <label htmlFor="role" className="text-lg font-semibold">Payment Screenshot</label>
                                                 <input type="file" accept='image/*' onChange={handleFileChange} className='text-md border px-2 py-2 rounded-md' placeholder='Enter Name' />
                                             </div>
-                                            <button type='submit' className='bg-indigo-500 px-3 py-2 rounded-lg text-white'>Submit</button>
+                                            <button disabled={paymentLoading} type='submit' className='bg-indigo-500 px-3 py-2 rounded-lg text-white'>{paymentLoading ? "Loading..." : "Submit"}</button>
                                         </form>
                                     </div>
                                 </div>

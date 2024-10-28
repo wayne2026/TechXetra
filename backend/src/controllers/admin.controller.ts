@@ -76,7 +76,6 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
         res.status(200).json({
             success: true,
             user,
-            message: "User role updated successfully"
         });
     } catch (error) {
         next(error);
@@ -258,6 +257,25 @@ export const toggleAllIsVisible = async (req: CustomRequest, res: Response, next
             success: true,
             result,
             message: `All events have been updated to isVisible = ${isVisible}`,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return next(new ErrorHandler("User not found", 404));
+        }
+
+        await User.findByIdAndDelete(req.params.id);
+
+        res.status(200).json({
+            success: true,
+            user,
+            message: "User deleted successfully"
         });
     } catch (error) {
         next(error);

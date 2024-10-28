@@ -371,6 +371,11 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
             return next(new ErrorHandler("Registration deadline has passed", StatusCodes.FORBIDDEN));
         }
 
+        console.log(event.eligibility)
+        console.log(event.eligibility && event.eligibility.schoolOrCollege && (event.eligibility.schoolOrCollege === user.schoolOrCollege))
+        console.log(event.eligibility && event.eligibility.schoolClass && (event.eligibility.schoolClass === user.schoolClass))
+        console.log(event.eligibility && event.eligibility.collegeClass && (event.eligibility.collegeClass === user.collegeClass))
+
         const eligible = (user?.schoolOrCollege === event.eligibility?.schoolOrCollege) && (event.eligibility?.schoolClass === user?.schoolClass) && (event.eligibility?.collegeClass === user?.collegeClass);
         if (!event.eligibility && !eligible) {
             return next(new ErrorHandler(`User's eligibility does not match with the event ${eligible}`, StatusCodes.FORBIDDEN));
