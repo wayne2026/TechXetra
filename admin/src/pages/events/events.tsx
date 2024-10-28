@@ -63,7 +63,7 @@ const EventsPage = () => {
             form.append('image', formData.image);
         }
         if (formData.backgroundImage) {
-            form.append('backgroundImage', formData.backgroundImage);
+            form.append('event', formData.backgroundImage);
         }
         try {
             if (id) {
