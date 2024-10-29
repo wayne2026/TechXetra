@@ -410,7 +410,9 @@ const Profile = () => {
 												)}
 												<p>Payment Status: {currentEvent?.payment?.status}</p>
 												<p>TransactionId: {currentEvent?.payment?.transactionId}</p>
-												<Link onClick={(e) => e.stopPropagation()} to={currentEvent?.payment?.paymentImage} target="blank" className="mt-2 flex items-center gap-4">Payment ScreenShot: <img className="h-10 w-10 rounded-lg" src={currentEvent.payment.paymentImage} alt={currentEvent.payment.transactionId} /></Link>
+												{currentEvent?.payment?.paymentImage && (
+													<Link onClick={(e) => e.stopPropagation()} to={currentEvent?.payment?.paymentImage} target="blank" className="mt-2 flex items-center gap-4">Payment ScreenShot: <img className="h-10 w-10 rounded-lg" src={currentEvent?.payment?.paymentImage} alt={currentEvent.payment.transactionId} /></Link>
+												)}
 												<p>Physical Verified: {currentEvent?.physicalVerification?.status ? "TRUE" : "FALSE"}</p>
 												<Link to={`/event?id=${currentEvent?.eventId._id}`} className="underline">Go to events page</Link>
 											</div>
@@ -524,7 +526,9 @@ const Profile = () => {
 											<div className="mt-2 text-sm">
 												<p>Amount: {event?.payment?.amount}</p>
 												<p>TransactionId: {event?.payment?.transactionId}</p>
-												<Link onClick={(e) => e.stopPropagation()} to={event?.payment?.paymentImage} target="blank" className="mt-2 flex items-center gap-4">Payment ScreenShot: <img className="h-10 w-10 rounded-lg" src={event.payment.paymentImage} alt={event.payment.transactionId} /></Link>
+												{event?.payment?.paymentImage && (
+													<Link onClick={(e) => e.stopPropagation()} to={event?.payment?.paymentImage} target="blank" className="mt-2 flex items-center gap-4">Payment ScreenShot: <img className="h-10 w-10 rounded-lg" src={event.payment.paymentImage} alt={event.payment.transactionId} /></Link>
+												)}
 											</div>
                                         </div>
 									</div>
