@@ -8,6 +8,7 @@ import { FaCamera } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import moment from 'moment-timezone';
 import { MdForwardToInbox } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 
 export const createQRCode = (data: string) => {
 	return new QRCodeStyling({
@@ -352,7 +353,7 @@ const Profile = () => {
 														</div>
 														<div className="flex flex-row md:flex-col">
 															<p className="underline">Status</p>
-															<p>{invite.status}</p>
+															<p>{invite?.status}</p>
 														</div>
 														<div className="flex gap-2 text-white">
 															<button onClick={() => handleCheckoutInvitation("ACCEPTED", invite.userId._id, invite.eventId._id)} className="bg-green-500 px-3 py-2 rounded-lg">ACCEPT</button>
@@ -396,18 +397,20 @@ const Profile = () => {
 														<p>Group Members: </p>
 														<div>
 															{currentEvent.group?.members?.map((member, index) => (
-																<div key={index}>{member.user.email} - {member.status}
+																<div key={index}>{member.user.email} - {member?.status}
 																{userContext?.user?._id === currentEvent.group?.leader?._id && (
-																	<button onClick={() => handleDeleteMember(currentEvent.eventId._id, member.user._id)}>del</button>
+																	<button className="bg-red-500 p-1 rounded-lg" onClick={() => handleDeleteMember(currentEvent.eventId._id, member.user._id)}>
+																		<MdDelete />
+																	</button>
 																)}
 																</div>
 															))}
 														</div>
 													</>
 												)}
-												<p>Payment Status: {currentEvent.payment.status}</p>
-												<p>TransactionId: {currentEvent.payment.transactionId}</p>
-												<Link onClick={(e) => e.stopPropagation()} to={currentEvent.payment.paymentImage} target="blank" className="mt-2 flex items-center gap-4">Payment ScreenShot: <img className="h-10 w-10 rounded-lg" src={currentEvent.payment.paymentImage} alt={currentEvent.payment.transactionId} /></Link>
+												<p>Payment Status: {currentEvent?.payment?.status}</p>
+												<p>TransactionId: {currentEvent?.payment?.transactionId}</p>
+												<Link onClick={(e) => e.stopPropagation()} to={currentEvent?.payment?.paymentImage} target="blank" className="mt-2 flex items-center gap-4">Payment ScreenShot: <img className="h-10 w-10 rounded-lg" src={currentEvent.payment.paymentImage} alt={currentEvent.payment.transactionId} /></Link>
 												<p>Physical Verified: {currentEvent?.physicalVerification?.status ? "TRUE" : "FALSE"}</p>
 												<Link to={`/event?id=${currentEvent?.eventId._id}`} className="underline">Go to events page</Link>
 											</div>
@@ -516,12 +519,12 @@ const Profile = () => {
 										)}
 										<div>
 											<h3 className="text-xl font-semibold">
-												Status: {event.payment.status}
+												Status: {event?.payment?.status}
 											</h3>
 											<div className="mt-2 text-sm">
-												<p>Amount: {event.payment.amount}</p>
-												<p>TransactionId: {event.payment.transactionId}</p>
-												<Link onClick={(e) => e.stopPropagation()} to={event.payment.paymentImage} target="blank" className="mt-2 flex items-center gap-4">Payment ScreenShot: <img className="h-10 w-10 rounded-lg" src={event.payment.paymentImage} alt={event.payment.transactionId} /></Link>
+												<p>Amount: {event?.payment?.amount}</p>
+												<p>TransactionId: {event?.payment?.transactionId}</p>
+												<Link onClick={(e) => e.stopPropagation()} to={event?.payment?.paymentImage} target="blank" className="mt-2 flex items-center gap-4">Payment ScreenShot: <img className="h-10 w-10 rounded-lg" src={event.payment.paymentImage} alt={event.payment.transactionId} /></Link>
 											</div>
                                         </div>
 									</div>
