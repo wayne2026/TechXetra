@@ -398,7 +398,7 @@ const Profile = () => {
 														<div>
 															{currentEvent.group?.members?.map((member, index) => (
 																<div key={index}>{member.user.email} - {member?.status}
-																{userContext?.user?._id === currentEvent.group?.leader?._id && (
+																{userContext?.user?.role === "ADMIN" &&userContext?.user?._id === currentEvent.group?.leader?._id && (
 																	<button className="bg-red-500 p-1 rounded-lg" onClick={() => handleDeleteMember(currentEvent.eventId._id, member.user._id)}>
 																		<MdDelete />
 																	</button>
@@ -487,7 +487,7 @@ const Profile = () => {
 
 				<div className="sm:mt-8 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:pt-10 ">
 					<h2 className="text-2xl font-bold mb-4">
-						Registered Events ({events?.length} || 0)
+						Registered Events ({events?.length || 0})
 					</h2>
 					{events && events?.length > 0 ? (
 						<div className="w-full flex flex-col justify-center items-center gap-2">
