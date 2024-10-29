@@ -212,13 +212,25 @@ const Profile = () => {
 
 	const handleDelteUserEvent = async (eventId: string) => {
 		try {
-            const { data } = await axios.delete(`${import.meta.env.VITE_BASE_URL}/events/byId/${eventId}`, { withCredentials: true });
+            const { data }: { data: UserEventResponse } = await axios.delete(`${import.meta.env.VITE_BASE_URL}/events/byId/${eventId}`, { withCredentials: true });
             setEvents(data.user.events);
+			console.log(data)
             toast.success("Event deleted successfully");
             setOpenEventDetails(false);
         } catch (error: any) {
             toast.error(error.response.data.message);
         }
+	}
+
+	const handleDeleteMember = async (eventId: string, memberId: string) => {
+		try {
+			const { data } = await axios.put(`${import.meta.env.VITE_BASE_URL}/events/member/del/${eventId}`, { memberId }, { withCredentials: true });
+			console.log(data)
+            toast.success("Memver Removed successfully");
+            setOpenEventDetails(false);
+		} catch (error: any) {
+			toast.error(error.response.data.message);
+		}
 	}
 
 	return (
@@ -382,11 +394,15 @@ const Profile = () => {
 												{currentEvent.group?.members && currentEvent.group?.members?.length > 0 && (
 													<>
 														<p>Group Members: </p>
-														<ul>
+														<div>
 															{currentEvent.group?.members?.map((member, index) => (
-																<li key={index}>{member.user.email} - {member.status}</li>
+																<div key={index}>{member.user.email} - {member.status}
+																{userContext?.user?._id === currentEvent.group?.leader?._id && (
+																	<button onClick={() => handleDeleteMember(currentEvent.eventId._id, member.user._id)}>del</button>
+																)}
+																</div>
 															))}
-														</ul>
+														</div>
 													</>
 												)}
 												<p>Payment Status: {currentEvent.payment.status}</p>

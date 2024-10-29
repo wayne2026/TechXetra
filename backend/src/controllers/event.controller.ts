@@ -430,8 +430,27 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
 
         let notEligibleMembers: string[] = []
         groupMembers.forEach(member => {
-            const eligible = (member?.schoolOrCollege === event.eligibility?.schoolOrCollege) && (event.eligibility?.schoolClass === member?.schoolClass) && (event.eligibility?.collegeClass === member?.collegeClass)
-            if (!event.eligibility && !eligible) {
+            const schoolOrCollegeEligibility = event.eligibility?.schoolOrCollege
+                ? event.eligibility.schoolOrCollege === member.schoolOrCollege
+                : true; // If undefined, treat it as eligible
+
+            const schoolClassEligibility = event.eligibility?.schoolClass && event.eligibility.schoolOrCollege === 'SCHOOL'
+                ? event.eligibility.schoolClass === member.schoolClass
+                : true; // If undefined or not a SCHOOL event, treat it as eligible
+
+            const collegeClassEligibility = event.eligibility?.collegeClass && event.eligibility.schoolOrCollege === 'COLLEGE'
+                ? event.eligibility.collegeClass === member.collegeClass
+                : true; // If undefined or not a COLLEGE event, treat it as eligible
+
+            // Final eligibility check: All conditions that are defined must be true for the user to be eligible.
+            const eligible = schoolOrCollegeEligibility && schoolClassEligibility && collegeClassEligibility;
+
+            console.log("schoolOrCollegeEligibility:", schoolOrCollegeEligibility);
+            console.log("schoolClassEligibility:", schoolClassEligibility);
+            console.log("collegeClassEligibility:", collegeClassEligibility);
+            console.log("Eligible:", eligible);
+
+            if (event.eligibility && !eligible) {
                 notEligibleMembers.push(member.email);
             }
         });
@@ -441,7 +460,7 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
 
         const isGroup = ((event.participation === participationEnum.TEAM) || ((event.participation === participationEnum.HYBRID) && teamMembersArray.length > 0)) ? true : false;
 
-        const eventObject = {
+        const eventObject:any = {
             eventId: event._id,
             paymentRequired: event.paymentRequired,
             eligible,
@@ -450,7 +469,10 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
                 leader: user._id,
                 members: isGroup ? teamMembersArray : undefined,
             },
-            payment: {
+        }
+
+        if (event.paymentRequired) {
+            eventObject.payment = {
                 status: paymentStatusEnum.PENDING,
                 amount: event.amount ? Number(event.amount) : 100,
             }
@@ -593,8 +615,27 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
 
         let notEligibleMembers: string[] = []
         groupMembers.forEach(member => {
-            const eligible = (member?.schoolOrCollege === event.eligibility?.schoolOrCollege) && (event.eligibility?.schoolClass === member?.schoolClass) && (event.eligibility?.collegeClass === member?.collegeClass);
-            if (!event.eligibility && !eligible) {
+            const schoolOrCollegeEligibility = event.eligibility?.schoolOrCollege
+                ? event.eligibility.schoolOrCollege === member.schoolOrCollege
+                : true; // If undefined, treat it as eligible
+
+            const schoolClassEligibility = event.eligibility?.schoolClass && event.eligibility.schoolOrCollege === 'SCHOOL'
+                ? event.eligibility.schoolClass === member.schoolClass
+                : true; // If undefined or not a SCHOOL event, treat it as eligible
+
+            const collegeClassEligibility = event.eligibility?.collegeClass && event.eligibility.schoolOrCollege === 'COLLEGE'
+                ? event.eligibility.collegeClass === member.collegeClass
+                : true; // If undefined or not a COLLEGE event, treat it as eligible
+
+            // Final eligibility check: All conditions that are defined must be true for the user to be eligible.
+            const eligible = schoolOrCollegeEligibility && schoolClassEligibility && collegeClassEligibility;
+
+            console.log("schoolOrCollegeEligibility:", schoolOrCollegeEligibility);
+            console.log("schoolClassEligibility:", schoolClassEligibility);
+            console.log("collegeClassEligibility:", collegeClassEligibility);
+            console.log("Eligible:", eligible);
+
+            if (event.eligibility && !eligible) {
                 notEligibleMembers.push(member.email);
             }
         });
