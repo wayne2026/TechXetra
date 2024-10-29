@@ -733,7 +733,13 @@ export const removeMember = async (req: CustomRequest, res: Response, next: Next
         await User.findOneAndUpdate(
             { _id: member._id },
             {
-                $pull: { events: { eventId: event._id } }
+                $pull: { 
+                    events: { eventId: event._id },
+                    invites: {
+                        eventId: event._id,
+                        userId: user._id
+                    }
+                }
             },
             { new: true, runValidators: true, useFindAndModify: false }
         );

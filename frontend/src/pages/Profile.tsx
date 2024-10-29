@@ -458,7 +458,7 @@ const Profile = () => {
 								{userContext?.user?.schoolOrCollege === "SCHOOL" ? userContext.user.schoolName : userContext?.user?.collegeName}
 							</p>
 							<p className="text-lg mb-1 capitalize">
-								<span className="font-semibold">{userContext?.user?.schoolOrCollege === "SCHOOL" ? "CLASS RANGE" : "UG/PG"}: </span>
+								<span className="font-semibold">Academic Level: </span>
 								{userContext?.user?.schoolOrCollege === "SCHOOL" ? userContext.user.schoolClass : userContext?.user?.collegeClass}
 							</p>
 							<p className="text-lg mb-1">

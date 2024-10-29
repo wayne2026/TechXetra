@@ -43,12 +43,11 @@ const Hackathon = () => {
 
 	useEffect(() => {
         if (!userContext?.user?.isVerified) {
-            // Redirect after a brief timeout for user to see the message
             const timer = setTimeout(() => {
                 navigate(from, { replace: true });
-            }, 2000); // 2 second delay before redirect
+            }, 2000);
 
-            return () => clearTimeout(timer); // Cleanup timeout on component unmount
+            return () => clearTimeout(timer);
         }
     }, [userContext?.user, from, navigate]);
 
@@ -328,7 +327,7 @@ const Hackathon = () => {
                                                     ) : (
                                                         <>
                                                             {users?.filter(user => !memberEmails.includes(user.email))?.map((user, index) => (
-                                                                <p className='py-2 px-3 hover:bg-gray-200 rounded-lg' key={index} onClick={() => setMemberEmails(emails => [...emails, user.email])}>
+                                                                <p className='cursor-pointer py-2 px-3 hover:bg-gray-200 rounded-lg' key={index} onClick={() => setMemberEmails(emails => [...emails, user.email])}>
                                                                     {user.email}
                                                                 </p>
                                                             ))}
