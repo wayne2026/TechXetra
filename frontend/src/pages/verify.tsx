@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import OtpInput from "../../components/better/otp-input";
 import { useUser } from "../context/user_context";
@@ -14,6 +14,16 @@ const Verify = () => {
     const [requestLoading, setRequestLoading] = useState(false);
 
     const from = location.state?.from?.pathname + location.state?.from?.search || "/profile";
+
+    useEffect(() => {
+        if (userContext?.user?.isVerified) {
+            const timer = setTimeout(() => {
+                navigate(from, { replace: true });
+            }, 2000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [userContext?.user?.isVerified, from, navigate]);
 
     const onOtpSubmit = async (otp: string) => {
         setVerifyLoading(true);
@@ -38,6 +48,10 @@ const Verify = () => {
             toast.error(error.response.data.message);
         }
         setRequestLoading(false);
+    }
+
+    if (userContext?.user?.isVerified) {
+        return <div className="text-center mt-8">You are already verified. Redirecting to profile...</div>
     }
 
     return (

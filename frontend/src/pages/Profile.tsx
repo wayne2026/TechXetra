@@ -1,4 +1,4 @@
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useUser } from "../context/user_context";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -46,6 +46,7 @@ export const createQRCode = (data: string) => {
 
 const Profile = () => {
 	const navigate = useNavigate();
+	const location = useLocation();
 	const [search] = useSearchParams();
 	const id = search.get("id");
 	const userContext = useUser();
@@ -68,7 +69,20 @@ const Profile = () => {
 	const [events, setEvents] = useState<UserEvent[]>();
 	const [invites, setInvites] = useState<UserInvite[]>();
 	const [openEventDetails, setOpenEventDetails] = useState(false);
-	const [currentEvent, setCurrentEvent] = useState<UserEvent | null>()
+	const [currentEvent, setCurrentEvent] = useState<UserEvent | null>();
+
+	const from = location.state?.from?.pathname + location.state?.from?.search || "/verify";
+
+	useEffect(() => {
+        if (!userContext?.user?.isVerified) {
+            // Redirect after a brief timeout for user to see the message
+            const timer = setTimeout(() => {
+                navigate(from, { replace: true });
+            }, 2000); // 2 second delay before redirect
+
+            return () => clearTimeout(timer); // Cleanup timeout on component unmount
+        }
+    }, [userContext?.user, from, navigate]);
 
 	const handleLogOut = async () => {
 		try {
@@ -233,6 +247,10 @@ const Profile = () => {
 			toast.error(error.response.data.message);
 		}
 	}
+
+	if (userContext?.user && !userContext?.user?.isVerified) {
+        return <div className="text-center mt-8">You are not verified. Redirecting to verify...</div>
+    }
 
 	return (
 		<div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b] text-white">

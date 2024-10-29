@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap'
 import { toast } from 'react-toastify';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { RxCross2 } from "react-icons/rx";
 import axios from 'axios';
 import moment from 'moment-timezone';
@@ -19,6 +19,8 @@ interface SearchEmailResponse {
 
 const Hackathon = () => {
     const [search] = useSearchParams();
+    const navigate = useNavigate();
+	const location = useLocation();
     const id = search.get("id");
     const userContext = useUser();
     const [event, setEvent] = useState<EventDetails>();
@@ -36,6 +38,19 @@ const Hackathon = () => {
     const [paymentId, setPaymentId] = useState("");
     const [userEvent, setUserEvent] = useState<UserEvent>();
     const [paymentLoading, setPaymentLoading] = useState(false);
+
+    const from = location.state?.from?.pathname + location.state?.from?.search || "/verify";
+
+	useEffect(() => {
+        if (!userContext?.user?.isVerified) {
+            // Redirect after a brief timeout for user to see the message
+            const timer = setTimeout(() => {
+                navigate(from, { replace: true });
+            }, 2000); // 2 second delay before redirect
+
+            return () => clearTimeout(timer); // Cleanup timeout on component unmount
+        }
+    }, [userContext?.user, from, navigate]);
 
     useEffect(() => {
         if (events && event) {
@@ -192,6 +207,10 @@ const Hackathon = () => {
             setPaymentFile(file);
         }
     };
+
+    if (userContext?.user && !userContext?.user?.isVerified) {
+        return <div className="text-center mt-8">You are not verified. Redirecting to verify...</div>
+    }
 
     return loading ? (
         <div className='flex justify-center items-center'>

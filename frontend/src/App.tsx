@@ -66,14 +66,10 @@ function App() {
 							element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}
 						>
 							<Route path="/verify" element={<Verify />} />
-						</Route>
-
-						<Route
-							element={<ProtectedRoute isAuthenticated={(userContext?.user && userContext.user.isVerified) ? true : false} redirect="/verify" />}
-						>
 							<Route path="/event" element={<Events_Page />} />
 							<Route path="/profile" element={<Profile />} />
 						</Route>
+						
 						<Route path="*" element={<NotFound />} />
 					</Routes>
 				{/* </Suspense> */}

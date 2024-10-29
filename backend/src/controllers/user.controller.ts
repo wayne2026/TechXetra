@@ -58,7 +58,7 @@ export const registerUser = async (req: Request, res: Response, next: NextFuncti
 		try {
 			await addEmailToQueue({
 				email: user.email,
-				subject: `TechXetra | Email Veification`,
+				subject: `TechXetra | Email Verification`,
 				message,
 			});
 		} catch (error) {
@@ -79,6 +79,10 @@ export const requestVerification = async (req: CustomRequest, res: Response, nex
 		if (!user) {
 			return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
 		}
+
+		if (user.isVerified) {
+			return next(new ErrorHandler("Email already verified", StatusCodes.BAD_REQUEST));
+		}
 	
 		const otp = user.getOneTimePassword();
 		await user.save({ validateBeforeSave: false });
@@ -88,7 +92,7 @@ export const requestVerification = async (req: CustomRequest, res: Response, nex
 		try {
 			await addEmailToQueue({
 				email: user.email,
-				subject: `TechXetra | Email Veification`,
+				subject: `TechXetra | Email Verification`,
 				message,
 			});
 	
@@ -129,7 +133,11 @@ export const verifyUser = async (req: CustomRequest, res: Response, next: NextFu
 		});
 	
 		if (!user) {
-			return next(new ErrorHandler("Email Veification OTP has Expired", StatusCodes.BAD_REQUEST));
+			return next(new ErrorHandler("Email Verification OTP has Expired", StatusCodes.BAD_REQUEST));
+		}
+
+		if (user.isVerified) {
+			return next(new ErrorHandler("Email already verified", StatusCodes.BAD_REQUEST));
 		}
 	
 		user.isVerified = true;
