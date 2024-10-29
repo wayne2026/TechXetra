@@ -371,27 +371,28 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
             return next(new ErrorHandler("Registration deadline has passed", StatusCodes.FORBIDDEN));
         }
 
-        console.log(event.eligibility)
-        const schoolOrCollegeEligibilty = event.eligibility && event.eligibility.schoolOrCollege && (event.eligibility.schoolOrCollege === user.schoolOrCollege)
-        const schoolClassEligibilty =  event.eligibility && event.eligibility.schoolClass && (event.eligibility.schoolClass === user.schoolClass)
-        const collegeClassEligibilty = event.eligibility && event.eligibility.collegeClass && (event.eligibility.collegeClass === user.collegeClass)
-        console.log(schoolOrCollegeEligibilty)
-        console.log(schoolClassEligibilty)
-        console.log(collegeClassEligibilty)
+        const schoolOrCollegeEligibility = event.eligibility?.schoolOrCollege
+            ? event.eligibility.schoolOrCollege === user.schoolOrCollege
+            : true; // If undefined, treat it as eligible
 
-        console.log(Boolean(schoolOrCollegeEligibilty))
-        console.log(Boolean(schoolClassEligibilty))
-        console.log(Boolean(collegeClassEligibilty))
+        const schoolClassEligibility = event.eligibility?.schoolClass && event.eligibility.schoolOrCollege === 'SCHOOL'
+            ? event.eligibility.schoolClass === user.schoolClass
+            : true; // If undefined or not a SCHOOL event, treat it as eligible
 
-        console.log(schoolClassEligibilty && schoolClassEligibilty && collegeClassEligibilty)
-        console.log(schoolClassEligibilty || schoolClassEligibilty || collegeClassEligibilty)
+        const collegeClassEligibility = event.eligibility?.collegeClass && event.eligibility.schoolOrCollege === 'COLLEGE'
+            ? event.eligibility.collegeClass === user.collegeClass
+            : true; // If undefined or not a COLLEGE event, treat it as eligible
 
-        console.log(Boolean(schoolClassEligibilty) && Boolean(schoolClassEligibilty) && Boolean(collegeClassEligibilty))
-        console.log(Boolean(schoolClassEligibilty) || Boolean(schoolClassEligibilty) || Boolean(collegeClassEligibilty))
+        // Final eligibility check: All conditions that are defined must be true for the user to be eligible.
+        const eligible = schoolOrCollegeEligibility && schoolClassEligibility && collegeClassEligibility;
 
-        const eligible = (user?.schoolOrCollege === event.eligibility?.schoolOrCollege) && (event.eligibility?.schoolClass === user?.schoolClass) && (event.eligibility?.collegeClass === user?.collegeClass);
-        if (!event.eligibility && !eligible) {
-            return next(new ErrorHandler(`User's eligibility does not match with the event ${eligible}`, StatusCodes.FORBIDDEN));
+        console.log("schoolOrCollegeEligibility:", schoolOrCollegeEligibility);
+        console.log("schoolClassEligibility:", schoolClassEligibility);
+        console.log("collegeClassEligibility:", collegeClassEligibility);
+        console.log("Eligible:", eligible);
+
+        if (event.eligibility && !eligible) {
+            return next(new ErrorHandler(`User's eligibility does not match with the event`, StatusCodes.FORBIDDEN));
         }
 
         const { memberEmails } = req.body;
