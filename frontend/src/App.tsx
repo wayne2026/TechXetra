@@ -13,6 +13,7 @@ import Register from "./pages/auth/Register";
 import NotFound from "./pages/not-found";
 import Landing from "./pages/Landing";
 import Profile from "./pages/Profile";
+import ResetPassword from "./pages/reset";
 
 // const ChatAssistant = lazy(() => import("../components/better/assitant"));
 
@@ -59,6 +60,7 @@ function App() {
 						<Route path="/" element={<Landing />} />
 						<Route path="/login" element={<Login />} />
 						<Route path="/register" element={<Register />} />
+						<Route path="/reset" element={<ResetPassword />} />
 
 						<Route
 							element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}

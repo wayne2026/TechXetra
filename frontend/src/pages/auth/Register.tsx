@@ -47,12 +47,11 @@ const Register = () => {
   const [schoolClass, setSchoolClass] = useState("");
   const [collegeClass, setCollegeClass] = useState("");
 
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const userContext = useUser();
-  const [loginLoading, setLoginLoading] = useState<boolean>(false);
+  const [loginLoading, setLoginLoading] = useState(false);
 
   const from = location.state?.from?.pathname + location.state?.from?.search || "/profile";
   

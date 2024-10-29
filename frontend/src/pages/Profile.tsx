@@ -391,15 +391,16 @@ const Profile = () => {
 												<p className="text-xl font-semibold">Event Title: {currentEvent?.eventId.title}</p>
 												<p>Event Date: {new Date(currentEvent?.eventId.eventDate!).toLocaleDateString('en-GB')}</p>
 												<p>Event Time: {moment.utc(currentEvent?.eventId.eventDate).format('hh:mm A')} onwards</p>
+												<p>isGroup: {currentEvent.isGroup.toString()}</p>
 												<p>Group Leader: {currentEvent.group?.leader?.email}</p>
 												{currentEvent.group?.members && currentEvent.group?.members?.length > 0 && (
 													<>
 														<p>Group Members: </p>
 														<div>
 															{currentEvent.group?.members?.map((member, index) => (
-																<div key={index}>{member.user.email} - {member?.status}
-																{userContext?.user?.role === "ADMIN" &&userContext?.user?._id === currentEvent.group?.leader?._id && (
-																	<button className="bg-red-500 p-1 rounded-lg" onClick={() => handleDeleteMember(currentEvent.eventId._id, member.user._id)}>
+																<div key={index} className="pl-6">{member.user.email} - {member?.status}
+																{userContext?.user?.role === "ADMIN" && userContext?.user?._id === currentEvent.group?.leader?._id && (
+																	<button className="bg-slate-200 text-red-500 m-1 p-1 rounded-lg" onClick={() => handleDeleteMember(currentEvent.eventId._id, member.user._id)}>
 																		<MdDelete />
 																	</button>
 																)}

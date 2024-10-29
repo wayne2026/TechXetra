@@ -258,7 +258,7 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 	try {
 		const { token } = req.params;
 	
-		if (token) {
+		if (!token) {
 			return next(new ErrorHandler("Broken Link", 500));
 		}
 	
@@ -274,7 +274,7 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 		});
 	
 		if (!user) {
-			return next(new ErrorHandler("Reset Password Token is Invalid or has Expired", 400));
+			return next(new ErrorHandler("Reset Password Token is either Invalid or has Expired", 400));
 		}
 	
 		const { newPassword, confirmPassword } = req.body;

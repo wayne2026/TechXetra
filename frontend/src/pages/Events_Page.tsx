@@ -275,6 +275,10 @@ const Hackathon = () => {
                                                 <RxCross2 size={20} />
                                             </button>
                                         </div>
+                                        <div className='mt-8 flex flex-col'>
+                                            <p className='text-center text-xl font-semibold text-indigo-500'>Search for emails (type more than 3 charecters to start) and click on your members email to invite them to your group.</p>
+                                            <p className='text-center text-xl font-semibold text-red-500'>{event?.participation === "HYBRID" && "If you are a lone wolf you can directly click register."}</p>
+                                        </div>
                                         <div className='mt-8'>
                                             <div className='flex flex-wrap gap-2'>
                                                 {memberEmails.map((member, index) => (

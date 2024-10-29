@@ -9,6 +9,7 @@ import { useUser } from "../../context/user_context";
 import { toast } from "react-toastify";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa";
+import { RxCross2 } from "react-icons/rx";
 
 const Login = () => {
   const starsBG = useRef<HTMLDivElement>(null);
@@ -17,8 +18,10 @@ const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const userContext = useUser();
-  const [loginLoading, setLoginLoading] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
   
   const location = useLocation();
   const from = location.state?.from?.pathname + location.state?.from?.search || "/profile";
@@ -55,6 +58,35 @@ const Login = () => {
     });
   });
 
+  const handleForgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!email) {
+      toast.warning("Please enter your email address");
+      return;
+    }
+
+    setForgotLoading(true);
+    const config = {
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
+    };
+
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/users/password/forgot`,
+        { email },
+        config
+      );
+      toast.success(data.message);
+    } catch (error: any) {
+      toast.error(error.response.data.message);
+    } finally {
+      setOpen(false);
+      setForgotLoading(false);
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoginLoading(true);
@@ -79,7 +111,6 @@ const Login = () => {
       );
       userContext?.setUser(data.user);
       toast.success("Logged In!");
-      userContext?.setUser(data.user)
       navigate(from, { replace: true });
     } catch (error: any) {
       userContext?.setUser(null);
@@ -120,6 +151,22 @@ const Login = () => {
             alt=""
             className="animate max-md:hidden"
           />
+          {open && (
+							<div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
+								<div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[40%]">
+									<div className='flex justify-between items-center'>
+										<h1 className='text-xl md:text-2xl font-semibold'>Enter you Email</h1>
+										<button className='border-2 rounded-lg px-2 py-1 text-lg' onClick={() => setOpen(false)}><RxCross2 size={20} /></button>
+									</div>
+									<form className='mt-8 max-h-[70vh] overflow-y-scroll hide-scrollbar' onSubmit={handleForgotPassword}>
+                    <div className="flex flex-col justify-center items-center space-y-4">
+                      <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-3 py-2 rounded-lg border-2" placeholder="Enter your emil" />
+                      <button disabled={forgotLoading} type="submit" className="w-full text-white bg-indigo-500 px-3 py-2 rounded-lg">{forgotLoading ? "Hold on..." : "Submit"}</button>
+                    </div>
+									</form>
+								</div>
+							</div>
+						)}
           <form
             onSubmit={handleSubmit}
             className="border-[0.5px] border-slate-700 rounded-lg mx-auto w-[40rem] pt-6 pb-10 text-white"
@@ -198,6 +245,12 @@ const Login = () => {
                 <Link to="/register" className="text-violet-400 hover:underline">
                   Register
                 </Link>
+              </p>
+              <p className="text-md">
+                Forgot Password?{" "}
+                <button type="button" onClick={() => setOpen(true)} className="text-violet-400 hover:underline">
+                  Click Here
+                </button>
               </p>
             </div>
           </form>

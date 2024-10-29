@@ -383,13 +383,7 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
             ? event.eligibility.collegeClass === user.collegeClass
             : true; // If undefined or not a COLLEGE event, treat it as eligible
 
-        // Final eligibility check: All conditions that are defined must be true for the user to be eligible.
         const eligible = schoolOrCollegeEligibility && schoolClassEligibility && collegeClassEligibility;
-
-        console.log("schoolOrCollegeEligibility:", schoolOrCollegeEligibility);
-        console.log("schoolClassEligibility:", schoolClassEligibility);
-        console.log("collegeClassEligibility:", collegeClassEligibility);
-        console.log("Eligible:", eligible);
 
         if (event.eligibility && !eligible) {
             return next(new ErrorHandler(`User's eligibility does not match with the event`, StatusCodes.FORBIDDEN));
@@ -442,13 +436,7 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
                 ? event.eligibility.collegeClass === member.collegeClass
                 : true; // If undefined or not a COLLEGE event, treat it as eligible
 
-            // Final eligibility check: All conditions that are defined must be true for the user to be eligible.
             const eligible = schoolOrCollegeEligibility && schoolClassEligibility && collegeClassEligibility;
-
-            console.log("schoolOrCollegeEligibility:", schoolOrCollegeEligibility);
-            console.log("schoolClassEligibility:", schoolClassEligibility);
-            console.log("collegeClassEligibility:", collegeClassEligibility);
-            console.log("Eligible:", eligible);
 
             if (event.eligibility && !eligible) {
                 notEligibleMembers.push(member.email);
@@ -460,7 +448,7 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
 
         const isGroup = ((event.participation === participationEnum.TEAM) || ((event.participation === participationEnum.HYBRID) && teamMembersArray.length > 0)) ? true : false;
 
-        const eventObject:any = {
+        const eventObject: any = {
             eventId: event._id,
             paymentRequired: event.paymentRequired,
             eligible,
@@ -538,7 +526,7 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
         res.status(200).json({
             success: true,
             user: updateUserEvent,
-            message: "Event registered successfully"
+            message: `Event registered successfully. ${isGroup ? `Invite sent to ${memberEmails.join(', ')}, tell them to check their email or profile.` : ""}`
         });
     } catch (error) {
         next(error);
@@ -630,11 +618,6 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
             // Final eligibility check: All conditions that are defined must be true for the user to be eligible.
             const eligible = schoolOrCollegeEligibility && schoolClassEligibility && collegeClassEligibility;
 
-            console.log("schoolOrCollegeEligibility:", schoolOrCollegeEligibility);
-            console.log("schoolClassEligibility:", schoolClassEligibility);
-            console.log("collegeClassEligibility:", collegeClassEligibility);
-            console.log("Eligible:", eligible);
-
             if (event.eligibility && !eligible) {
                 notEligibleMembers.push(member.email);
             }
@@ -684,7 +667,7 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
         res.status(200).json({
             success: true,
             event: updateUserEvent,
-            message: "Event members added successfully"
+            message: `Event registered successfully. ${memberEmails.length > 0 ? `Invite sent to ${memberEmails.join(', ')}, tell them to check their email or profile.` : ""}`
         });
     } catch (error) {
         next(error);
