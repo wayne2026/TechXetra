@@ -416,9 +416,9 @@ const Profile = () => {
 															<Link onClick={(e) => e.stopPropagation()} to={currentEvent?.payment?.paymentImage} target="blank" className="mt-2 flex items-center gap-4">Payment ScreenShot: <img className="h-10 w-10 rounded-lg" src={currentEvent?.payment?.paymentImage} alt={currentEvent.payment.transactionId} /></Link>
 														)}
 														<p>Physical Verified: {currentEvent?.physicalVerification?.status ? "TRUE" : "FALSE"}</p>
-														<Link to={`/event?id=${currentEvent?.eventId._id}`} className="underline">Go to events page</Link>
 													</>
 												)}
+												<Link to={`/event?id=${currentEvent?.eventId._id}`} className="underline">Go to events page</Link>
 											</div>
 										</div>
 									)}
@@ -487,7 +487,7 @@ const Profile = () => {
 
 				<div className="sm:mt-8 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:pt-10 ">
 					<h2 className="text-2xl font-bold mb-4">
-						Registered Events ({events?.length})
+						Registered Events ({events?.length} || 0)
 					</h2>
 					{events && events?.length > 0 ? (
 						<div className="w-full flex flex-col justify-center items-center gap-2">
