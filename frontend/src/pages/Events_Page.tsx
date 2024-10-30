@@ -121,7 +121,7 @@ const Hackathon = () => {
     }, []);
 
     useEffect(() => {
-        if (keyword && keyword.length > 3) {
+        if (open && keyword && keyword.length > 3) {
             setSearchLoading(true);
 
             const delayDebounce = setTimeout(() => {
@@ -134,7 +134,7 @@ const Hackathon = () => {
         } else {
             setUsers([]);
         }
-    }, [keyword]);
+    }, [keyword, open]);
 
     useEffect(() => {
         if (imageRef.current) {
