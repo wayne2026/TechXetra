@@ -634,8 +634,6 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
             { new: true, runValidators: true, useFindAndModify: false }
         ).select("events");
 
-        console.log(updateUserEvent)
-
         groupMembers.forEach(async (member) => {
             try {
                 const message = `${user.firstName} has sent you an invite to participate in ${event.title} \n\n Please check you profile and click on ✉ \n\n ${process.env.CLIENT_URL}/profile`;
@@ -731,8 +729,6 @@ export const removeMember = async (req: CustomRequest, res: Response, next: Next
             },
             { new: true, runValidators: true, useFindAndModify: false }
         ).select("events");
-
-        console.log(updatedUser)
 
         await User.findOneAndUpdate(
             { _id: member._id },
