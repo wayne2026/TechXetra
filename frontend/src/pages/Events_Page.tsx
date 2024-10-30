@@ -20,7 +20,7 @@ interface SearchEmailResponse {
 const Hackathon = () => {
     const [search] = useSearchParams();
     const navigate = useNavigate();
-	const location = useLocation();
+    const location = useLocation();
     const id = search.get("id");
     const userContext = useUser();
     const [event, setEvent] = useState<EventDetails>();
@@ -41,7 +41,7 @@ const Hackathon = () => {
 
     const from = location.state?.from?.pathname + location.state?.from?.search || "/verify";
 
-	useEffect(() => {
+    useEffect(() => {
         if (!userContext?.user?.isVerified) {
             const timer = setTimeout(() => {
                 navigate(from, { replace: true });
@@ -55,6 +55,11 @@ const Hackathon = () => {
         if (events && event) {
             const foundUserEvent = events.find(userEvent => userEvent?.eventId?._id?.toString() === event?._id.toString());
             setUserEvent(foundUserEvent);
+            if (foundUserEvent?.group?.members) {
+                foundUserEvent?.group?.members.forEach(member => {
+                    setMemberEmails(prev => [...prev, member.user.email]);
+                })
+            }
         }
     }, [events, event]);
 
@@ -73,10 +78,8 @@ const Hackathon = () => {
         try {
             const { data }: { data: UserEventResponse } = await axios.get(`${import.meta.env.VITE_BASE_URL}/users/events`, { withCredentials: true });
             setEvents(data.user.events);
-            console.log(data.user.events);
         } catch (error: any) {
             toast.error(error.response.data.message);
-            console.log(error.response.data.message);
         }
     }
 
@@ -175,9 +178,10 @@ const Hackathon = () => {
         }
         try {
             if (id) {
-                const { data }: { data: any } = await axios.put(`${import.meta.env.VITE_BASE_URL}/events/enroll/${id}`, { memberEmails }, { withCredentials: true });
-                setEvents(data.user.events);
-                setMemberEmails([]);
+                await axios.put(`${import.meta.env.VITE_BASE_URL}/events/enroll/${id}`, { memberEmails }, { withCredentials: true });
+                // setEvents(data.user.events);
+                fetchEvents();
+                fetchEvent();
                 if (open) {
                     setOpen(false);
                 }
@@ -189,16 +193,19 @@ const Hackathon = () => {
         } catch (error: any) {
             toast.error(error.response.data.message);
         } finally {
+            // if (open) {
+            //     setOpen(false);
+            // }
         }
     }
 
     useEffect(() => {
-        if (open) {
+        if (open || openPaymemt) {
             document.body.classList.add('no-scroll');
         } else {
             document.body.classList.remove('no-scroll');
         }
-    }, [open]);
+    }, [open, openPaymemt]);
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -206,6 +213,37 @@ const Hackathon = () => {
             setPaymentFile(file);
         }
     };
+
+    const handleAddMoreMembers = async () => {
+        const oldMembers = userEvent?.group?.members?.map(m => m.user.email) || [];
+        const newMembers = memberEmails.filter(m => !oldMembers.includes(m));
+        if (memberEmails.length == 0 || newMembers.length == 0) {
+            toast.error("Please select at least one new member to add.");
+            return;
+        }
+        if (newMembers.length > (event?.maxGroup! - (oldMembers.length + 1))) {
+            toast.error(`Only ${event?.maxGroup! - (oldMembers.length + 1)} more members can be added`);
+            return;
+        }
+        try {
+            if (id) {
+                await axios.put(`${import.meta.env.VITE_BASE_URL}/events/member/add/${id}`, { memberEmails: newMembers }, { withCredentials: true });
+                fetchEvents();
+                fetchEvent();
+                if (open) {
+                    setOpen(false);
+                }
+                // if (event?.paymentRequired) {
+                //     setOpenPaymemt(true);
+                // }
+                toast.success("Successfully add member(s).");
+            }
+        } catch (error: any) {
+            toast.error(error.response.data.message);
+        } finally {
+            // setOpen(false);
+        }
+    }
 
     if (userContext?.user && !userContext?.user?.isVerified) {
         return <div className="text-center mt-8">You are not verified. Redirecting to verify...</div>
@@ -282,7 +320,9 @@ const Hackathon = () => {
                                 <div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
                                     <div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[40%]">
                                         <div className='flex justify-between items-center'>
-                                            <h1 className='text-xl md:text-2xl font-semibold'>Add Members</h1>
+                                            <h1 className='text-xl md:text-2xl font-semibold'>
+                                                {(userEvent && ["HYBRID", "TEAM"].includes(event?.participation) && (((userEvent.group?.members?.length || 0) + 1) < event?.maxGroup!)) ? "Add Members" : "Add Members and Register"}
+                                            </h1>
                                             <button
                                                 className='border-2 rounded-lg px-2 py-1 text-lg'
                                                 onClick={() => {
@@ -294,11 +334,24 @@ const Hackathon = () => {
                                             </button>
                                         </div>
                                         <div className='mt-8 flex flex-col'>
-                                            <p className='text-center text-xl font-semibold text-indigo-500'>Search for emails (type more than 3 charecters to start) and click on your members email to invite them to your group.</p>
-                                            <p className='text-center text-xl font-semibold text-red-500'>{event?.participation === "HYBRID" && "If you are a lone wolf you can directly click register."}</p>
+                                            {(userEvent && ["HYBRID", "TEAM"].includes(event?.participation) && (((userEvent.group?.members?.length || 0) + 1) < event?.maxGroup!)) ? (
+                                                <p className='text-center text-lg lg:text-xl font-semibold text-indigo-500'>
+                                                    You can add {event?.maxGroup! - ((userEvent.group?.members?.length || 0) + 1)} more members
+                                                </p>
+                                            ) : (
+                                                <>
+                                                    <p className='text-center text-lg lg:text-xl font-semibold text-indigo-500'>
+                                                        Search for emails (type more than 3 charecters to start) and click on your members email to invite them to your group.
+                                                    </p>
+                                                    <p className='text-center text-md italic font-semibold text-red-500'>
+                                                        {event?.participation === "HYBRID" && "If you are a lone wolf you can directly click register."}
+                                                    </p>
+                                                </>
+                                            )}
                                         </div>
                                         <div className='mt-8'>
                                             <div className='flex flex-wrap gap-2'>
+                                                {/* (userEvent && ["HYBRID", "TEAM"].includes(event?.participation) && (((userEvent.group?.members?.length || 0) + 1) < event?.maxGroup!)) */}
                                                 {memberEmails.map((member, index) => (
                                                     <div key={index} className='flex bg-slate-300 text-black rounded-full gap-2 px-2 py-1'>
                                                         <p>{member.length > 15 ? `${member.slice(0, 15)}...` : member}</p>
@@ -327,7 +380,16 @@ const Hackathon = () => {
                                                     ) : (
                                                         <>
                                                             {users?.filter(user => !memberEmails.includes(user.email))?.map((user, index) => (
-                                                                <p className='cursor-pointer py-2 px-3 hover:bg-gray-200 rounded-lg' key={index} onClick={() => setMemberEmails(emails => [...emails, user.email])}>
+                                                                <p
+                                                                    className='cursor-pointer py-2 px-3 hover:bg-gray-200 rounded-lg'
+                                                                    key={index}
+                                                                    onClick={() => {
+                                                                        // if (!userEvent?.group?.members?.some(member => member.user.email === user.email)) {
+                                                                        //     setMemberEmails(emails => [...emails, user.email]);
+                                                                        // }
+                                                                        setMemberEmails(emails => [...emails, user.email]);
+                                                                    }}
+                                                                >
                                                                     {user.email}
                                                                 </p>
                                                             ))}
@@ -335,7 +397,15 @@ const Hackathon = () => {
                                                     )}
                                                 </div>
                                             </div>
-                                            <button className="w-full mt-2 px-4 py-3 mr-4 bg-pink-500 rounded-lg text-white hover:bg-pink-600" disabled={event?.participation === "TEAM" && memberEmails.length === 0} onClick={enrollEvent}>Register</button>
+                                            {(userEvent && ["HYBRID", "TEAM"].includes(event?.participation) && (((userEvent.group?.members?.length || 0) + 1) < event?.maxGroup!)) ? (
+                                                <button className="w-full text-md md:text-lg font-normal md:font-semibold mt-2 px-4 py-3 mr-4 bg-green-500 rounded-lg text-white hover:bg-green-600" disabled={memberEmails.length === 0} onClick={handleAddMoreMembers}>
+                                                    Add more members
+                                                </button>
+                                            ) : (
+                                                <button className="w-full text-md md:text-lg font-normal md:font-semibold mt-2 px-4 py-3 mr-4 bg-pink-500 rounded-lg text-white hover:bg-pink-600" disabled={event?.participation === "TEAM" && memberEmails.length === 0} onClick={enrollEvent}>
+                                                    Complete Registration
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -359,7 +429,7 @@ const Hackathon = () => {
                                                 <label htmlFor="role" className="text-lg font-semibold">Payment Screenshot</label>
                                                 <input type="file" accept='image/*' onChange={handleFileChange} className='text-md border px-2 py-2 rounded-md' placeholder='Enter Name' />
                                             </div>
-                                            <button disabled={paymentLoading} type='submit' className='bg-indigo-500 px-3 py-2 rounded-lg text-white'>{paymentLoading ? "Loading..." : "Submit"}</button>
+                                            <button disabled={paymentLoading} type='submit' className='text-lg font-semibold bg-indigo-500 px-3 py-2 rounded-lg text-white'>{paymentLoading ? "Loading..." : "Submit"}</button>
                                         </form>
                                     </div>
                                 </div>
@@ -367,16 +437,28 @@ const Hackathon = () => {
 
                             {userEvent ? (
                                 <div className='mt-6'>
+                                    {["HYBRID", "TEAM"].includes(event?.participation) && (((userEvent.group?.members?.length || 0) + 1) < event?.maxGroup!) && (
+                                        <button
+                                            onClick={() => setOpen(true)}
+                                            className="my-1 px-4 py-3 mr-4 bg-green-500 rounded-lg text-white hover:bg-green-600"
+                                        >
+                                            Add Member(s) +
+                                        </button>
+                                    )}
                                     {event.paymentRequired && !["SUBMITTED", "VERIFIED"].includes(userEvent?.payment?.status) &&
                                         (userEvent.group?.leader?._id?.toString() === userContext?.user?._id.toString()) && (
                                             <button
                                                 onClick={() => setOpenPaymemt(true)}
-                                                className="px-4 py-3 mr-4 bg-green-500 rounded-lg text-white hover:bg-green-600"
+                                                className="my-1 px-4 py-3 mr-4 bg-green-500 rounded-lg text-white hover:bg-green-600"
                                             >
                                                 Pay Now →
                                             </button>
-                                        )}
-                                    <p className="mt-2 text-slate-400 italic text-sm">You have already registered for this event.</p>
+                                        )
+                                    }
+                                    <p className="mt-2 text-slate-400 italic text-sm">
+                                        You have already registered for this event.
+                                        {(userEvent && ["HYBRID", "TEAM"].includes(event?.participation) && (((userEvent.group?.members?.length || 0) + 1) < event?.maxGroup!)) && ` You can add ${event?.maxGroup! - ((userEvent.group?.members?.length || 0) + 1)} more members`}
+                                    </p>
                                 </div>
                             ) : (
                                 <>

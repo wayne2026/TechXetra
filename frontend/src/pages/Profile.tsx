@@ -75,12 +75,11 @@ const Profile = () => {
 
 	useEffect(() => {
         if (!userContext?.user?.isVerified) {
-            // Redirect after a brief timeout for user to see the message
             const timer = setTimeout(() => {
                 navigate(from, { replace: true });
-            }, 2000); // 2 second delay before redirect
+            }, 2000);
 
-            return () => clearTimeout(timer); // Cleanup timeout on component unmount
+            return () => clearTimeout(timer);
         }
     }, [userContext?.user, from, navigate]);
 
@@ -112,7 +111,6 @@ const Profile = () => {
 			setEvents(data.user.events);
 		} catch (error: any) {
 			toast.error(error.response.data.message);
-			console.log(error.response.data.message);
 		}
 	}
 
@@ -206,9 +204,11 @@ const Profile = () => {
 
 	const handleCheckoutInvitation = async (choice: string, userId: string, eventId: string) => {
 		try {
-            const { data } = await axios.put(`${import.meta.env.VITE_BASE_URL}/events/invite/${userId}/${eventId}`, { choice }, { withCredentials: true });
-            setEvents(data.user.events);
-			setInvites(data.user.invites);
+            await axios.put(`${import.meta.env.VITE_BASE_URL}/events/invite/${userId}/${eventId}`, { choice }, { withCredentials: true });
+            // setEvents(data.user.events);
+			// setInvites(data.user.invites);
+			fetchEvents();
+			fetchInvites();
             toast.success("Invite checked out successfully");
         } catch (error: any) {
 			toast.error(error.response.data.message);
@@ -227,9 +227,8 @@ const Profile = () => {
 
 	const handleDelteUserEvent = async (eventId: string) => {
 		try {
-            const { data }: { data: UserEventResponse } = await axios.delete(`${import.meta.env.VITE_BASE_URL}/events/byId/${eventId}`, { withCredentials: true });
-            setEvents(data.user.events);
-			console.log(data)
+            await axios.delete(`${import.meta.env.VITE_BASE_URL}/events/byId/${eventId}`, { withCredentials: true });
+            fetchEvents();
             toast.success("Event deleted successfully");
             setOpenEventDetails(false);
         } catch (error: any) {
@@ -239,9 +238,10 @@ const Profile = () => {
 
 	const handleDeleteMember = async (eventId: string, memberId: string) => {
 		try {
-			const { data } = await axios.put(`${import.meta.env.VITE_BASE_URL}/events/member/del/${eventId}`, { memberId }, { withCredentials: true });
-			console.log(data)
-            toast.success("Memver Removed successfully");
+			axios.put(`${import.meta.env.VITE_BASE_URL}/events/member/del/${eventId}`, { memberId }, { withCredentials: true });
+			// setEvents(data.user.events);
+			fetchEvents();
+            toast.success("Member Removed successfully");
             setOpenEventDetails(false);
 		} catch (error: any) {
 			toast.error(error.response.data.message);
@@ -417,7 +417,7 @@ const Profile = () => {
 														<div>
 															{currentEvent.group?.members?.map((member, index) => (
 																<div key={index} className="pl-6">{member.user.email} - {member?.status}
-																{userContext?.user?.role === "ADMIN" && userContext?.user?._id === currentEvent.group?.leader?._id && (
+																{userContext?.user?._id === currentEvent.group?.leader?._id && (
 																	<button className="bg-slate-200 text-red-500 m-1 p-1 rounded-lg" onClick={() => handleDeleteMember(currentEvent.eventId._id, member.user._id)}>
 																		<MdDelete />
 																	</button>

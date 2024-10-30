@@ -391,7 +391,7 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
 
         const { memberEmails } = req.body;
         if (memberEmails && !Array.isArray(memberEmails)) {
-            return next(new ErrorHandler("Data should be an array of events", StatusCodes.BAD_REQUEST));
+            return next(new ErrorHandler("Data should be an array of emails", StatusCodes.BAD_REQUEST));
         }
         if (memberEmails.length > (event.maxGroup! - 1)) {
             return next(new ErrorHandler("Data exceeded limit", StatusCodes.BAD_REQUEST));
@@ -561,7 +561,7 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
 
         const { memberEmails } = req.body;
         if (memberEmails && !Array.isArray(memberEmails)) {
-            return next(new ErrorHandler("Data should be an array of events", StatusCodes.BAD_REQUEST));
+            return next(new ErrorHandler("Data should be an array of emails", StatusCodes.BAD_REQUEST));
         }
 
         if (memberEmails && memberEmails.length > (event.maxGroup! - (1 + prevMembers?.length))) {
@@ -627,12 +627,14 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
         }
 
         const updateUserEvent = await User.findOneAndUpdate(
-            { _id: user._id, 'events._id': event._id },
+            { _id: user._id, 'events.eventId': event._id },
             {
                 $push: { 'events.$.group.members': teamMembersArray }
             },
             { new: true, runValidators: true, useFindAndModify: false }
-        );
+        ).select("events");
+
+        console.log(updateUserEvent)
 
         groupMembers.forEach(async (member) => {
             try {
@@ -666,7 +668,7 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
 
         res.status(200).json({
             success: true,
-            event: updateUserEvent,
+            user: updateUserEvent,
             message: `Event registered successfully. ${memberEmails.length > 0 ? `Invite sent to ${memberEmails.join(', ')}, tell them to check their email or profile.` : ""}`
         });
     } catch (error) {
@@ -728,7 +730,9 @@ export const removeMember = async (req: CustomRequest, res: Response, next: Next
                 $pull: { 'events.$.group.members': { user: member._id } }
             },
             { new: true, runValidators: true, useFindAndModify: false }
-        );
+        ).select("events");
+
+        console.log(updatedUser)
 
         await User.findOneAndUpdate(
             { _id: member._id },

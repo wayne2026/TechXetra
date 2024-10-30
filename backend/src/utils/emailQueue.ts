@@ -69,7 +69,7 @@ worker.on('failed', async (job: Job<EmailReturnData> | undefined, err: Error) =>
     console.log(`${job?.id} has failed with ${err.message}`);
     await EmailModel.create({
         email: job?.data.email,
-        status: 'SUCCESS',
+        status: 'ERROR',
         error: err.message,
     });
 });
