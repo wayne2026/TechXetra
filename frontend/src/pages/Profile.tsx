@@ -227,7 +227,7 @@ const Profile = () => {
 
 	const handleDelteUserEvent = async (eventId: string) => {
 		try {
-            await axios.delete(`${import.meta.env.VITE_BASE_URL}/events/byId/${eventId}`, { withCredentials: true });
+            await axios.delete(`${import.meta.env.VITE_BASE_URL}/events/user/${eventId}`, { withCredentials: true });
             fetchEvents();
             toast.success("Event deleted successfully");
             setOpenEventDetails(false);
