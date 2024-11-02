@@ -8,11 +8,10 @@ import {
 	flexRender,
 	getCoreRowModel,
 	getFilteredRowModel,
-	getPaginationRowModel,
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -33,12 +32,30 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 export type User = {
 	id: string;
+	firstName: string;
+	lastName: string;
 	email: string;
 	role: string;
+	phoneNumber: string;
+	schoolOrCollege: string;
+	schoolName?: string;
+	collegeName?: string;
+	collegeClass?: string;
+	schoolClass?: string;
 	isVerified: boolean;
+	isBlocked: boolean;
+	account: string[];
 	createdAt: string;
 	updatedAt: string;
 };
@@ -69,39 +86,120 @@ export const columns: ColumnDef<User>[] = [
 		enableHiding: false,
 	},
 	{
+		accessorKey: "name",
+		header: "Name",
+		cell: ({ row }) => (
+			<div className="font-medium">
+				{row.original.firstName} {row.original.lastName}
+			</div>
+		),
+	},
+	{
 		accessorKey: "email",
-		header: "Email",
+		header: ({ column }) => (
+			<Button
+				variant="ghost"
+				onClick={() =>
+					column.toggleSorting(column.getIsSorted() === "asc")
+				}
+			>
+				Email
+				<ArrowUpDown className="ml-2 h-4 w-4" />
+			</Button>
+		),
 		cell: ({ row }) => (
 			<div className="lowercase">{row.getValue("email")}</div>
 		),
 	},
 	{
-		accessorKey: "role",
-		header: "Role",
-		cell: ({ row }) => <div>{row.getValue("role")}</div>,
+		accessorKey: "phoneNumber",
+		header: "Phone",
+		cell: ({ row }) => <div>{row.getValue("phoneNumber")}</div>,
 	},
 	{
-		accessorKey: "isVerified",
-		header: "Verified",
+		accessorKey: "role",
+		header: "Role",
 		cell: ({ row }) => (
-			<div>{row.getValue("isVerified") ? "Yes" : "No"}</div>
+			<Badge variant="outline" className="capitalize">
+				{row.getValue("role")}
+			</Badge>
 		),
 	},
 	{
-		accessorKey: "createdAt",
-		header: "Created At",
+		accessorKey: "account",
+		header: "Account Type",
 		cell: ({ row }) => (
-			<div>
-				{new Date(row.getValue("createdAt")).toLocaleDateString()}
+			<div className="flex gap-1">
+				{(row.getValue("account") as string[]).map((type) => (
+					<Badge
+						key={type}
+						variant="secondary"
+						className="capitalize"
+					>
+						{type.toLowerCase()}
+					</Badge>
+				))}
 			</div>
 		),
 	},
 	{
-		accessorKey: "updatedAt",
-		header: "Updated At",
+		accessorKey: "institution",
+		header: "Institution",
+		cell: ({ row }) => {
+			const type = row.original.schoolOrCollege;
+			const name =
+				type === "SCHOOL"
+					? row.original.schoolName
+					: row.original.collegeName;
+			const className =
+				type === "SCHOOL"
+					? row.original.schoolClass
+					: row.original.collegeClass;
+
+			return (
+				<div>
+					<div className="font-medium">{name}</div>
+					<div className="text-sm text-muted-foreground">
+						{type.charAt(0) + type.slice(1).toLowerCase()} -{" "}
+						{className}
+					</div>
+				</div>
+			);
+		},
+	},
+	{
+		accessorKey: "status",
+		header: "Status",
+		cell: ({ row }) => {
+			const isVerified = row.original.isVerified;
+			const isBlocked = row.original.isBlocked;
+
+			return (
+				<div className="flex gap-2">
+					<Badge variant={isVerified ? "default" : "secondary"}>
+						{isVerified ? "Verified" : "Unverified"}
+					</Badge>
+					{isBlocked && <Badge variant="destructive">Blocked</Badge>}
+				</div>
+			);
+		},
+	},
+	{
+		accessorKey: "createdAt",
+		header: ({ column }) => (
+			<Button
+				variant="ghost"
+				onClick={() =>
+					column.toggleSorting(column.getIsSorted() === "asc")
+				}
+			>
+				Joined
+				<ArrowUpDown className="ml-2 h-4 w-4" />
+			</Button>
+		),
 		cell: ({ row }) => (
-			<div>
-				{new Date(row.getValue("updatedAt")).toLocaleDateString()}
+			<div className="text-sm">
+				{new Date(row.getValue("createdAt")).toLocaleDateString()}
 			</div>
 		),
 	},
@@ -130,6 +228,9 @@ export const columns: ColumnDef<User>[] = [
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem>View Details</DropdownMenuItem>
+						<DropdownMenuItem className="text-destructive">
+							{user.isBlocked ? "Unblock User" : "Block User"}
+						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			);
@@ -141,6 +242,10 @@ const UsersPage = () => {
 	const [data, setData] = React.useState<User[]>([]);
 	const [loading, setLoading] = React.useState(true);
 	const [error, setError] = React.useState<string | null>(null);
+	const [totalPages, setTotalPages] = React.useState(0);
+	const [currentPage, setCurrentPage] = React.useState(1);
+	const [pageSize, setPageSize] = React.useState(10);
+	const [keyword, setKeyword] = React.useState("");
 
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] =
@@ -149,24 +254,32 @@ const UsersPage = () => {
 		React.useState<VisibilityState>({});
 	const [rowSelection, setRowSelection] = React.useState({});
 
+	const fetchUsers = React.useCallback(async () => {
+		try {
+			setLoading(true);
+			const response = await axios.get(
+				`http://localhost:8000/api/v1/admins/users/all`,
+				{
+					params: {
+						page: currentPage,
+						limit: pageSize,
+						keyword: keyword || undefined,
+					},
+					withCredentials: true,
+				}
+			);
+			setData(response.data.users);
+			setTotalPages(Math.ceil(response.data.total / pageSize));
+		} catch (err) {
+			setError("Failed to fetch users.");
+		} finally {
+			setLoading(false);
+		}
+	}, [currentPage, pageSize, keyword]);
+
 	React.useEffect(() => {
-		const fetchUsers = async () => {
-			try {
-				const response = await axios.get(
-					"http://localhost:8000/api/v1/admins/users/all",
-					{
-						withCredentials: true,
-					}
-				);
-				setData(response.data.users);
-			} catch (err) {
-				setError("Failed to fetch users.");
-			} finally {
-				setLoading(false);
-			}
-		};
 		fetchUsers();
-	}, []);
+	}, [fetchUsers]);
 
 	const table = useReactTable({
 		data,
@@ -174,7 +287,6 @@ const UsersPage = () => {
 		onSortingChange: setSorting,
 		onColumnFiltersChange: setColumnFilters,
 		getCoreRowModel: getCoreRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		onColumnVisibilityChange: setColumnVisibility,
@@ -187,29 +299,54 @@ const UsersPage = () => {
 		},
 	});
 
-	if (loading) return <p>Loading...</p>;
-	if (error) return <p>{error}</p>;
+	const handlePageChange = (newPage: number) => {
+		setCurrentPage(newPage);
+	};
+
+	const handlePageSizeChange = (value: string) => {
+		setPageSize(Number(value));
+		setCurrentPage(1);
+	};
+
+	if (loading)
+		return (
+			<div className="flex items-center justify-center h-screen">
+				Loading...
+			</div>
+		);
+	if (error)
+		return (
+			<div className="flex items-center justify-center h-screen text-red-500">
+				{error}
+			</div>
+		);
 
 	return (
-		<div className="w-full md:w-[80%] mx-auto mt-24 bg-white p-6 rounded-lg">
+		<div className="w-full md:w-[90%] mx-auto mt-24 bg-white p-6 rounded-lg shadow-sm">
 			<div className="flex items-center py-4 px-2">
 				<p className="text-2xl font-semibold">All Users</p>
 			</div>
-			<div className="flex items-center py-4">
+			<div className="flex items-center py-4 gap-4">
 				<Input
-					placeholder="Filter emails..."
-					value={
-						(table
-							.getColumn("email")
-							?.getFilterValue() as string) ?? ""
-					}
-					onChange={(event) =>
-						table
-							.getColumn("email")
-							?.setFilterValue(event.target.value)
-					}
+					placeholder="Search users..."
+					value={keyword}
+					onChange={(event) => setKeyword(event.target.value)}
 					className="max-w-sm"
 				/>
+				<Select
+					value={pageSize.toString()}
+					onValueChange={handlePageSizeChange}
+				>
+					<SelectTrigger className="w-[180px]">
+						<SelectValue placeholder="Select page size" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="5">5 per page</SelectItem>
+						<SelectItem value="10">10 per page</SelectItem>
+						<SelectItem value="20">20 per page</SelectItem>
+						<SelectItem value="50">50 per page</SelectItem>
+					</SelectContent>
+				</Select>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button variant="outline" className="ml-auto">
@@ -287,6 +424,40 @@ const UsersPage = () => {
 						)}
 					</TableBody>
 				</Table>
+			</div>
+			<div className="flex items-center justify-end space-x-2 py-4">
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={() => handlePageChange(currentPage - 1)}
+					disabled={currentPage === 1}
+				>
+					Previous
+				</Button>
+				<div className="flex items-center gap-2">
+					{Array.from({ length: totalPages }, (_, i) => i + 1).map(
+						(page) => (
+							<Button
+								key={page}
+								variant={
+									currentPage === page ? "default" : "outline"
+								}
+								size="sm"
+								onClick={() => handlePageChange(page)}
+							>
+								{page}
+							</Button>
+						)
+					)}
+				</div>
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={() => handlePageChange(currentPage + 1)}
+					disabled={currentPage === totalPages}
+				>
+					Next
+				</Button>
 			</div>
 		</div>
 	);
