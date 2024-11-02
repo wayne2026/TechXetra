@@ -211,7 +211,7 @@ export const getUsersInEvents = async (req: Request, res: Response, next: NextFu
                     let: { leaderId: "$events.group.leader" },
                     pipeline: [
                         { $match: { $expr: { $eq: ["$_id", "$$leaderId"] } } },
-                        { $project: { firstName: 1, lastName: 1, email: 1, phoneNumber: 1, schoolOrCollege: 1, schoolClass: 1, collegeClass: 1 } }
+                        { $project: { firstName: 1, lastName: 1, email: 1, phoneNumber: 1, schoolOrCollege: 1, schoolName: 1, collegeName: 1, schoolClass: 1, collegeClass: 1 } }
                     ],
                     as: "groupLeader"
                 }
@@ -225,7 +225,7 @@ export const getUsersInEvents = async (req: Request, res: Response, next: NextFu
                     let: { memberIds: "$events.group.members.user" },
                     pipeline: [
                         { $match: { $expr: { $in: ["$_id", "$$memberIds"] } } },
-                        { $project: { firstName: 1, lastName: 1, email: 1, phoneNumber: 1, schoolOrCollege: 1, schoolClass: 1, collegeClass: 1 } }
+                        { $project: { firstName: 1, lastName: 1, email: 1, phoneNumber: 1, schoolOrCollege: 1, schoolName: 1, collegeName: 1, schoolClass: 1, collegeClass: 1 } }
                     ],
                     as: "groupMembers"
                 }
@@ -248,6 +248,8 @@ export const getUsersInEvents = async (req: Request, res: Response, next: NextFu
                             schoolOrCollege: "$schoolOrCollege",
                             schoolName: "$schoolName",
                             collegeName: "$collegeName",
+                            schoolClass: "$schoolClass",
+                            collegeClass: "$collegeClass",
                             payment: "$events.payment",
                             physicalVerification: "$events.physicalVerification"
                         }
