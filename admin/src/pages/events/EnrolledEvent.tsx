@@ -4,26 +4,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
 
-export type User = {
-	id: string;
-    firstName: string;
-    lastName: string;
-    schoolOrCollege: String;
-    schoolName: string;
-    collegeName: string;
-	email: string;
-	role: string;
-	isVerified: boolean;
-	createdAt: string;
-	updatedAt: string;
-};
-
-export type Event = {
-    title: string;
-    eventDate: string;
-    venue: string;
-    amount: number;
-};
 
 const EnrolledEvent = () => {
     const location = useLocation();
@@ -32,7 +12,7 @@ const EnrolledEvent = () => {
     const eventID = searchParams.get('event');
     const [user, setUser] = useState<User | null>(null);
     
-    const [event, setEvent] = useState<Event | null>(null);
+    const [event, setEvent] = useState<EventDetails | null>(null);
     const [userError, setUserError] = useState(false);
     const [payment, setPayment] = useState({
         status: "paid",
@@ -126,7 +106,7 @@ console.log(user);
                 </div>
                 <div className="flex justify-between">
                     <span className="text-gray-700 font-medium">Time:</span>
-                    <span className="text-gray-900">{event?.eventDate}</span>
+                    <span className="text-gray-900">{event?.eventDate?.toLocaleString()}</span>
                 </div>
             </div>
 
