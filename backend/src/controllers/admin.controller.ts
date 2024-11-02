@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from "http-status-codes";
-import User, { roleEnum } from '../models/user.model.js';
+import User, { IUserEvent, roleEnum } from '../models/user.model.js';
 import { CustomRequest } from '../middlewares/auth.middleware.js';
 import Event from '../models/event.model.js';
 import ErrorHandler from '../utils/errorHandler.js';
