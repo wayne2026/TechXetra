@@ -1,134 +1,331 @@
-import { Button } from "@/components/ui/button";
+import * as React from "react";
 import axios from "axios";
-import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import moment from 'moment-timezone';
+import {
+	CaretSortIcon,
+	ChevronDownIcon,
+	DotsHorizontalIcon,
+} from "@radix-ui/react-icons";
+import {
+	ColumnDef,
+	ColumnFiltersState,
+	SortingState,
+	VisibilityState,
+	flexRender,
+	getCoreRowModel,
+	getFilteredRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	useReactTable,
+} from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+	DropdownMenu,
+	DropdownMenuCheckboxItem,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
-interface FormData {
-    eventDate: string;
-    deadline: string;
-    image: File | null;
-    backgroundImage: File | null;
+// Enum and Interface
+export const participationEnum = {
+	SOLO: "SOLO",
+	TEAM: "TEAM",
+	HYBRID: "HYBRID",
+} as const;
+
+export const categoryEnum = {
+	TECHNICAL: "TECHNICAL",
+	CULTURAL: "CULTURAL",
+	SPORTS: "SPORTS",
+	ESPORTS: "ESPORTS",
+	GENERAL: "GENERAL",
+	MISCELLANEOUS: "MISCELLANEOUS",
+} as const;
+
+interface IEvent {
+	_id: string;
+	title: string;
+	description: string;
+	category: (typeof categoryEnum)[keyof typeof categoryEnum];
+	participation: (typeof participationEnum)[keyof typeof participationEnum];
+	amount?: number;
+	eventDate: Date;
+	createdAt: Date;
+	updatedAt: Date;
 }
 
-const EventsPage = () => {
+export const columns: ColumnDef<IEvent>[] = [
+	{
+		id: "select",
+		header: ({ table }) => (
+			<Checkbox
+				checked={
+					table.getIsAllPageRowsSelected() ||
+					(table.getIsSomePageRowsSelected() && "indeterminate")
+				}
+				onCheckedChange={(value) =>
+					table.toggleAllPageRowsSelected(!!value)
+				}
+				aria-label="Select all"
+			/>
+		),
+		cell: ({ row }) => (
+			<Checkbox
+				checked={row.getIsSelected()}
+				onCheckedChange={(value) => row.toggleSelected(!!value)}
+				aria-label="Select row"
+			/>
+		),
+		enableSorting: false,
+		enableHiding: false,
+	},
+	{
+		accessorKey: "title",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() =>
+						column.toggleSorting(column.getIsSorted() === "asc")
+					}
+				>
+					Title
+					<CaretSortIcon className="ml-2 h-4 w-4" />
+				</Button>
+			);
+		},
+	},
+	{
+		accessorKey: "description",
+		header: "Description",
+	},
+	{
+		accessorKey: "category",
+		header: "Category",
+		cell: ({ row }) => (
+			<div className="capitalize">{row.getValue("category")}</div>
+		),
+	},
+	{
+		accessorKey: "amount",
+		header: () => <div className="text-right">Amount</div>,
+		cell: ({ row }) => {
+			const amount = parseFloat(row.getValue("amount"));
 
-    const [search] = useSearchParams();
-    const id = search.get('id');
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState<FormData>({
-        eventDate: "",
-        deadline: "",
-        image: null,
-        backgroundImage: null
-    });
+			const formatted = new Intl.NumberFormat("en-US", {
+				style: "currency",
+				currency: "USD",
+			}).format(amount);
 
+			return <div className="text-right font-medium">{formatted}</div>;
+		},
+	},
+	{
+		id: "actions",
+		cell: ({ row }) => {
+			const event = row.original;
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
+			return (
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="ghost" className="h-8 w-8 p-0">
+							<span className="sr-only">Open menu</span>
+							<DotsHorizontalIcon className="h-4 w-4" />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						<DropdownMenuLabel>Actions</DropdownMenuLabel>
+						<DropdownMenuItem
+							onClick={() =>
+								navigator.clipboard.writeText(event._id)
+							}
+						>
+							Copy event ID
+						</DropdownMenuItem>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem>View details</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			);
+		},
+	},
+];
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, files } = e.target;
-        if (files && files.length > 0) {
-            setFormData({
-                ...formData,
-                [name]: files[0],
-            });
-        }
-    };
+export function EventsPage() {
+	const [sorting, setSorting] = React.useState<SortingState>([]);
+	const [columnFilters, setColumnFilters] =
+		React.useState<ColumnFiltersState>([]);
+	const [columnVisibility, setColumnVisibility] =
+		React.useState<VisibilityState>({});
+	const [rowSelection, setRowSelection] = React.useState({});
+	const [events, setEvents] = React.useState<IEvent[]>([]); // State to hold events data
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const config = {
-            headers: { "Content-Type": "multipart/form-data" },
-            withCredentials: true,
-        };
+	// Fetching events data
+	React.useEffect(() => {
+		const fetchEvents = async () => {
+			try {
+				const response = await axios.get(
+					"http://localhost:8000/api/v1/events/all"
+				);
+				setEvents(response.data.events);
+			} catch (error) {
+				console.error("Failed to fetch events:", error);
+			}
+		};
 
-        const form = new FormData();
-        const eventDateUTC = moment(formData.eventDate).utc().format();
-        const deadlineDateUTC = moment(formData.deadline).utc().format();
-        if (formData.eventDate) {
-            form.append('eventDate', eventDateUTC);
-        }
-        if (formData.deadline) {
-            form.append('deadline', deadlineDateUTC);
-        }
-        if (formData.image) {
-            form.append('image', formData.image);
-        }
-        if (formData.backgroundImage) {
-            form.append('event', formData.backgroundImage);
-        }
-        try {
-            if (id) {
-                await axios.put(`${import.meta.env.VITE_BASE_URL}/events/byId/${id}`, formData, config);
-                toast.success("Updated");
-            } else {
-                toast.info("Can fetch ID directly enter the link, don't edit")
-            }
-        } catch (error: any) {
-            toast.error(error.response.data.message);
-        }
-    };
+		fetchEvents();
+	}, []);
 
-    return (
-        <div className="mt-36">
-            <Button onClick={() => navigate("/events/create")}>Create New Event</Button>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="eventDate">Event Date:</label>
-                    <input
-                        type="datetime-local"
-                        id="eventDate"
-                        name="eventDate"
-                        value={formData.eventDate}
-                        onChange={handleInputChange}
-                    />
-                </div>
+	const table = useReactTable({
+		data: events,
+		columns,
+		onSortingChange: setSorting,
+		onColumnFiltersChange: setColumnFilters,
+		getCoreRowModel: getCoreRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+		onColumnVisibilityChange: setColumnVisibility,
+		onRowSelectionChange: setRowSelection,
+		state: {
+			sorting,
+			columnFilters,
+			columnVisibility,
+			rowSelection,
+		},
+	});
 
-                <div>
-                    <label htmlFor="deadline">Event Deadline:</label>
-                    <input
-                        type="datetime-local"
-                        id="deadline"
-                        name="deadline"
-                        value={formData.deadline}
-                        onChange={handleInputChange}
-                    />
-                </div>
-
-                <div>
-                    <label htmlFor="image">Event Image:</label>
-                    <input
-                        type="file"
-                        id="image"
-                        name="image"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                    />
-                </div>
-
-                <div>
-                    <label htmlFor="backgroundImage">Event Background:</label>
-                    <input
-                        type="file"
-                        id="backgroundImage"
-                        name="backgroundImage"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                    />
-                </div>
-
-                <button type="submit">Upload</button>
-            </form>
-        </div>
-    )
+	return (
+		<div className="w-full">
+			<div className="flex items-center py-4">
+				<Input
+					placeholder="Filter titles..."
+					value={
+						(table
+							.getColumn("title")
+							?.getFilterValue() as string) ?? ""
+					}
+					onChange={(event) =>
+						table
+							.getColumn("title")
+							?.setFilterValue(event.target.value)
+					}
+					className="max-w-sm"
+				/>
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="outline" className="ml-auto">
+							Columns <ChevronDownIcon className="ml-2 h-4 w-4" />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						{table
+							.getAllColumns()
+							.filter((column) => column.getCanHide())
+							.map((column) => (
+								<DropdownMenuCheckboxItem
+									key={column.id}
+									className="capitalize"
+									checked={column.getIsVisible()}
+									onCheckedChange={(value) =>
+										column.toggleVisibility(!!value)
+									}
+								>
+									{column.id}
+								</DropdownMenuCheckboxItem>
+							))}
+					</DropdownMenuContent>
+				</DropdownMenu>
+			</div>
+			<div className="rounded-md border">
+				<Table>
+					<TableHeader>
+						{table.getHeaderGroups().map((headerGroup) => (
+							<TableRow key={headerGroup.id}>
+								{headerGroup.headers.map((header) => (
+									<TableHead key={header.id}>
+										{header.isPlaceholder
+											? null
+											: flexRender(
+													header.column.columnDef
+														.header,
+													header.getContext()
+											  )}
+									</TableHead>
+								))}
+							</TableRow>
+						))}
+					</TableHeader>
+					<TableBody>
+						{table.getRowModel().rows.length ? (
+							table.getRowModel().rows.map((row) => (
+								<TableRow
+									key={row.id}
+									data-state={
+										row.getIsSelected() && "selected"
+									}
+								>
+									{row.getVisibleCells().map((cell) => (
+										<TableCell key={cell.id}>
+											{flexRender(
+												cell.column.columnDef.cell,
+												cell.getContext()
+											)}
+										</TableCell>
+									))}
+								</TableRow>
+							))
+						) : (
+							<TableRow>
+								<TableCell
+									colSpan={columns.length}
+									className="h-24 text-center"
+								>
+									No results.
+								</TableCell>
+							</TableRow>
+						)}
+					</TableBody>
+				</Table>
+			</div>
+			<div className="flex items-center justify-end space-x-2 py-4">
+				<div className="flex-1 text-sm text-muted-foreground">
+					{table.getFilteredSelectedRowModel().rows.length} of{" "}
+					{table.getFilteredRowModel().rows.length} row(s) selected.
+				</div>
+				<div className="space-x-2">
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => table.previousPage()}
+						disabled={!table.getCanPreviousPage()}
+					>
+						Previous
+					</Button>
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => table.nextPage()}
+						disabled={!table.getCanNextPage()}
+					>
+						Next
+					</Button>
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export default EventsPage;
