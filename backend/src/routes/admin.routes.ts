@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authorizeRoles, isUserVerified, verifyToken } from "../middlewares/auth.middleware.js";
-import {deleteUser, getAllUsers, getUserById, loginUser, toggleAllIsVisible, toggleBlockUser, updatedUserRole } from "../controllers/admin.controller.js";
+import {deleteUser, getAllUsers, getEventsRegistered, getUserById, getUsersInEvents, loginUser, toggleAllIsVisible, toggleBlockUser, updatedUserRole } from "../controllers/admin.controller.js";
 import { roleEnum } from "../models/user.model.js";
 
 const router = Router();
@@ -13,5 +13,7 @@ router.route("/users/byId/:id")
 router.route("/users/block/:id").put(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), toggleBlockUser);
 router.route("/users/role/:id").put(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), updatedUserRole);
 router.route("/events/isVisible/all").put(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), toggleAllIsVisible);
+router.route("/users/event/:id").get(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), getUsersInEvents);
+router.route("/events/regi").get(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), getEventsRegistered);
 
 export default router;

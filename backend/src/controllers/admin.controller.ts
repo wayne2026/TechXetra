@@ -6,6 +6,7 @@ import Event from '../models/event.model.js';
 import ErrorHandler from '../utils/errorHandler.js';
 import sendToken from '../utils/jwtToken.js';
 import ApiFeatures from '../utils/apiFeatures.js';
+import mongoose from 'mongoose';
 
 export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -162,6 +163,166 @@ export const getEventsEnrolledByUser = async (req: Request, res: Response, next:
         res.status(StatusCodes.OK).json({
             success: true,
             data: events,
+            count: events.length
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getUsersInEvents = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const event = await Event.findById(req.params.id);
+        if (!event) {
+            return next(new ErrorHandler("Event not found", 404));
+        }
+
+        const users = await User.aggregate([
+            {
+                $match: {
+                    "events.eventId": new mongoose.Types.ObjectId(req.params.id)
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    firstName: 1,
+                    lastName: 1,
+                    email: 1,
+                    phoneNumber: 1,
+                    schoolOrCollege: 1,
+                    schoolName: 1,
+                    collegeName: 1,
+                    "events": {
+                        $filter: {
+                            input: "$events",
+                            as: "event",
+                            cond: { $eq: ["$$event.eventId", new mongoose.Types.ObjectId(req.params.id)] }
+                        }
+                    }
+                }
+            },
+            {
+                $unwind: "$events"
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    let: { leaderId: "$events.group.leader" },
+                    pipeline: [
+                        { $match: { $expr: { $eq: ["$_id", "$$leaderId"] } } },
+                        { $project: { firstName: 1, lastName: 1, email: 1, phoneNumber: 1, schoolOrCollege: 1, schoolClass: 1, collegeClass: 1 } }
+                    ],
+                    as: "groupLeader"
+                }
+            },
+            {
+                $unwind: { path: "$groupLeader", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    let: { memberIds: "$events.group.members.user" },
+                    pipeline: [
+                        { $match: { $expr: { $in: ["$_id", "$$memberIds"] } } },
+                        { $project: { firstName: 1, lastName: 1, email: 1, phoneNumber: 1, schoolOrCollege: 1, schoolClass: 1, collegeClass: 1 } }
+                    ],
+                    as: "groupMembers"
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        leaderId: { $ifNull: ["$events.group.leader", "$_id"] },
+                        isGroup: { $gt: [{ $size: "$events.group.members" }, 0] }
+                    },
+                    leader: { $first: "$groupLeader" },
+                    members: { $first: "$groupMembers" },
+                    user: {
+                        $first: {
+                            userId: "$_id",
+                            firstName: "$firstName",
+                            lastName: "$lastName",
+                            email: "$email",
+                            phoneNumber: "$phoneNumber",
+                            schoolOrCollege: "$schoolOrCollege",
+                            schoolName: "$schoolName",
+                            collegeName: "$collegeName",
+                            payment: "$events.payment",
+                            physicalVerification: "$events.physicalVerification"
+                        }
+                    }
+                }
+            },
+            {
+                $replaceRoot: {
+                    newRoot: {
+                        $cond: [
+                            { $eq: ["$_id.isGroup", true] },
+                            {
+                                leader: "$leader",
+                                members: "$members",
+                                payment: "$user.payment",
+                                physicalVerification: "$user.physicalVerification"
+                            },
+                            "$user"
+                        ]
+                    }
+                }
+            }
+        ]);
+
+        res.status(StatusCodes.OK).json({
+            success: true,
+            users,
+            count: users.length
+        });
+    } catch (error) {
+        next();
+    }
+}
+
+export const getEventsRegistered = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const events = await User.aggregate([
+            {
+                $unwind: "$events"
+            },
+            {
+                $group: {
+                    _id: "$events.eventId",
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $lookup: {
+                    from: "events",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "eventDetails"
+                }
+            },
+            {
+                $unwind: "$eventDetails"
+            },
+            {
+                $project: {
+                    _id: 0,
+                    eventId: "$_id",
+                    title: "$eventDetails.title"
+                }
+            },
+            {
+                $group: {
+                    _id: "$eventId",
+                    title: { $first: "$title" }
+                }
+            }
+        ]);
+
+        res.status(StatusCodes.OK).json({
+            success: true,
+            events,
             count: events.length
         });
     } catch (error) {
