@@ -1,5 +1,6 @@
 import * as React from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import {
 	ColumnDef,
 	ColumnFiltersState,
@@ -208,6 +209,7 @@ export const columns: ColumnDef<User>[] = [
 		enableHiding: false,
 		cell: ({ row }) => {
 			const user = row.original;
+			const navigate = useNavigate(); // Initialize useNavigate
 
 			return (
 				<DropdownMenu>
@@ -220,14 +222,20 @@ export const columns: ColumnDef<User>[] = [
 					<DropdownMenuContent align="end">
 						<DropdownMenuLabel>Actions</DropdownMenuLabel>
 						<DropdownMenuItem
-							onClick={() =>
-								navigator.clipboard.writeText(user.id)
-							}
+							onClick={() => {
+								navigator.clipboard.writeText(user.id);
+							}}
 						>
 							Copy User ID
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem>View Details</DropdownMenuItem>
+						<DropdownMenuItem
+							onClick={() =>
+								navigate(`/users/user/byID?id=${user.id}`)
+							} // Redirect to user details page
+						>
+							View Details
+						</DropdownMenuItem>
 						<DropdownMenuItem className="text-destructive">
 							{user.isBlocked ? "Unblock User" : "Block User"}
 						</DropdownMenuItem>
