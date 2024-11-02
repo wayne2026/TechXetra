@@ -9,6 +9,7 @@ import userRouter from "./routes/user.routes.js";
 import eventRouter from "./routes/event.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import emailRoutes from "./routes/email.routes.js";
+import passRoutes from "./routes/pass.routes.js";
 
 const app: Application = express();
 
@@ -46,6 +47,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/events", eventRouter);
 app.use("/api/v1/admins", adminRoutes);
 app.use("/api/v1/emails", emailRoutes);
+app.use("/api/v1/passes", passRoutes);
 
 app.use(ErrorMiddleware);
 

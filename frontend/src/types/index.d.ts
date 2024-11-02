@@ -79,6 +79,10 @@ interface User {
 	phoneNumber: string;
 	isVerified: boolean;
 	isBlocked: boolean;
+	pass: {
+		hasPass: boolean;
+		isPaid: boolean;
+	};
 	// events: UserEvent[] | [];
 	googleId: string;
 }

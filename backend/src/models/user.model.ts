@@ -76,6 +76,14 @@ export interface IUserInvites extends Document {
 	status: typeof invitationStatusEnum[keyof typeof invitationStatusEnum];
 }
 
+export interface IUserPass extends Document {
+	userId: mongoose.Schema.Types.ObjectId;
+	hasPass: boolean,
+	cost: number,
+	generatedAt: Date,
+	isPaid: boolean
+}
+
 export interface IUser extends Document {
 	_id: mongoose.Schema.Types.ObjectId;
 	firstName: string;
@@ -93,6 +101,7 @@ export interface IUser extends Document {
 	phoneNumber: string;
 	isVerified: boolean;
 	isBlocked: boolean;
+	pass: IUserPass;
 	events: IUserEvent[];
 	invites: IUserInvites[];
 	refreshToken?: string;
@@ -298,6 +307,23 @@ const UserSchema: Schema<IUser> = new Schema(
 		isBlocked: {
 			type: Boolean,
 			default: false
+		},
+		pass: {
+			hasPass: {
+				type: Boolean,
+				default: false
+			},
+			cost: {
+				type: Number,
+				enum: [0, 50, 100]
+			},
+			generatedAt: {
+				type: Date
+			},
+			isPaid: {
+				type: Boolean,
+				default: false
+			}
 		},
 		events: [EventSchema],
 		invites: [InvitesSchema],

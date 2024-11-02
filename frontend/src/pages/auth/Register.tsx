@@ -165,7 +165,7 @@ const Register = () => {
   };
 
   return (
-    <div className="w-screen h-screen bg-black mx-auto border-2  ">
+    <div className="w-screen h-screen bg-black mx-auto border-2">
       <div ref={starsBG} className="w-full h-full">
         <StarsBackground
           starDensity={0.0009}

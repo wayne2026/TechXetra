@@ -14,6 +14,7 @@ import NotFound from "./pages/not-found";
 import Landing from "./pages/Landing";
 import Profile from "./pages/Profile";
 import ResetPassword from "./pages/reset";
+import Passes from "./pages/Passes";
 
 // const ChatAssistant = lazy(() => import("../components/better/assitant"));
 
@@ -68,6 +69,7 @@ function App() {
 							<Route path="/verify" element={<Verify />} />
 							<Route path="/event" element={<Events_Page />} />
 							<Route path="/profile" element={<Profile />} />
+							<Route path="/passes/:id" element={<Passes />} />
 						</Route>
 						
 						<Route path="*" element={<NotFound />} />
