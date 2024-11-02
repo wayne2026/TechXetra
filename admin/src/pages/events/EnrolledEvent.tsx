@@ -4,27 +4,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
 
-export type User = {
-	id: string;
-    firstName: string;
-    lastName: string;
-    schoolOrCollege: String;
-    schoolName: string;
-    collegeName: string;
-	email: string;
-	role: string;
-	isVerified: boolean;
-	createdAt: string;
-	updatedAt: string;
-};
-
-export type Event = {
-    title: string;
-    eventDate: string;
-    venue: string;
-    amount: number;
-};
-
 const EnrolledEvent = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
@@ -32,7 +11,7 @@ const EnrolledEvent = () => {
     const eventID = searchParams.get('event');
     const [user, setUser] = useState<User | null>(null);
     
-    const [event, setEvent] = useState<Event | null>(null);
+    const [event, setEvent] = useState<EventDetails | null>(null);
     const [userError, setUserError] = useState(false);
     const [payment, setPayment] = useState({
         status: "paid",
@@ -89,8 +68,8 @@ console.log(user);
 
             {/* User Card */}
            {user && <div className="flex items-center space-x-6 bg-gray-50 p-5 rounded-lg shadow-sm">
-                <Avatar className="w-16 h-16 bg-black">
-                    <AvatarImage src="../../../public/logo.png" alt="profile" className="rounded-full" />
+                <Avatar className="w-16 h-16" style={!user.avatar ? {background: "black"}:{}}>
+                    <AvatarImage src={user.avatar || "../../../public/logo.png"} alt="profile" className="rounded-full" />
                 </Avatar>
                 <div>
                     <h2 className="text-xl font-semibold text-gray-800">{user?.firstName} {user?.lastName}</h2>
@@ -126,7 +105,7 @@ console.log(user);
                 </div>
                 <div className="flex justify-between">
                     <span className="text-gray-700 font-medium">Time:</span>
-                    <span className="text-gray-900">{event?.eventDate}</span>
+                    <span className="text-gray-900">{event?.eventDate?.toString()}</span>
                 </div>
             </div>
 
