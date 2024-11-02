@@ -90,16 +90,16 @@ const App = () => {
                             path="/users/user"
                             element={
                                 <>
-                                    <PageTitle title="Get Event | TechXetra Admin" />
+                                    <PageTitle title="Event Enrolled | TechXetra Admin" />
                                     <EnrolledEvent />
                                 </>
                             }
                         />
-                         <Route
+                        <Route
                             path="/users/user/byID"
                             element={
                                 <>
-                                    <PageTitle title="Get User | TechXetra Admin" />
+                                    <PageTitle title="Events Enrolled | TechXetra Admin" />
                                     <UserDetails />
                                 </>
                             }
