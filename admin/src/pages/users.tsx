@@ -246,6 +246,9 @@ const UsersPage = () => {
 	const [currentPage, setCurrentPage] = React.useState(1);
 	const [pageSize, setPageSize] = React.useState(10);
 	const [keyword, setKeyword] = React.useState("");
+	const [statusFilter, setStatusFilter] = React.useState(""); // For verified/unverified
+	const [blockedFilter, setBlockedFilter] = React.useState(""); // For blocked/unblocked
+	const [roleFilter, setRoleFilter] = React.useState(""); // For roles
 
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] =
@@ -264,6 +267,19 @@ const UsersPage = () => {
 						page: currentPage,
 						limit: pageSize,
 						keyword: keyword || undefined,
+						isVerified:
+							statusFilter === "verified"
+								? true
+								: statusFilter === "unverified"
+								? false
+								: undefined,
+						isBlocked:
+							blockedFilter === "blocked"
+								? true
+								: blockedFilter === "unblocked"
+								? false
+								: undefined,
+						role: roleFilter || undefined,
 					},
 					withCredentials: true,
 				}
@@ -275,7 +291,14 @@ const UsersPage = () => {
 		} finally {
 			setLoading(false);
 		}
-	}, [currentPage, pageSize, keyword]);
+	}, [
+		currentPage,
+		pageSize,
+		keyword,
+		statusFilter,
+		blockedFilter,
+		roleFilter,
+	]);
 
 	React.useEffect(() => {
 		fetchUsers();
@@ -308,19 +331,6 @@ const UsersPage = () => {
 		setCurrentPage(1);
 	};
 
-	if (loading)
-		return (
-			<div className="flex items-center justify-center h-screen">
-				Loading...
-			</div>
-		);
-	if (error)
-		return (
-			<div className="flex items-center justify-center h-screen text-red-500">
-				{error}
-			</div>
-		);
-
 	return (
 		<div className="w-full md:w-[90%] mx-auto mt-24 bg-white p-6 rounded-lg shadow-sm">
 			<div className="flex items-center py-4 px-2">
@@ -347,32 +357,39 @@ const UsersPage = () => {
 						<SelectItem value="50">50 per page</SelectItem>
 					</SelectContent>
 				</Select>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline" className="ml-auto">
-							Columns <ChevronDown className="ml-2 h-4 w-4" />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						{table
-							.getAllColumns()
-							.filter((column) => column.getCanHide())
-							.map((column) => {
-								return (
-									<DropdownMenuCheckboxItem
-										key={column.id}
-										className="capitalize"
-										checked={column.getIsVisible()}
-										onCheckedChange={(value) =>
-											column.toggleVisibility(!!value)
-										}
-									>
-										{column.id}
-									</DropdownMenuCheckboxItem>
-								);
-							})}
-					</DropdownMenuContent>
-				</DropdownMenu>
+				<Select onValueChange={setStatusFilter}>
+					<SelectTrigger>
+						<SelectValue placeholder="Select Status" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="Select Status">All</SelectItem>
+						<SelectItem value="verified">Verified</SelectItem>
+						<SelectItem value="unverified">Unverified</SelectItem>
+					</SelectContent>
+				</Select>
+				<Select onValueChange={setBlockedFilter}>
+					<SelectTrigger>
+						<SelectValue placeholder="Select Blocked Status" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="Select Blocked Status">
+							All
+						</SelectItem>
+						<SelectItem value="blocked">Blocked</SelectItem>
+						<SelectItem value="unblocked">Unblocked</SelectItem>
+					</SelectContent>
+				</Select>
+				<Select onValueChange={setRoleFilter}>
+					<SelectTrigger>
+						<SelectValue placeholder="Select Role" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="Select Role">All</SelectItem>
+						<SelectItem value="USER">User</SelectItem>
+						<SelectItem value="ADMIN">Admin</SelectItem>
+						<SelectItem value="MODERATOR">Moderator</SelectItem>
+					</SelectContent>
+				</Select>
 			</div>
 			<div className="rounded-md border">
 				<Table>
