@@ -351,7 +351,6 @@ const Hackathon = () => {
                                         </div>
                                         <div className='mt-8'>
                                             <div className='flex flex-wrap gap-2'>
-                                                {/* (userEvent && ["HYBRID", "TEAM"].includes(event?.participation) && (((userEvent.group?.members?.length || 0) + 1) < event?.maxGroup!)) */}
                                                 {memberEmails.map((member, index) => (
                                                     <div key={index} className='flex bg-slate-300 text-black rounded-full gap-2 px-2 py-1'>
                                                         <p>{member.length > 15 ? `${member.slice(0, 15)}...` : member}</p>
@@ -384,9 +383,6 @@ const Hackathon = () => {
                                                                     className='cursor-pointer py-2 px-3 hover:bg-gray-200 rounded-lg'
                                                                     key={index}
                                                                     onClick={() => {
-                                                                        // if (!userEvent?.group?.members?.some(member => member.user.email === user.email)) {
-                                                                        //     setMemberEmails(emails => [...emails, user.email]);
-                                                                        // }
                                                                         setMemberEmails(emails => [...emails, user.email]);
                                                                     }}
                                                                 >
@@ -420,6 +416,9 @@ const Hackathon = () => {
                                         <div className='text-center h-42 w-56'>
                                             <img src="/upi.jpg" alt="upi" />
                                         </div>
+                                        {event.paymentRequired && (
+                                            <p>Event Amount - ₹ {event.amount}</p>
+                                        )}
                                         <form className='mt-8 flex flex-col justify-center space-y-2' onSubmit={handlePaymentSubmision}>
                                             <div className="flex flex-col gap-4">
                                                 <label htmlFor="role" className="text-lg font-semibold">Transaction Id</label>
