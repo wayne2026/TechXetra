@@ -40,6 +40,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 export type Event = {
 	id: string;
@@ -182,6 +183,8 @@ const EventsPage = () => {
 		React.useState<VisibilityState>({});
 	const [rowSelection, setRowSelection] = React.useState({});
 
+const navigate = useNavigate();
+
 	const fetchEvents = React.useCallback(async () => {
 		try {
 			setLoading(true);
@@ -254,6 +257,11 @@ const EventsPage = () => {
 			<div className="flex items-center py-4 px-2">
 				<p className="text-2xl font-semibold">All Events</p>
 			</div>
+			<Button
+					onClick={() => navigate("/events/create")}
+				>
+					Create New Event
+				</Button>
 			<div className="flex items-center py-4 gap-4">
 				<Input
 					placeholder="Search events..."

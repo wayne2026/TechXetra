@@ -1,429 +1,338 @@
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFieldArray } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useSearchParams } from "react-router-dom";
-import { Textarea } from "@/components/ui/textarea";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import React from 'react';
 
-const formSchema = z.object({
-    title: z.string().min(2).max(50),
-    subTitle: z.string().min(2).max(50),
-    description: z.string().min(2).max(50),
-    category: z.string().min(2).max(50),
-    participation: z.string().min(2).max(50),
-    maxGroup: z.string().min(2).max(50),
-    // isVisible: z.boolean(),
-    // canRegister: z.boolean(),
-    // externalRegistration: z.boolean(),
-    // extrenalRegistrationLink: z.string().url("Must be a valid URL").optional(),
-    // externalLink: z.string().url("Must be a valid URL").optional(),
-    // registrationRequired: z.boolean(),
-    // paymentRequired: z.boolean(),
-    amount: z.string().min(2).max(50),
-    eventDate: z.string().refine(value => !isNaN(Date.parse(value)), { message: "Invalid date" }),
-    venue: z.string().min(2).max(50),
-    deadline: z.string().refine(value => !isNaN(Date.parse(value)), { message: "Invalid date" }),
-    image: z
-        .any()
-        .refine((files) => files instanceof FileList && files.length > 0, {
-            message: "File is required",
-        })
-        .refine((files) => files[0]?.size <= 5 * 1024 * 1024, {
-            message: "File size must be less than 5MB",
-        })
-        .refine((files) => ['image/*'].includes(files[0]?.type), {
-            message: "Only Image files are allowed",
-        }),
-    rules: z.array(z.string().min(1, "Rule can't be empty")).nonempty("Must have at least one rule"),
-    backgroundImage: z
-        .any()
-        .refine((files) => files instanceof FileList && files.length > 0, {
-            message: "File is required",
-        })
-        .refine((files) => files[0]?.size <= 5 * 1024 * 1024, {
-            message: "File size must be less than 5MB",
-        })
-        .refine((files) => ['image/*'].includes(files[0]?.type), {
-            message: "Only Image files are allowed",
-        }),
-    schoolOrCollege: z.string().min(2).max(50).optional(),
-    collegeClass: z.string().min(2).max(50).optional(),
-    schoolClass: z.string().min(2).max(50).optional(),
-});
-
-const CreateEvent = () => {
-
-    const [search] = useSearchParams();
-    const id = search.get('id');
-
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            title: "",
-            subTitle: "",
-            description: "",
-            category: "",
-            participation: "",
-            maxGroup: "",
-            amount: "",
-            venue: "",
-            eventDate: "",
-            deadline: "",
-            rules: [""],
-            schoolOrCollege: "",
-            schoolClass: "",
-            collegeClass: ""
-        },
+const Create = () => {
+    const [formData, setFormData] = React.useState({
+        title: "",
+        subTitle: "",
+        description: "",
+        category: "",
+        participation: "",
+        image: {},
+        backgroundImage: {},
+        maxGroup: "",
+        amount: "",
+        venue: "",
+        eventDate: "",
+        deadline: "",
+        rules: [""],
+        schoolOrCollege: "",
+        schoolClass: "",
+        collegeClass: ""
     });
 
-    const { fields, append, remove } = useFieldArray({
-        control: form.control, // Connect to the form's control
-        name: "rules", // Field name must match the array in the schema
-    });
+    const handleChange = (e: { target: { name: any; value: any; }; }) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value
+        }));
+    };
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
-    }
+    const handleRuleChange = (index: number, value: string) => {
+        const updatedRules = [...formData.rules];
+        updatedRules[index] = value;
+        setFormData((prevData) => ({
+            ...prevData,
+            rules: updatedRules
+        }));
+    };
+
+    const addRule = () => {
+        setFormData((prevData) => ({
+            ...prevData,
+            rules: [...prevData.rules, ""]
+        }));
+    };
+
+    const removeRule = (index: number) => {
+        const updatedRules = formData.rules.filter((_, i) => i !== index);
+        setFormData((prevData) => ({
+            ...prevData,
+            rules: updatedRules
+        }));
+    };
+
+    const handleSubmit = (e: { preventDefault: () => void; }) => {
+        e.preventDefault();
+        console.log(formData);
+    };
 
     return (
-        <div className="w-[90%] md:w-[60%] lg:w-[50%] mt-24 mb-6 bg-white py-6 px-12 rounded-lg">
-            <h1 className="text-3xl font-semibold py-6">{id ? "Edit" : "Create"} Event</h1>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                    <div className="w-full flex items-center gap-4">
-                        <FormField
-                            control={form.control}
-                            name="title"
-                            render={({ field }) => (
-                                <FormItem className="w-1/2">
-                                    <FormLabel>Title</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter the event title" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="subTitle"
-                            render={({ field }) => (
-                                <FormItem className="w-1/2">
-                                    <FormLabel>Sub Title</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter the event sub title" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+        <div className="container mt-24 mx-auto p-8 lg:max-w-4xl">
+            <div className="bg-white shadow-lg rounded-lg p-8 lg:p-12">
+                <h1 className="text-3xl font-semibold mb-8 text-center text-gray-800">Create Event</h1>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
+                        <div className="flex-1 flex flex-col">
+                            <label htmlFor="title" className="text-sm font-medium text-gray-700">Title</label>
+                            <input
+                                type="text"
+                                id="title"
+                                name="title"
+                                value={formData.title}
+                                onChange={handleChange}
+                                placeholder="Enter title"
+                                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                            />
+                        </div>
+                        <div className="flex-1 flex flex-col">
+                            <label htmlFor="subTitle" className="text-sm font-medium text-gray-700">SubTitle</label>
+                            <input
+                                type="text"
+                                id="subTitle"
+                                name="subTitle"
+                                value={formData.subTitle}
+                                onChange={handleChange}
+                                placeholder="Enter subtitle"
+                                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col">
+                        <label htmlFor="description" className="text-sm font-medium text-gray-700">Description</label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            value={formData.description}
+                            onChange={handleChange}
+                            placeholder="Enter description"
+                            className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
                         />
                     </div>
 
-                    <div>
-                        <FormLabel>Rules</FormLabel>
-                        {fields.map((field, index) => (
-                            <div key={field.id} className="flex items-center space-x-2">
-                                <FormField
-                                    control={form.control}
-                                    name={`rules.${index}`}
-                                    render={({ field }) => (
-                                        <FormItem className="flex-1">
-                                            <FormControl>
-                                                <Input placeholder={`Enter rule ${index + 1}`} {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <Button
-                                    type="button"
-                                    onClick={() => remove(index)}
-                                    className="bg-red-500 text-white"
-                                    disabled={fields.length === 1} // Prevent removing the last rule
-                                >
-                                    Remove
-                                </Button>
-                            </div>
-                        ))}
-                        {/* Button to add a new rule */}
-                        <Button
-                            type="button"
-                            onClick={() => append("")} // Append an empty string as a new rule
-                            className="mt-2"
-                        >
-                            Add Rule
-                        </Button>
+                    <div className="flex flex-col space-y-4">
+                        {/* Rules Section */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">Rules</label>
+                            {formData.rules.map((rule, index) => (
+                                <div key={index} className="flex items-center space-x-2">
+                                    <input
+                                        type="text"
+                                        placeholder={`Enter rule ${index + 1}`}
+                                        value={rule}
+                                        onChange={(e) => handleRuleChange(index, e.target.value)}
+                                        className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => removeRule(index)}
+                                        className="bg-red-500 text-white px-3 py-1 rounded-md"
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            ))}
+                            {/* Button to add a new rule */}
+                            <button
+                                type="button"
+                                onClick={addRule}
+                                className="mt-2 bg-black text-white px-3 py-1 rounded-md"
+                            >
+                                Add Rule
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Description Field */}
-                    <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Description</FormLabel>
-                                <FormControl>
-                                    <Textarea placeholder="Brief description" {...field} />
-                                    {/* <Input placeholder="Brief description" {...field} /> */}
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                    <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
+                        <div className="flex-1 flex flex-col">
+                            <label htmlFor="category" className="text-sm font-medium text-gray-700">Category</label>
+                            <select
+                                id="category"
+                                name="category"
+                                value={formData.category}
+                                onChange={handleChange}
+                                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            >
+                                <option value="" disabled>Select category</option>
+                                <option value="TECHNICAL">Technical</option>
+                                <option value="GENERAL">General</option>
+                                <option value="CULTURAL">Cultural</option>
+                            </select>
+                        </div>
 
-                    <div className="w-full flex items-center gap-4">
-                        <FormField
-                            control={form.control}
+                        <div className="flex-1 flex flex-col">
+                            <label htmlFor="participation" className="text-sm font-medium text-gray-700">Participation</label>
+                            <select
+                                id="participation"
+                                name="participation"
+                                value={formData.participation}
+                                onChange={handleChange}
+                                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            >
+                                <option value="" disabled>Select participation type</option>
+                                <option value="SOLO">Solo</option>
+                                <option value="TEAM">Team</option>
+                                <option value="HYBRID">Hybrid</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    {/* Image Upload */}
+                    <div className="flex-1 flex flex-col">
+                        <label htmlFor="image" className="text-sm font-medium text-gray-700">Event Image</label>
+                        <input
+                            type="file"
+                            id="image"
                             name="image"
-                            render={({ field }) => (
-                                <FormItem className="w-1/2">
-                                    <FormLabel>Image</FormLabel>
-                                    <FormControl>
-                                        <Input type="file" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                            accept="image/*"
+                            onChange={handleChange}
+                            className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                        <FormField
-                            control={form.control}
+                    </div>
+
+                    {/* Background Image Upload */}
+                    <div className="flex-1 flex flex-col">
+                        <label htmlFor="backgroundImage" className="text-sm font-medium text-gray-700">Background Image</label>
+                        <input
+                            type="file"
+                            id="backgroundImage"
                             name="backgroundImage"
-                            render={({ field }) => (
-                                <FormItem className="w-1/2">
-                                    <FormLabel>Background Image</FormLabel>
-                                    <FormControl>
-                                        <Input type="file" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                            accept="image/*"
+                            onChange={handleChange}
+                            className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
-                    <div className="w-full flex items-center gap-4">
-                        <FormField
-                            control={form.control}
+                    <div className="flex flex-col space-y-4">
+                        {/* School or College Selection */}
+                        <div className="flex-1 flex flex-col">
+                            <label htmlFor="schoolOrCollege" className="text-sm font-medium text-gray-700">School or College</label>
+                            <select
+                                id="schoolOrCollege"
+                                name="schoolOrCollege"
+                                value={formData.schoolOrCollege}
+                                onChange={handleChange}
+                                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            >
+                                <option value="" disabled>Select option</option>
+                                <option value="SCHOOL">School</option>
+                                <option value="COLLEGE">College</option>
+                                <option value="BOTH">Both</option>
+                            </select>
+                        </div>
+
+                        {/* School Class Selection (Shown if 'SCHOOL' or 'BOTH' is selected) */}
+                        {(formData.schoolOrCollege === 'SCHOOL' || formData.schoolOrCollege === 'BOTH') && (
+                            <div className="flex-1 flex flex-col">
+                                <label htmlFor="schoolClass" className="text-sm font-medium text-gray-700">School Class</label>
+                                <select
+                                    id="schoolClass"
+                                    name="schoolClass"
+                                    value={formData.schoolClass}
+                                    onChange={handleChange}
+                                    className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                >
+                                    <option value="" disabled>Select school class</option>
+                                    <option value="ONE_TO_FOUR">One to Four</option>
+                                    <option value="FIVE_TO_EIGHT">Five to Eight</option>
+                                    <option value="NINE_TO_TWELVE">Nine to Twelve</option>
+                                </select>
+                            </div>
+                        )}
+
+                        {/* College Class Selection (Shown if 'COLLEGE' or 'BOTH' is selected) */}
+                        {(formData.schoolOrCollege === 'COLLEGE' || formData.schoolOrCollege === 'BOTH') && (
+                            <div className="flex-1 flex flex-col">
+                                <label htmlFor="collegeClass" className="text-sm font-medium text-gray-700">College Class</label>
+                                <select
+                                    id="collegeClass"
+                                    name="collegeClass"
+                                    value={formData.collegeClass}
+                                    onChange={handleChange}
+                                    className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                >
+                                    <option value="" disabled>Select college class</option>
+                                    <option value="UG">UG</option>
+                                    <option value="PG">PG</option>
+                                </select>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
+                        <div className="flex-1 flex flex-col">
+                            <label htmlFor="maxGroup" className="text-sm font-medium text-gray-700">Max Group Size</label>
+                            <input
+                                type="number"
+                                id="maxGroup"
+                                name="maxGroup"
+                                value={formData.maxGroup}
+                                onChange={handleChange}
+                                placeholder="Enter max group size"
+                                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="flex-1 flex flex-col">
+                            <label htmlFor="amount" className="text-sm font-medium text-gray-700">Amount</label>
+                            <input
+                                type="number"
+                                id="amount"
+                                name="amount"
+                                value={formData.amount}
+                                onChange={handleChange}
+                                placeholder="Enter amount"
+                                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
+                        <div className="flex-1 flex flex-col">
+                            <label htmlFor="venue" className="text-sm font-medium text-gray-700">Venue</label>
+                            <input
+                                type="text"
+                                id="venue"
+                                name="venue"
+                                value={formData.venue}
+                                onChange={handleChange}
+                                placeholder="Enter venue"
+                                className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+
+                    </div>
+
+                    {/* Event Date and Time */}
+                    <div className="flex-1 flex flex-col">
+                        <label htmlFor="eventDate" className="text-sm font-medium text-gray-700">Event Date and Time</label>
+                        <input
+                            type="datetime-local"
+                            id="eventDate"
                             name="eventDate"
-                            render={({ field }) => (
-                                <FormItem className="w-1/2">
-                                    <FormLabel>Event Date</FormLabel>
-                                    <FormControl>
-                                        <Input type="datetime-local" placeholder="Enter event date (YYYY-MM-DD)" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                            value={formData.eventDate}
+                            onChange={handleChange}
+                            className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                        <FormField
-                            control={form.control}
+                    </div>
+
+                    {/* Registration Deadline Date and Time */}
+                    <div className="flex-1 flex flex-col">
+                        <label htmlFor="deadline" className="text-sm font-medium text-gray-700">Registration Deadline</label>
+                        <input
+                            type="datetime-local"
+                            id="deadline"
                             name="deadline"
-                            render={({ field }) => (
-                                <FormItem className="w-1/2">
-                                    <FormLabel>Event Deadline</FormLabel>
-                                    <FormControl>
-                                        <Input type="datetime-local" placeholder="Enter event deadline (YYYY-MM-DD)" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                            value={formData.deadline}
+                            onChange={handleChange}
+                            className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
-                    <div className="w-full flex items-center gap-4">
-                        <FormField
-                            control={form.control}
-                            name="participation"
-                            render={({ field }) => (
-                                <FormItem className="w-1/2">
-                                    <FormLabel>Participation</FormLabel>
-                                    <FormControl>
-                                        <Select>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Choose Participation" {...field} />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="SOLO">SOLO</SelectItem>
-                                                <SelectItem value="TEAM">TEAM</SelectItem>
-                                                <SelectItem value="HYBRID">HYBRID</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="category"
-                            render={({ field }) => (
-                                <FormItem className="w-1/2">
-                                    <FormLabel>Category</FormLabel>
-                                    <FormControl>
-                                        <Select>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Category" {...field} />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="TECHNICAL">TECHNICAL</SelectItem>
-                                                <SelectItem value="GENERAL">GENERAL</SelectItem>
-                                                <SelectItem value="CULTURAL">CULTURAL</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
 
-                    <div className="w-full flex items-center gap-4">
-                        <FormField
-                            control={form.control}
-                            name="schoolOrCollege"
-                            render={({ field }) => (
-                                <FormItem className="w-1/2">
-                                    <FormLabel>School or College</FormLabel>
-                                    <FormControl>
-                                        <Select>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="School or College" {...field} />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="SCHOOL">SCHOOL</SelectItem>
-                                                <SelectItem value="COLLEGE">COLLEGE</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="schoolClass"
-                            render={({ field }) => (
-                                <FormItem className="w-1/2">
-                                    <FormLabel>School Class</FormLabel>
-                                    <FormControl>
-                                        <Select>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="School Class" {...field} />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="ONE_TO_FOUR">ONE_TO_FOURL</SelectItem>
-                                                <SelectItem value="FIVE_TO_EIGHT">FIVE_TO_EIGHT</SelectItem>
-                                                <SelectItem value="NINE_TO_TWELVE">NINE_TO_TWELVE</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="collegeClass"
-                            render={({ field }) => (
-                                <FormItem className="w-1/2">
-                                    <FormLabel>College Class</FormLabel>
-                                    <FormControl>
-                                        <Select>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="College Class" {...field} />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="UG">UG</SelectItem>
-                                                <SelectItem value="PG">PG</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-
-                    {/* Max Group Size Field */}
-                    <FormField
-                        control={form.control}
-                        name="maxGroup"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Max Group Size</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Enter max group size" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    {/* Venue Field */}
-                    <FormField
-                        control={form.control}
-                        name="venue"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Venue</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Enter event venue" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    {/* Payment Required */}
-                    {/* <FormField
-                        control={form.control}
-                        name="paymentRequired"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Payment Required</FormLabel>
-                                <FormControl>
-                                    <Input type="checkbox" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    /> */}
-
-                    {/* Amount (conditionally required based on paymentRequired) */}
-                    <FormField
-                        control={form.control}
-                        name="amount"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Amount</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Enter amount" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <Button type="submit">Submit</Button>
+                    <button
+                        type="submit"
+                        className="w-full py-3 bg-black text-white font-semibold rounded-md shadow-md hover:bg-gray-700 transition duration-300"
+                    >
+                        Create
+                    </button>
                 </form>
-            </Form>
+            </div>
         </div>
-    )
-}
+    );
+};
 
-export default CreateEvent;
+export default Create;

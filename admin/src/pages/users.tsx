@@ -211,6 +211,7 @@ export const columns: ColumnDef<User>[] = [
 			const user = row.original;
 			const navigate = useNavigate(); // Initialize useNavigate
 
+
 			return (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -264,6 +265,8 @@ const UsersPage = () => {
 	const [columnVisibility, setColumnVisibility] =
 		React.useState<VisibilityState>({});
 	const [rowSelection, setRowSelection] = React.useState({});
+
+	
 
 	const fetchUsers = React.useCallback(async () => {
 		try {
