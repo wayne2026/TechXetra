@@ -43,7 +43,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 export type User = {
-	id: string;
+	_id: string;
 	firstName: string;
 	lastName: string;
 	email: string;
@@ -223,7 +223,7 @@ export const columns: ColumnDef<User>[] = [
 						<DropdownMenuLabel>Actions</DropdownMenuLabel>
 						<DropdownMenuItem
 							onClick={() => {
-								navigator.clipboard.writeText(user.id);
+								navigator.clipboard.writeText(user?._id);
 							}}
 						>
 							Copy User ID
@@ -231,7 +231,7 @@ export const columns: ColumnDef<User>[] = [
 						<DropdownMenuSeparator />
 						<DropdownMenuItem
 							onClick={() =>
-								navigate(`/users/user/byID?id=${user.id}`)
+								navigate(`/users/user/byID?id=${user?._id}`)
 							} // Redirect to user details page
 						>
 							View Details
@@ -269,7 +269,7 @@ const UsersPage = () => {
 		try {
 			setLoading(true);
 			const response = await axios.get(
-				`http://localhost:8000/api/v1/admins/users/all`,
+				`${import.meta.env.VITE_BASE_URL}/admins/users/all`,
 				{
 					params: {
 						page: currentPage,
