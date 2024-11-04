@@ -185,17 +185,15 @@ const UsersPage = () => {
             `isBlocked=${filter.blocked}`,
         ].filter(Boolean).join("&");
 
-        if (!filter.keyword || filter.keyword.length > 3) {
-            setLoading(true);
+        setLoading(true);
 
-            const delayDebounce = setTimeout(() => {
-                const link = `${import.meta.env.VITE_BASE_URL}/admins/users/all?${queryParams}`;
-                fetchUsers(link);
-                setLoading(false);
-            }, filter.keyword && filter.keyword.length > 3 ? 2000 : 0);
+        const delayDebounce = setTimeout(() => {
+            const link = `${import.meta.env.VITE_BASE_URL}/admins/users/all?${queryParams}`;
+            fetchUsers(link);
+            setLoading(false);
+        }, 2000);
 
-            return () => clearTimeout(delayDebounce);
-        }
+        return () => clearTimeout(delayDebounce);
 
     }, [filter, counts.currentPage]);
 
