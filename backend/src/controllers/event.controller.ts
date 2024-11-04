@@ -378,11 +378,11 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
             ? event.eligibility.schoolOrCollege === user.schoolOrCollege
             : true;
 
-        const schoolClassEligibility = event.eligibility?.schoolClass
+        const schoolClassEligibility = schoolOrCollegeEligibility && event.eligibility?.schoolClass && event.eligibility.schoolClass.length > 0
             ? (event.eligibility.schoolClass).includes(user.schoolClass as any)
             : true;
 
-        const collegeClassEligibility = event.eligibility?.collegeClass
+        const collegeClassEligibility = schoolOrCollegeEligibility && event.eligibility?.collegeClass && event.eligibility.collegeClass.length > 0
             ? (event.eligibility.collegeClass).includes(user.collegeClass as any)
             : true;
 
@@ -431,11 +431,11 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
                 ? event.eligibility.schoolOrCollege === member.schoolOrCollege
                 : true;
 
-            const schoolClassEligibility = event.eligibility?.schoolClass
+            const schoolClassEligibility = schoolOrCollegeEligibility && event.eligibility?.schoolClass && event.eligibility.schoolClass.length > 0
                 ? (event.eligibility.schoolClass).includes(member.schoolClass as any)
                 : true;
 
-            const collegeClassEligibility = event.eligibility?.collegeClass
+            const collegeClassEligibility = schoolOrCollegeEligibility && event.eligibility?.collegeClass && event.eligibility.collegeClass.length > 0
                 ? (event.eligibility.collegeClass).includes(member.collegeClass as any)
                 : true;
 
@@ -620,11 +620,11 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
                 ? event.eligibility.schoolOrCollege === member.schoolOrCollege
                 : true;
 
-            const schoolClassEligibility = event.eligibility?.schoolClass
+            const schoolClassEligibility = schoolOrCollegeEligibility && event.eligibility?.schoolClass && event.eligibility.schoolClass.length > 0
                 ? (event.eligibility.schoolClass).includes(member.schoolClass as any)
                 : true;
 
-            const collegeClassEligibility = event.eligibility?.collegeClass
+            const collegeClassEligibility = schoolOrCollegeEligibility && event.eligibility?.collegeClass && event.eligibility.collegeClass.length > 0
                 ? (event.eligibility.collegeClass).includes(member.collegeClass as any)
                 : true;
 

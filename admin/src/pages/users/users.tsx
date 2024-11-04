@@ -185,15 +185,17 @@ const UsersPage = () => {
             `isBlocked=${filter.blocked}`,
         ].filter(Boolean).join("&");
 
-        setLoading(true);
+        if (filter.keyword && filter.keyword.length > 3) {
+            setLoading(true);
 
-        const delayDebounce = setTimeout(() => {
-            const link = `${import.meta.env.VITE_BASE_URL}/admins/users/all?${queryParams}`;
-            fetchUsers(link);
-            setLoading(false);
-        }, 2000);
+            const delayDebounce = setTimeout(() => {
+                const link = `${import.meta.env.VITE_BASE_URL}/admins/users/all?${queryParams}`;
+                fetchUsers(link);
+                setLoading(false);
+            }, 2000);
 
-        return () => clearTimeout(delayDebounce);
+            return () => clearTimeout(delayDebounce);
+        }
 
     }, [filter, counts.currentPage]);
 
@@ -212,7 +214,7 @@ const UsersPage = () => {
             </div>
             <div className="flex flex-col md:flex-row justify-between items-center py-4 gap-4">
                 <Input
-                    placeholder="Search User Email (More than 3 characters)"
+                    placeholder="Search User Email"
                     value={filter.keyword}
                     onChange={(e) => {
                         setFilter({ ...filter, keyword: e.target.value });
