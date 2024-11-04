@@ -113,9 +113,9 @@ interface EventDetails {
     rules?: string[];
     backgroundImage?: string;
     eligibility?: {
-        schoolOrCollege: string;
-        collegeClass?: string;
-        schoolClass?: string;
+        schoolOrCollege?: string;
+        collegeClass?: [string];
+        schoolClass?: [string];
     }
     createdAt: Date;
     updatedAt: Date;

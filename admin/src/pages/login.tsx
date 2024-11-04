@@ -11,12 +11,21 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useUser } from "@/context/user_context";
 
 const formSchema = z.object({
     email: z.string().email().min(2).max(50),
     password: z.string().min(8).max(50),
 });
 const LoginPage = () => {
+
+    const userContext = useUser();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname + location.state?.from?.search || "/users";
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -26,8 +35,28 @@ const LoginPage = () => {
         },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        if (!values.password || !values.email) {
+            toast.warning("All fields are required");
+            return;
+        }
+        const config = {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+        };
+        const payload = {
+            email: values.email,
+            password: values.password,
+        };
+        try {
+            const { data }: { data: UserResponse } = await axios.post(`${import.meta.env.VITE_BASE_URL}/admins/login`, payload, config);
+            userContext?.setUser(data.user);
+            toast.success("Logged In!");
+            navigate(from, { replace: true });
+        } catch (error: any) {
+            userContext?.setUser(null);
+            toast.error(error.response.data.message);
+        }
     }
 
     return (

@@ -11,8 +11,9 @@ import EventsPage from "./pages/events/events";
 import NotFound from "./pages/not-found";
 import PageTitle from "./components/custom/page-title";
 import Navbar from "./components/custom/navbar";
-import UsersPage from "./pages/users";
+import UsersPage from "./pages/users/users";
 import CreateEvent from "./pages/events/create";
+import UserPage from "./pages/users/user";
 
 const App = () => {
     const userContext = useUser();
@@ -63,6 +64,15 @@ const App = () => {
                                 <>
                                     <PageTitle title="Users | TechXetra Admin" />
                                     <UsersPage />
+                                </>
+                            }
+                        />
+                        <Route
+                            path="/users/user"
+                            element={
+                                <>
+                                    <PageTitle title="User | TechXetra Admin" />
+                                    <UserPage />
                                 </>
                             }
                         />

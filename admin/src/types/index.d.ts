@@ -1,19 +1,30 @@
 interface UserEvent {
-	eventId: string;
+	eventId: {
+		_id: string;
+		title: string;
+		eventDate: Date;
+		venue: string;
+	}
     paymentRequired: boolean;
 	eligible: boolean;
 	isGroup: boolean;
-	members: string[];
+    group?: {
+		leader?: UserEventPopulatedData;
+		members?: {
+			status: string;
+			user: UserEventPopulatedData;
+		}[];
+	}
 	payment: {
 		status: string;
 		transactionId: string;
 		paymentImage: string;
 		amount: number;
-		verifierId: string;
+		verifierId: UserEventPopulatedData;
 	}
 	physicalVerification: {
 		status: boolean;
-		verifierId: string;
+		verifierId: UserEventPopulatedData;
 	}
 }
 
@@ -42,6 +53,14 @@ interface UserResponse {
     success: boolean;
     user: User;
     token: string;
+}
+
+interface AllUsersResponse {
+    success: boolean;
+    count: number;
+    resultPerPage: number;
+    filteredUsersCount: number;
+    users: User[];
 }
 
 interface EventDetails {

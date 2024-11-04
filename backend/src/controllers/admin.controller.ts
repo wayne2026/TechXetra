@@ -69,7 +69,25 @@ export const getAllUsers = async (req: Request, res: Response, next: NextFunctio
 
 export const getUserById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.id)
+            .populate("events.eventId", "title eventDate venue")
+            .populate({
+                path: 'events.group.leader',
+                select: 'firstName lastName email'
+            })
+            .populate({
+                path: 'events.group.members.user',
+                select: 'firstName lastName email'
+            })
+            .populate({
+                path: 'events.payment.verifierId',
+                select: 'firstName lastName email'
+            })
+            .populate({
+                path: 'events.physicalVerification.verifierId',
+                select: 'firstName lastName email'
+            });
+
         if (!user) {
             return next(new ErrorHandler("User not found", 404));
         }
@@ -439,6 +457,71 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
             success: true,
             user,
             message: "User deleted successfully"
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const migrateEligibilityFields = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await Event.updateMany(
+            { "eligibility.schoolClass": { $type: "string" } },
+            { $set: { "eligibility.schoolClass": ["$eligibility.schoolClass"] } }
+        );
+
+        await Event.updateMany(
+            { "eligibility.collegeClass": { $type: "string" } },
+            { $set: { "eligibility.collegeClass": ["$eligibility.collegeClass"] } }
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Eligibility fields migrated successfully"
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const deleteUserEvents = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = await User.findById(req.params.user);
+        if (!user) {
+            return next(new ErrorHandler("User not found", StatusCodes.NOT_FOUND));
+        }
+
+        const event = await Event.findById(req.params.id);
+        if (!event) {
+            return next(new ErrorHandler(`Event not found with id ${req.params.id}`, StatusCodes.NOT_FOUND));
+        }
+
+        const userEvent = user.events.find(userEvent => userEvent.eventId.toString() === event._id.toString());
+        if (!userEvent) {
+            return next(new ErrorHandler("Event isn't registered yet", StatusCodes.BAD_REQUEST));
+        }
+
+        const eventId = event._id;
+
+        const updatedUser = await User.findByIdAndUpdate(
+            user._id,
+            {
+                $pull: {
+                    events: {
+                        eventId
+                    },
+                },
+            },
+            { new: true, runValidators: true, useFindAndModify: false }
+        );
+
+        if (!updatedUser) {
+            return next(new ErrorHandler("Failed to update user", StatusCodes.BAD_REQUEST));
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Deleted UserEvent successfully"
         });
     } catch (error) {
         next(error);

@@ -370,18 +370,21 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
         if (event.deadline && event.deadline.getTime() <= Date.now()) {
             return next(new ErrorHandler("Registration deadline has passed", StatusCodes.FORBIDDEN));
         }
+        if (event.limit && event.limit <= event.registered) {
+            return next(new ErrorHandler("Registration limit exceeded", StatusCodes.FORBIDDEN));
+        }
 
         const schoolOrCollegeEligibility = event.eligibility?.schoolOrCollege
             ? event.eligibility.schoolOrCollege === user.schoolOrCollege
-            : true; // If undefined, treat it as eligible
+            : true;
 
-        const schoolClassEligibility = event.eligibility?.schoolClass && event.eligibility.schoolOrCollege === 'SCHOOL'
-            ? event.eligibility.schoolClass === user.schoolClass
-            : true; // If undefined or not a SCHOOL event, treat it as eligible
+        const schoolClassEligibility = event.eligibility?.schoolClass
+            ? (event.eligibility.schoolClass).includes(user.schoolClass as any)
+            : true;
 
-        const collegeClassEligibility = event.eligibility?.collegeClass && event.eligibility.schoolOrCollege === 'COLLEGE'
-            ? event.eligibility.collegeClass === user.collegeClass
-            : true; // If undefined or not a COLLEGE event, treat it as eligible
+        const collegeClassEligibility = event.eligibility?.collegeClass
+            ? (event.eligibility.collegeClass).includes(user.collegeClass as any)
+            : true;
 
         const eligible = schoolOrCollegeEligibility && schoolClassEligibility && collegeClassEligibility;
 
@@ -426,15 +429,15 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
         groupMembers.forEach(member => {
             const schoolOrCollegeEligibility = event.eligibility?.schoolOrCollege
                 ? event.eligibility.schoolOrCollege === member.schoolOrCollege
-                : true; // If undefined, treat it as eligible
+                : true;
 
-            const schoolClassEligibility = event.eligibility?.schoolClass && event.eligibility.schoolOrCollege === 'SCHOOL'
-                ? event.eligibility.schoolClass === member.schoolClass
-                : true; // If undefined or not a SCHOOL event, treat it as eligible
+            const schoolClassEligibility = event.eligibility?.schoolClass
+                ? (event.eligibility.schoolClass).includes(member.schoolClass as any)
+                : true;
 
-            const collegeClassEligibility = event.eligibility?.collegeClass && event.eligibility.schoolOrCollege === 'COLLEGE'
-                ? event.eligibility.collegeClass === member.collegeClass
-                : true; // If undefined or not a COLLEGE event, treat it as eligible
+            const collegeClassEligibility = event.eligibility?.collegeClass
+                ? (event.eligibility.collegeClass).includes(member.collegeClass as any)
+                : true;
 
             const eligible = schoolOrCollegeEligibility && schoolClassEligibility && collegeClassEligibility;
 
@@ -477,20 +480,20 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
         ).select("events")
             .populate("events.eventId", "title eventDate venue")
             .populate({
-                path: 'events.group.leader', // Populate the leader field in events.group
-                select: 'firstName lastName email' // Select the fields you want from the populated User document
+                path: 'events.group.leader',
+                select: 'firstName lastName email'
             })
             .populate({
-                path: 'events.group.members.user', // Populate the members' user field in events.group
-                select: 'firstName lastName email' // Select the fields you want from the populated User documents
+                path: 'events.group.members.user',
+                select: 'firstName lastName email'
             })
             .populate({
-                path: 'events.payment.verifierId', // Populate the verifierId field in events.payment
-                select: 'firstName lastName email' // Select the fields you want from the populated User document
+                path: 'events.payment.verifierId',
+                select: 'firstName lastName email'
             })
             .populate({
-                path: 'events.physicalVerification.verifierId', // Populate verifierId in physicalVerification
-                select: 'firstName lastName email' // Select the fields you want from the populated User document
+                path: 'events.physicalVerification.verifierId',
+                select: 'firstName lastName email'
             });
 
         groupMembers.forEach(async (member) => {
@@ -522,6 +525,16 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
                 console.error('Error sending email:', error);
             }
         });
+
+        if (event.limit) {
+            await Event.findByIdAndUpdate(
+                event._id,
+                {
+                    $inc: { registered: 1 }
+                },
+                { new: true, runValidators: true, useFindAndModify: false }
+            );
+        }
 
         res.status(200).json({
             success: true,
@@ -605,17 +618,16 @@ export const addMembers = async (req: CustomRequest, res: Response, next: NextFu
         groupMembers.forEach(member => {
             const schoolOrCollegeEligibility = event.eligibility?.schoolOrCollege
                 ? event.eligibility.schoolOrCollege === member.schoolOrCollege
-                : true; // If undefined, treat it as eligible
+                : true;
 
-            const schoolClassEligibility = event.eligibility?.schoolClass && event.eligibility.schoolOrCollege === 'SCHOOL'
-                ? event.eligibility.schoolClass === member.schoolClass
-                : true; // If undefined or not a SCHOOL event, treat it as eligible
+            const schoolClassEligibility = event.eligibility?.schoolClass
+                ? (event.eligibility.schoolClass).includes(member.schoolClass as any)
+                : true;
 
-            const collegeClassEligibility = event.eligibility?.collegeClass && event.eligibility.schoolOrCollege === 'COLLEGE'
-                ? event.eligibility.collegeClass === member.collegeClass
-                : true; // If undefined or not a COLLEGE event, treat it as eligible
+            const collegeClassEligibility = event.eligibility?.collegeClass
+                ? (event.eligibility.collegeClass).includes(member.collegeClass as any)
+                : true;
 
-            // Final eligibility check: All conditions that are defined must be true for the user to be eligible.
             const eligible = schoolOrCollegeEligibility && schoolClassEligibility && collegeClassEligibility;
 
             if (event.eligibility && !eligible) {
@@ -733,7 +745,7 @@ export const removeMember = async (req: CustomRequest, res: Response, next: Next
         await User.findOneAndUpdate(
             { _id: member._id },
             {
-                $pull: { 
+                $pull: {
                     events: { eventId: event._id },
                     invites: {
                         eventId: event._id,

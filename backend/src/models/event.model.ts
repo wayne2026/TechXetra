@@ -40,10 +40,12 @@ interface IEvent extends Document {
     rules?: string[];
     backgroundImage?: string;
     eligibility?: {
-        schoolOrCollege: typeof schoolEnum[keyof typeof schoolEnum];
-        collegeClass?: typeof collegeClassEnum[keyof typeof collegeClassEnum];
-        schoolClass?: typeof schoolClassEnum[keyof typeof schoolClassEnum];
+        schoolOrCollege?: typeof schoolEnum[keyof typeof schoolEnum];
+        collegeClass?: Array<typeof collegeClassEnum[keyof typeof collegeClassEnum]>;
+        schoolClass?: Array<typeof schoolClassEnum[keyof typeof schoolClassEnum]>;
     }
+    limit: number;
+    registered: number;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -115,14 +117,18 @@ const EventSchema: Schema<IEvent> = new Schema(
                 enum: Object.values(schoolEnum),
             },
             schoolClass: {
-                type: String,
+                type: [String],
                 enum: Object.values(schoolClassEnum),
+                set: (value: string) => Array.isArray(value) ? value : [value],
             },
             collegeClass: {
-                type: String,
+                type: [String],
                 enum: Object.values(collegeClassEnum),
+                set: (value: string) => Array.isArray(value) ? value : [value],
             },
         },
+        limit: Number,
+        registered: Number,
     },
     {
         timestamps: true,
