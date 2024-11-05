@@ -77,12 +77,13 @@ const EventsPage = () => {
     const fetchUsers = async (url: string) => {
         try {
             const { data }: { data: AllEventDetailsResponse } = await axios.get(url, { withCredentials: true });
+            console.log(data);
             setEvents(data.events);
             setCounts(prev => ({
                 ...prev,
                 resultPerPage: data.resultPerPage,
-                filteredUsers: data.filteredEventsCount,
-                totalUsers: data.count
+                filteredEvents: data.filteredEventsCount,
+                totalEvents: data.count
             }));
         } catch (error: any) {
             toast.error(error.response.data.message);

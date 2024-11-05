@@ -68,7 +68,9 @@ export const createEvent = async (req: Request, res: Response, next: NextFunctio
             rules,
             schoolOrCollege,
             schoolClass,
-            collegeClass
+            collegeClass,
+            limit,
+            registered
         } = req.body;
 
         if (!title || !description || !category || !participation || !eventDate) {
@@ -133,6 +135,8 @@ export const createEvent = async (req: Request, res: Response, next: NextFunctio
             image: eventImage,
             backgroundImage: eventBackground,
             eligibility,
+            limit,
+            registered
         });
 
         res.status(StatusCodes.CREATED).json({
@@ -189,7 +193,9 @@ export const updateEventDetails = async (req: Request, res: Response, next: Next
             rules,
             schoolOrCollege,
             schoolClass,
-            collegeClass
+            collegeClass,
+            limit,
+            registered
         } = req.body;
 
         if (rules && !Array.isArray(rules)) {
@@ -259,6 +265,8 @@ export const updateEventDetails = async (req: Request, res: Response, next: Next
             eligibility,
             image: eventImage || event.image,
             backgroundImage: eventBackground || event.backgroundImage,
+            limit: limit || event.limit,
+            registered: registered || event.registered,
         };
 
         const updatedEvent = await Event.findByIdAndUpdate(
