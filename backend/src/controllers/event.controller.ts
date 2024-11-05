@@ -7,7 +7,6 @@ import ErrorHandler from '../utils/errorHandler.js';
 import path from 'path';
 import fs from "fs";
 import { addEmailToQueue } from '../utils/emailQueue.js';
-import ApiFeatures from '../utils/apiFeatures.js';
 
 interface Eligibility {
     schoolOrCollege?: string;
@@ -17,23 +16,11 @@ interface Eligibility {
 
 export const getAllEvents = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const resultPerPage = 10;
-        const count = await Event.countDocuments();
-
-        const apiFeatures = new ApiFeatures(Event.find().select('title category participation limit registered').sort({ $natural: -1 }), req.query).searchEvent().filter();
-
-        let filteredEvents = await apiFeatures.query;
-        let filteredEventsCount = filteredEvents.length;
-
-        apiFeatures.pagination(resultPerPage);
-        filteredEvents = await apiFeatures.query.clone();
+        const events = await Event.find().select("title description category participation backgroundImage")
 
         res.status(StatusCodes.OK).json({
             success: true,
-            count,
-            resultPerPage,
-            events: filteredEvents,
-            filteredEventsCount
+            events
         });
     } catch (error) {
         next(error);

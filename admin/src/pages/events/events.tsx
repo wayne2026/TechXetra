@@ -101,7 +101,7 @@ const EventsPage = () => {
         setLoading(true);
 
         const delayDebounce = setTimeout(() => {
-            const link = `${import.meta.env.VITE_BASE_URL}/events/all?${queryParams}`;
+            const link = `${import.meta.env.VITE_BASE_URL}/admins/events/all?${queryParams}`;
             fetchUsers(link);
             setLoading(false);
         }, 2000);

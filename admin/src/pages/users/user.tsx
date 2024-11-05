@@ -101,7 +101,7 @@ const UserPage = () => {
                 <div className="mt-6 mb-6 flex flex-col md:flex-row items-center gap-8">
                     {user?.avatar && user?.avatar?.length > 0 ? (
                         <img
-                            src={user.avatar}
+                            src={user?.avatar}
                             alt="Profile"
                             className="w-24 h-24 rounded-full shadow-md border-4 border-indigo-600"
                         />
@@ -111,12 +111,12 @@ const UserPage = () => {
                         </div>
                     )}
                     <div className="text-center sm:text-left">
-                        <p className="text-lg font-semibold text-gray-700">Name: {user.firstName} {user.lastName}</p>
-                        <p className="text-lg font-semibold text-gray-700">{user.schoolOrCollege === "SCHOOL" ? "SCHHOL" : "COLLEGE"}: {user.schoolOrCollege === "SCHOOL" ? user.schoolName : user.collegeName}</p>
-                        <p className="text-lg font-semibold text-gray-700">Email: {user.email}</p>
-                        <p className="text-lg font-semibold text-gray-700">Phone: {user.phoneNumber}</p>
-                        <p className="text-lg font-semibold text-gray-700">Role: {user.role}</p>
-                        <p className="text-lg font-semibold text-gray-700">Academic Level: {user.schoolOrCollege === "SCHOOL" ? user.schoolClass : user.collegeClass}</p>
+                        <p className="text-lg font-semibold text-gray-700">Name: {user?.firstName} {user?.lastName}</p>
+                        <p className="text-lg font-semibold text-gray-700">{user?.schoolOrCollege === "SCHOOL" ? "SCHHOL" : "COLLEGE"}: {user?.schoolOrCollege === "SCHOOL" ? user?.schoolName : user?.collegeName}</p>
+                        <p className="text-lg font-semibold text-gray-700">Email: {user?.email}</p>
+                        <p className="text-lg font-semibold text-gray-700">Phone: {user?.phoneNumber}</p>
+                        <p className="text-lg font-semibold text-gray-700">Role: {user?.role}</p>
+                        <p className="text-lg font-semibold text-gray-700">Academic Level: {user?.schoolOrCollege === "SCHOOL" ? user?.schoolClass : user?.collegeClass}</p>
                     </div>
                 </div>
 
@@ -139,7 +139,7 @@ const UserPage = () => {
                     </div>
 
                     <div className="inline-flex items-center cursor-pointer gap-4">
-                        <p className="text-xl font-semibold text-gray-600">BLOCKED: {user.isBlocked.toString().toUpperCase()}</p>
+                        <p className="text-xl font-semibold text-gray-600">BLOCKED: {user?.isBlocked?.toString().toUpperCase()}</p>
                         <button onClick={handleToggleBlockUser} className="rounded bg-indigo-500 px-3 py-2 font-medium text-white hover:bg-opacity-90">
                             Block User
                         </button>
@@ -148,21 +148,21 @@ const UserPage = () => {
 
                 <h1 className="text-3xl font-semibold text-indigo-600 underline">Enrolled Events</h1>
 
-                {user.events && user.events.map((event, index) => (
+                {user?.events && user?.events.map((event, index) => (
                     <div key={index} className="mt-4 w-full md:w-[90%] mx-auto">
                         <div className="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200 cursor-pointer hover:bg-gray-200">
                             <div className="flex flex-col md:flex-row justify-between items-center">
                                 <div>
-                                    <h3 className="text-2xl font-semibold text-indigo-600">{event.eventId.title}</h3>
+                                    <h3 className="text-2xl font-semibold text-indigo-600">{event?.eventId?.title}</h3>
                                     <p className="text-sm text-slate-400">
-                                        {event.eventId.venue} • {moment.utc(event.eventId.eventDate).format('DD/MM/yyyy')} • {moment.utc(event.eventId.eventDate).format('hh:mm A')}
+                                        {event?.eventId?.venue} • {moment.utc(event?.eventId?.eventDate).format('DD/MM/yyyy')} • {moment.utc(event?.eventId?.eventDate).format('hh:mm A')}
                                     </p>
                                 </div>
-                                {event.group && event.group.members && event.group.members?.length > 0 && (
+                                {event?.group && event?.group?.members && event?.group?.members?.length > 0 && (
                                     <div>
-                                        <p>Leader: {event.group.leader?.firstName}{event.group.leader?.lastName}</p>
-                                        {event.group.members.map((member, index) => (
-                                            <p key={index}>Member{index + 1}: {member.user?.firstName}{member.user?.lastName} - {member.status}</p>
+                                        <p>Leader: {event?.group?.leader?.firstName}{event?.group?.leader?.lastName}</p>
+                                        {event?.group?.members.map((member, index) => (
+                                            <p key={index}>Member{index + 1}: {member?.user?.firstName}{member?.user?.lastName} - {member?.status}</p>
                                         ))}
                                     </div>
                                 )}
@@ -172,15 +172,15 @@ const UserPage = () => {
                                     <h2 className="text-md font-semibold">Payment Details</h2>
                                     <div className="mt-2 flex flex-wrap items-center space-x-2 max-sm:space-y-2">
                                         <span className={`px-3 py-1 rounded-full text-sm font-semibold bg-green-500 text-white`}>
-                                            {event.payment.status}
+                                            {event?.payment?.status}
                                         </span>
                                     </div>
                                     <div className="mt-2 text-sm text-gray-600">
-                                        <p><strong>Transaction ID:</strong>{event.payment.transactionId}</p>
-                                        <p><strong>Verifier:</strong> {event.payment.verifierId}</p>
-                                        <p><strong>Amount:</strong> ₹ {event.payment.amount}</p>
+                                        <p><strong>Transaction ID:</strong>{event?.payment?.transactionId}</p>
+                                        <p><strong>Verifier:</strong> {event?.payment?.verifierId}</p>
+                                        <p><strong>Amount:</strong> ₹ {event?.payment?.amount}</p>
                                         {event?.payment?.paymentImage && (
-                                            <Link onClick={(e) => e.stopPropagation()} to={event?.payment?.paymentImage} target="blank" className="mt-2 flex items-center gap-4">Payment ScreenShot: <img className="h-10 w-10 rounded-lg" src={event.payment.paymentImage} alt={event.payment.transactionId} /></Link>
+                                            <Link onClick={(e) => e.stopPropagation()} to={event?.payment?.paymentImage} target="blank" className="mt-2 flex items-center gap-4">Payment ScreenShot: <img className="h-10 w-10 rounded-lg" src={event?.payment?.paymentImage} alt={event?.payment?.transactionId} /></Link>
                                         )}
                                     </div>
                                 </div>
@@ -188,11 +188,11 @@ const UserPage = () => {
                                     <h2 className="text-md font-semibold">Phyiscal Verification Details</h2>
                                     <div className="mt-2 flex flex-wrap items-center space-x-2 max-sm:space-y-2">
                                         <span className={`px-3 py-1 rounded-full text-sm font-semibold bg-green-500 text-white`}>
-                                            {event.physicalVerification.status.toString().toUpperCase()}
+                                            {event?.physicalVerification?.status?.toString().toUpperCase()}
                                         </span>
                                     </div>
                                     <div className="mt-2 text-sm text-gray-600">
-                                        <p><strong>Verifier:</strong> {event.physicalVerification.verifierId}</p>
+                                        <p><strong>Verifier:</strong> {event?.physicalVerification?.verifierId}</p>
                                     </div>
                                 </div>
                             </div>

@@ -527,3 +527,28 @@ export const deleteUserEvents = async (req: Request, res: Response, next: NextFu
         next(error);
     }
 }
+
+export const getAllEvents = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const resultPerPage = 10;
+        const count = await Event.countDocuments();
+
+        const apiFeatures = new ApiFeatures(Event.find().select('title category participation limit registered').sort({ $natural: -1 }), req.query).searchEvent().filter();
+
+        let filteredEvents = await apiFeatures.query;
+        let filteredEventsCount = filteredEvents.length;
+
+        apiFeatures.pagination(resultPerPage);
+        filteredEvents = await apiFeatures.query.clone();
+
+        res.status(StatusCodes.OK).json({
+            success: true,
+            count,
+            resultPerPage,
+            events: filteredEvents,
+            filteredEventsCount
+        });
+    } catch (error) {
+        next(error);
+    }
+}
