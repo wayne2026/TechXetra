@@ -86,21 +86,14 @@ interface EventDetails {
     rules?: string[];
     backgroundImage?: string;
     eligibility?: {
-        schoolOrCollege: string;
-        collegeClass?: string;
-        schoolClass?: string;
+        schoolOrCollege?: string;
+        collegeClass?: string[];
+        schoolClass?: string[];
     }
+	limit?: number;
+	registered?: number;
     createdAt: Date;
     updatedAt: Date;
-}
-
-interface AllEventCarousel {
-	_id: string;
-    title: string;
-    description: string;
-    category: string;
-    participation: string;
-    backgroundImage?: string;
 }
 
 interface EventDetailsResponse {
@@ -110,5 +103,8 @@ interface EventDetailsResponse {
 
 interface AllEventDetailsResponse {
 	success: boolean;
-	events: AllEventCarousel[];
+	count: number;
+	resultPerPage: number;
+	events: EventDetails[];
+	filteredEventsCount: number;
 }

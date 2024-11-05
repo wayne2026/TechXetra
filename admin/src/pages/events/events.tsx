@@ -1,132 +1,261 @@
-import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import {
+    ColumnDef,
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getSortedRowModel,
+    useReactTable,
+} from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import moment from 'moment-timezone';
 
-interface FormData {
-    eventDate: string;
-    deadline: string;
-    image: File | null;
-    backgroundImage: File | null;
-}
+export const columns: ColumnDef<EventDetails>[] = [
+    {
+        accessorKey: "title",
+        header: "Title",
+        cell: ({ row }) => (
+            <div className="font-medium">{row.original.title}</div>
+        ),
+    },
+    {
+        accessorKey: "participation",
+        header: "Participation",
+        cell: ({ row }) => (
+            <div className="font-normal">{row.getValue("participation")}</div>
+        ),
+    },
+    {
+        accessorKey: "category",
+        header: "Category",
+        cell: ({ row }) => <div className="font-normal">{row.getValue("category")}</div>,
+    },
+    {
+        accessorKey: "limit",
+        header: "Limit",
+        cell: ({ row }) => (
+            <div className="font-normal">{row.getValue("limit")}</div>
+        ),
+    },
+    {
+        accessorKey: "registered",
+        header: "Registered",
+        cell: ({ row }) => (
+            <div className="font-normal">{row.getValue("registered")}</div>
+        ),
+    },
+];
 
 const EventsPage = () => {
 
-    const [search] = useSearchParams();
-    const id = search.get('id');
     const navigate = useNavigate();
-    const [formData, setFormData] = useState<FormData>({
-        eventDate: "",
-        deadline: "",
-        image: null,
-        backgroundImage: null
+    const [events, setEvents] = useState<EventDetails[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [filter, setFilter] = useState({
+        keyword: "",
+        participation: "",
+        category: ""
+    });
+    const [counts, setCounts] = useState({
+        currentPage: 1,
+        resultPerPage: 1,
+        filteredEvents: 1,
+        totalEvents: 1
     });
 
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, files } = e.target;
-        if (files && files.length > 0) {
-            setFormData({
-                ...formData,
-                [name]: files[0],
-            });
-        }
-    };
-
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const config = {
-            headers: { "Content-Type": "multipart/form-data" },
-            withCredentials: true,
-        };
-
-        const form = new FormData();
-        const eventDateUTC = moment(formData.eventDate).utc().format();
-        const deadlineDateUTC = moment(formData.deadline).utc().format();
-        if (formData.eventDate) {
-            form.append('eventDate', eventDateUTC);
-        }
-        if (formData.deadline) {
-            form.append('deadline', deadlineDateUTC);
-        }
-        if (formData.image) {
-            form.append('image', formData.image);
-        }
-        if (formData.backgroundImage) {
-            form.append('event', formData.backgroundImage);
-        }
+    const fetchUsers = async (url: string) => {
         try {
-            if (id) {
-                await axios.put(`${import.meta.env.VITE_BASE_URL}/events/byId/${id}`, formData, config);
-                toast.success("Updated");
-            } else {
-                toast.info("Can fetch ID directly enter the link, don't edit")
-            }
+            const { data }: { data: AllEventDetailsResponse } = await axios.get(url, { withCredentials: true });
+            setEvents(data.events);
+            setCounts(prev => ({
+                ...prev,
+                resultPerPage: data.resultPerPage,
+                filteredUsers: data.filteredEventsCount,
+                totalUsers: data.count
+            }));
         } catch (error: any) {
             toast.error(error.response.data.message);
+            setEvents([]);
         }
-    };
+    }
+
+    useEffect(() => {
+        const queryParams = [
+            `keyword=${filter.keyword}`,
+            `page=${counts.currentPage}`,
+            filter.participation && `participation=${filter.participation}`,
+            filter.category && `category=${filter.category}`,
+        ].filter(Boolean).join("&");
+
+        setLoading(true);
+
+        const delayDebounce = setTimeout(() => {
+            const link = `${import.meta.env.VITE_BASE_URL}/events/all?${queryParams}`;
+            fetchUsers(link);
+            setLoading(false);
+        }, 2000);
+
+        return () => clearTimeout(delayDebounce);
+
+    }, [filter, counts.currentPage]);
+
+    const table = useReactTable({
+        data: events,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+    });
 
     return (
-        <div className="mt-36">
-            <Button onClick={() => navigate("/events/create")}>Create New Event</Button>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="eventDate">Event Date:</label>
-                    <input
-                        type="datetime-local"
-                        id="eventDate"
-                        name="eventDate"
-                        value={formData.eventDate}
-                        onChange={handleInputChange}
-                    />
+        <div className="w-full md:w-[90%] mx-auto mt-24 mb-16 bg-white p-6 rounded-lg shadow-sm">
+            <div className="flex items-center py-4 px-2 gap-2">
+                <p className="text-2xl font-semibold">All Events ( {filter ? counts.filteredEvents : counts.totalEvents} )</p>
+                <Button onClick={() => navigate(`/events/create`)}>Create New Event</Button>
+            </div>
+            <div className="flex flex-col md:flex-row justify-between items-center py-4 gap-4">
+                <Input
+                    placeholder="Search User Email"
+                    value={filter.keyword}
+                    onChange={(e) => {
+                        setFilter({ ...filter, keyword: e.target.value });
+                        setCounts({ ...counts, currentPage: 1 });
+                    }}
+                    className="max-w-sm"
+                />
+                <div className="flex justify-center items-center space-x-4">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCounts({ ...counts, currentPage: counts.currentPage - 1 })}
+                        disabled={counts.currentPage === 1}
+                    >
+                        Prev
+                    </Button>
+                    <div className="truncate">
+                        {counts.currentPage} / {Math.ceil(counts.filteredEvents / counts.resultPerPage)}
+                    </div>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCounts({ ...counts, currentPage: counts.currentPage + 1 })}
+                        disabled={counts.currentPage === Math.ceil(counts.filteredEvents / counts.resultPerPage)}
+                    >
+                        Next
+                    </Button>
                 </div>
+            </div>
 
-                <div>
-                    <label htmlFor="deadline">Event Deadline:</label>
-                    <input
-                        type="datetime-local"
-                        id="deadline"
-                        name="deadline"
-                        value={formData.deadline}
-                        onChange={handleInputChange}
-                    />
+            <div className="flex flex-wrap justify-evenly items-center space-y-4 py-6 px-4 md:px-6 xl:px-7.5">
+                <div className="inline-flex items-center cursor-pointer gap-4">
+                    <select
+                        className="text-black px-2 py-1 rounded-md border-2"
+                        value={filter.participation}
+                        onChange={(e) => {
+                            setFilter({ ...filter, participation: e.target.value });
+                            setCounts({ ...counts, currentPage: 1 });
+                        }}
+                    >
+                        <option value="">ALL</option>
+                        <option value="SOLO">SOLO</option>
+                        <option value="TEAM">TEAM</option>
+                        <option value="HYBRID">HYBRID</option>
+                    </select>
+                    <label className="ms-3 text-md font-semibold text-slate-700 dark:text-white">Participation</label>
                 </div>
-
-                <div>
-                    <label htmlFor="image">Event Image:</label>
-                    <input
-                        type="file"
-                        id="image"
-                        name="image"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                    />
+                <div className="inline-flex items-center cursor-pointer gap-4">
+                    <select
+                        className="text-black px-2 py-1 rounded-md border-2"
+                        value={filter.category}
+                        onChange={(e) => {
+                            setFilter({ ...filter, category: e.target.value });
+                            setCounts({ ...counts, currentPage: 1 });
+                        }}
+                    >
+                        <option value="">ALL</option>
+                        <option value="TECHNICAL">TECHNICAL</option>
+                        <option value="GENERAL">GENERAL</option>
+                        <option value="CULTURAL">CULTURAL</option>
+                        <option value="SPORTS">SPORTS</option>
+                        <option value="ESPORTS">ESPORTS</option>
+                        <option value="MISCELLANEOUS">MISCELLANEOUS</option>
+                    </select>
+                    <label className="ms-3 text-md font-semibold text-slate-700 dark:text-white">Category</label>
                 </div>
+            </div>
 
-                <div>
-                    <label htmlFor="backgroundImage">Event Background:</label>
-                    <input
-                        type="file"
-                        id="backgroundImage"
-                        name="backgroundImage"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                    />
-                </div>
-
-                <button type="submit">Upload</button>
-            </form>
+            <div className="rounded-md border">
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                header.column.columnDef
+                                                    .header,
+                                                header.getContext()
+                                            )}
+                                    </TableHead>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {loading ? (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={columns.length}
+                                    className="h-24 text-center"
+                                >
+                                    Loading...
+                                </TableCell>
+                            </TableRow>
+                        ) : table.getRowModel().rows?.length ? (
+                            table.getRowModel().rows.map((row) => (
+                                <TableRow
+                                    key={row.id}
+                                    data-state={
+                                        row.getIsSelected() && "selected"
+                                    }
+                                    onClick={() => navigate(`/events/event?id=${row.original._id}`)}
+                                >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext()
+                                            )}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={columns.length}
+                                    className="h-24 text-center"
+                                >
+                                    No results.
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
         </div>
     )
 }

@@ -44,8 +44,8 @@ interface IEvent extends Document {
         collegeClass?: Array<typeof collegeClassEnum[keyof typeof collegeClassEnum]>;
         schoolClass?: Array<typeof schoolClassEnum[keyof typeof schoolClassEnum]>;
     }
-    limit: number;
-    registered: number;
+    limit?: number;
+    registered?: number;
     createdAt: Date;
     updatedAt: Date;
 }

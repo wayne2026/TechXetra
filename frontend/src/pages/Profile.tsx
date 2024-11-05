@@ -526,7 +526,7 @@ const Profile = () => {
 											</h3>
 											<div className="mt-2 text-sm">
 												<p>Venue: {event.eventId.title}</p>
-												<p>Event Date: {new Date(event?.eventId.eventDate!).toLocaleDateString('en-GB')}</p>
+												<p>Event Date: {moment.utc(event.eventId.eventDate).format('DD/MM/yyyy')}</p>
 												<p>Event Time: {moment.utc(event.eventId.eventDate).format('hh:mm A')} onwards</p>
 											</div>
 										</div>

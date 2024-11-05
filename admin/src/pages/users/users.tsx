@@ -227,7 +227,7 @@ const UsersPage = () => {
                         onClick={() => setCounts({ ...counts, currentPage: counts.currentPage - 1 })}
                         disabled={counts.currentPage === 1}
                     >
-                        Previous
+                        Prev
                     </Button>
                     <div className="truncate">
                         {counts.currentPage} / {Math.ceil(counts.filteredUsers / counts.resultPerPage)}

@@ -112,9 +112,9 @@ export const toggleBlockUser = async (req: CustomRequest, res: Response, next: N
             return next(new ErrorHandler("Cannot block or unblock yourself", 400));
         }
 
-        const newUser = await User.findById(
+        const newUser = await User.findByIdAndUpdate(
             user._id,
-            { isBlocked: !user.isBlocked },
+            { $set: { isBlocked: !user.isBlocked } },
             { new: true, runValidators: true, useFindAndModify: false }
         )
 

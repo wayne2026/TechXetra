@@ -7,14 +7,33 @@ import ErrorHandler from '../utils/errorHandler.js';
 import path from 'path';
 import fs from "fs";
 import { addEmailToQueue } from '../utils/emailQueue.js';
+import ApiFeatures from '../utils/apiFeatures.js';
+
+interface Eligibility {
+    schoolOrCollege?: string;
+    schoolClass?: string[];
+    collegeClass?: string[];
+}
 
 export const getAllEvents = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const events = await Event.find().select('title description backgroundImage category participation');
+        const resultPerPage = 10;
+        const count = await Event.countDocuments();
+
+        const apiFeatures = new ApiFeatures(Event.find().select('title category participation limit registered').sort({ $natural: -1 }), req.query).searchEvent().filter();
+
+        let filteredEvents = await apiFeatures.query;
+        let filteredEventsCount = filteredEvents.length;
+
+        apiFeatures.pagination(resultPerPage);
+        filteredEvents = await apiFeatures.query.clone();
 
         res.status(StatusCodes.OK).json({
             success: true,
-            events,
+            count,
+            resultPerPage,
+            events: filteredEvents,
+            filteredEventsCount
         });
     } catch (error) {
         next(error);
@@ -77,10 +96,10 @@ export const createEvent = async (req: Request, res: Response, next: NextFunctio
         if (schoolOrCollege && !Object.values(schoolEnum).includes(schoolOrCollege)) {
             return next(new ErrorHandler("Invalid field SchoolOrCollege", 400));
         }
-        if (schoolClass && !Object.values(schoolClassEnum).includes(schoolClass)) {
+        if (schoolClass && (!Array.isArray(schoolClass) || (schoolClass.length <= 0 && !schoolClass.every(item => Object.values(schoolClassEnum).includes(item))))) {
             return next(new ErrorHandler("Invalid field SchoolClass", 400));
         }
-        if (collegeClass && !Object.values(collegeClassEnum).includes(collegeClass)) {
+        if (collegeClass && (!Array.isArray(collegeClass) || (collegeClass.length <= 0 && !collegeClass.every(item => Object.values(collegeClassEnum).includes(item))))) {
             return next(new ErrorHandler("Invalid field CollegeClass", 400));
         }
 
@@ -92,6 +111,18 @@ export const createEvent = async (req: Request, res: Response, next: NextFunctio
             ? `${process.env.SERVER_URL}/events/${(req.files["event"] as Express.Multer.File[])[0].filename}`
             : "";
 
+        const eligibility: Eligibility = {
+            schoolOrCollege,
+        };
+
+        if (schoolClass) {
+            eligibility.schoolClass = schoolClass;
+        }
+
+        if (collegeClass) {
+            eligibility.collegeClass = collegeClass;
+        }
+
         const event = await Event.create({
             title,
             subTitle,
@@ -100,25 +131,21 @@ export const createEvent = async (req: Request, res: Response, next: NextFunctio
             category,
             participation,
             maxGroup,
-            isVisible: Boolean(isVisible),
-            canRegister: Boolean(canRegister),
-            externalRegistration: Boolean(externalRegistration),
+            isVisible: typeof isVisible === 'string' ? isVisible === 'true' : Boolean(isVisible),
+            canRegister: typeof canRegister === 'string' ? canRegister === 'true' : Boolean(canRegister),
+            externalRegistration: typeof externalRegistration === 'string' ? externalRegistration === 'true' : Boolean(externalRegistration),
             extrenalRegistrationLink,
             externalLink,
-            registrationRequired: Boolean(registrationRequired),
-            paymentRequired: Boolean(paymentRequired),
+            registrationRequired: typeof registrationRequired === 'string' ? registrationRequired === 'true' : Boolean(registrationRequired),
+            paymentRequired: typeof paymentRequired === 'string' ? paymentRequired === 'true' : Boolean(paymentRequired),
             amount,
             eventDate,
             venue,
             deadline,
             rules,
-            images: eventImage,
+            image: eventImage,
             backgroundImage: eventBackground,
-            eligibility: {
-                schoolOrCollege,
-                schoolClass,
-                collegeClass
-            },
+            eligibility,
         });
 
         res.status(StatusCodes.CREATED).json({
@@ -187,10 +214,10 @@ export const updateEventDetails = async (req: Request, res: Response, next: Next
         if (schoolOrCollege && !Object.values(schoolEnum).includes(schoolOrCollege)) {
             return next(new ErrorHandler("Invalid field SchoolOrCollege", 400));
         }
-        if (schoolClass && !Object.values(schoolClassEnum).includes(schoolClass)) {
+        if (schoolClass && (!Array.isArray(schoolClass) || (schoolClass.length <= 0 && !schoolClass.every(item => Object.values(schoolClassEnum).includes(item))))) {
             return next(new ErrorHandler("Invalid field SchoolClass", 400));
         }
-        if (collegeClass && !Object.values(collegeClassEnum).includes(collegeClass)) {
+        if (collegeClass && (!Array.isArray(collegeClass) || (collegeClass.length <= 0 && !collegeClass.every(item => Object.values(collegeClassEnum).includes(item))))) {
             return next(new ErrorHandler("Invalid field CollegeClass", 400));
         }
 
@@ -208,6 +235,18 @@ export const updateEventDetails = async (req: Request, res: Response, next: Next
 
         if (eventBackground && event?.backgroundImage && event?.backgroundImage.length > 0) {
             await deleteOldImage(event?.backgroundImage, 'events');
+        }
+
+        const eligibility: Eligibility = {
+            schoolOrCollege,
+        };
+
+        if (schoolClass) {
+            eligibility.schoolClass = schoolClass;
+        }
+
+        if (collegeClass) {
+            eligibility.collegeClass = collegeClass;
         }
 
         const updatedData = {
@@ -230,11 +269,7 @@ export const updateEventDetails = async (req: Request, res: Response, next: Next
             venue: venue || event.venue,
             deadline: deadline || event.deadline,
             rules: rules || event.rules,
-            eligibility: {
-                schoolOrCollege: schoolOrCollege || event?.eligibility?.schoolOrCollege,
-                schoolClass: schoolClass || event?.eligibility?.schoolClass,
-                collegeClass: collegeClass || event?.eligibility?.collegeClass,
-            },
+            eligibility,
             image: eventImage || event.image,
             backgroundImage: eventBackground || event.backgroundImage,
         };
@@ -248,7 +283,7 @@ export const updateEventDetails = async (req: Request, res: Response, next: Next
         res.status(StatusCodes.OK).json({
             success: true,
             message: "Event updated successfully",
-            updatedEvent,
+            event: updatedEvent,
         });
     } catch (error) {
         next(error);
@@ -370,7 +405,7 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
         if (event.deadline && event.deadline.getTime() <= Date.now()) {
             return next(new ErrorHandler("Registration deadline has passed", StatusCodes.FORBIDDEN));
         }
-        if (event.limit && event.limit <= event.registered) {
+        if (event.limit && event.limit <= (event.registered || 0)) {
             return next(new ErrorHandler("Registration limit exceeded", StatusCodes.FORBIDDEN));
         }
 

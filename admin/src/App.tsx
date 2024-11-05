@@ -14,6 +14,7 @@ import Navbar from "./components/custom/navbar";
 import UsersPage from "./pages/users/users";
 import CreateEvent from "./pages/events/create";
 import UserPage from "./pages/users/user";
+import EventPage from "./pages/events/event";
 
 const App = () => {
     const userContext = useUser();
@@ -82,6 +83,15 @@ const App = () => {
                                 <>
                                     <PageTitle title="Events | TechXetra Admin" />
                                     <EventsPage />
+                                </>
+                            }
+                        />
+                        <Route
+                            path="/events/event"
+                            element={
+                                <>
+                                    <PageTitle title="Event | TechXetra Admin" />
+                                    <EventPage />
                                 </>
                             }
                         />

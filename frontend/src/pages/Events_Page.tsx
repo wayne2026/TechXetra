@@ -438,7 +438,10 @@ const Hackathon = () => {
                                 <div className='mt-6'>
                                     {["HYBRID", "TEAM"].includes(event?.participation) && (((userEvent.group?.members?.length || 0) + 1) < event?.maxGroup!) && (
                                         <button
-                                            onClick={() => setOpen(true)}
+                                            onClick={() => {
+                                                setOpen(true);
+                                                setKeyword("");
+                                            }}
                                             className="my-1 px-4 py-3 mr-4 bg-green-500 rounded-lg text-white hover:bg-green-600"
                                         >
                                             Add Member(s) +
