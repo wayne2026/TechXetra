@@ -28,10 +28,10 @@ const HomePage = () => {
                     <hr className="w-[90%] md:w-[50%] border border-gray-400" />
                     <div className="flex flex-col gap-4 w-[80%] md:w-[40%]">
                         <h1 className="text-lg font-semibold">Navigations</h1>
-                        <Button variant={"outline"} onClick={() => navigate("/login")}>All Users</Button>
-                        <Button variant={"outline"} onClick={() => navigate("/login")}>All Events</Button>
-                        <Button variant={"outline"} onClick={() => navigate("/login")}>Create New Event</Button>
-                        <Button variant={"outline"} onClick={() => navigate("/login")}>Registered Events</Button>
+                        <Button variant={"outline"} onClick={() => navigate("/users")}>All Users</Button>
+                        <Button variant={"outline"} onClick={() => navigate("/events")}>All Events</Button>
+                        <Button variant={"outline"} onClick={() => navigate("/events/create")}>Create New Event</Button>
+                        <Button variant={"outline"} onClick={() => navigate("/events/registered")}>Registered Events</Button>
                         <Button variant={"outline"} onClick={() => navigate("/login")}>Payment Verify Pending</Button>
                     </div>
                     <hr className="w-[90%] md:w-[50%] border border-gray-400" />

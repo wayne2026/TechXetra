@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "react-toastify";
 import axios from "axios";
-import moment from 'moment-timezone';
+// import moment from 'moment-timezone';
 
 const CreateEvent = () => {
     const [search] = useSearchParams();
@@ -110,9 +110,17 @@ const CreateEvent = () => {
         form.append("registrationRequired", JSON.stringify(formData.registrationRequired));
         form.append("paymentRequired", JSON.stringify(formData.paymentRequired));
         if (formData.amount) form.append("amount", formData.amount);
-        if (formData.eventDate) form.append("eventDate", moment(formData.eventDate).utc().format());
+        if (formData.eventDate) {
+            // console.log("eventDate", formData.eventDate);
+            // const eventDateUTC = moment(formData.eventDate).utc().format();
+            // console.log("eventDateUTC", eventDateUTC);
+            form.append("eventDate", formData.eventDate);
+        }
         if (formData.venue) form.append("venue", formData.venue);
-        if (formData.deadline) form.append("deadline", moment(formData.deadline).utc().format());
+        if (formData.deadline) {
+            // const deadlineUTC = moment(formData.deadline).utc().format();
+            form.append("deadline", formData.deadline);
+        }
         if (formData.image) form.append("image", formData.image);
         if (formData.backgroundImage) form.append("event", formData.backgroundImage);
         formData.rules.forEach((rule, index) => form.append(`rules[${index}]`, rule));
@@ -287,11 +295,11 @@ const CreateEvent = () => {
                 <div className="w-full flex flex-col md:flex-row items-center gap-4">
                     <div className="w-full md:w-1/2">
                         <Label className="block text-sm font-medium">Event Date</Label>
-                        <Input name="eventDate" type="datetime-local" value={formData.eventDate} onChange={handleInputChange} placeholder="Enter event date" />
+                        <input name="eventDate" type="datetime-local" value={formData.eventDate} onChange={handleInputChange} placeholder="Enter event date" />
                     </div>
                     <div className="w-full md:w-1/2">
                         <label className="block text-sm font-medium">Event Deadline</label>
-                        <Input name="deadline" type="datetime-local" value={formData.deadline} onChange={handleInputChange} placeholder="Enter event deadline" />
+                        <input name="deadline" type="datetime-local" value={formData.deadline} onChange={handleInputChange} placeholder="Enter event deadline" />
                     </div>
                 </div>
 

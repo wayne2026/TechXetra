@@ -329,13 +329,21 @@ export const getEventsRegistered = async (req: Request, res: Response, next: Nex
                 $project: {
                     _id: 0,
                     eventId: "$_id",
-                    title: "$eventDetails.title"
+                    title: "$eventDetails.title",
+                    participation: "$eventDetails.participation",
+                    category: "$eventDetails.category",
+                    limit: "$eventDetails.limit",
+                    registered: "$eventDetails.registered"
                 }
             },
             {
                 $group: {
                     _id: "$eventId",
-                    title: { $first: "$title" }
+                    title: { $first: "$title" },
+                    participation: { $first: "$participation" },
+                    category: { $first: "$category" },
+                    limit: { $first: "$limit" },
+                    registered: { $first: "$registered" }
                 }
             }
         ]);

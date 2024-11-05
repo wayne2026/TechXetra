@@ -15,6 +15,7 @@ import UsersPage from "./pages/users/users";
 import CreateEvent from "./pages/events/create";
 import UserPage from "./pages/users/user";
 import EventPage from "./pages/events/event";
+import RegisteredEvents from "./pages/events/registered";
 
 const App = () => {
     const userContext = useUser();
@@ -101,6 +102,15 @@ const App = () => {
                                 <>
                                     <PageTitle title="New Event | TechXetra Admin" />
                                     <CreateEvent />
+                                </>
+                            }
+                        />
+                        <Route
+                            path="/events/registered"
+                            element={
+                                <>
+                                    <PageTitle title="Registered Events | TechXetra Admin" />
+                                    <RegisteredEvents />
                                 </>
                             }
                         />
