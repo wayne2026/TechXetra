@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { User, UserResponse } from "../types";
 
 type UserContextType = {
     user: User | null;

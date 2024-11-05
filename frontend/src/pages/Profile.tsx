@@ -14,6 +14,7 @@ import { RxCross2 } from "react-icons/rx";
 import moment from "moment-timezone";
 import { MdForwardToInbox } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
+import { UserEvent, UserInvite } from "../types";
 
 export const createQRCode = (data: string) => {
   return new QRCodeStyling({

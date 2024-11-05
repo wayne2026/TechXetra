@@ -54,11 +54,17 @@ interface UserInviteResponse {
 	}
 }
 
+interface Events {
+	eventId: string;
+	title: string;
+	paymentRequired: boolean;
+};
+
 interface UserEventResponse {
 	success: boolean;
 	user: {
 		_id: string;
-        events: UserEvent[];
+        events: Events[];
 	}
 }
 
@@ -83,7 +89,7 @@ interface User {
 		hasPass: boolean;
 		isPaid: boolean;
 	};
-	// events: UserEvent[] | [];
+	events: UserEvent[] | [];
 	googleId: string;
 }
 
@@ -143,3 +149,9 @@ interface AllEventDetailsResponse {
 	success: boolean;
 	events: AllEventCarousel[];
 }
+
+export const paymentStatusEnum = {
+	PENDING: "PENDING",
+	SUBMITTED: "SUBMITTED",
+	VERIFIED: "VERIFIED",
+} as const;

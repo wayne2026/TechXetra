@@ -47,6 +47,7 @@ export const invitationStatusEnum = {
 
 export interface IUserEvent extends Document {
 	eventId: mongoose.Schema.Types.ObjectId;
+	title: string;
     paymentRequired: boolean;
 	eligible: boolean;
 	isGroup: boolean;
@@ -125,6 +126,10 @@ const EventSchema: Schema<IUserEvent> = new Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Event",
 			required: true,
+		},
+		title: {
+			type: String,
+			required: true
 		},
 		paymentRequired: {
             type: Boolean,

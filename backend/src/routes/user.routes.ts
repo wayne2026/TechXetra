@@ -4,6 +4,7 @@ import {
 	getUser,
 	getUserEvents,
 	getUserInvites,
+	getUsersInExcelSheet,
 	loginUser,
 	logoutUser,
 	registerUser,
@@ -32,5 +33,6 @@ router.route("/password/reset/:token").put(forgotPassword);
 router.route("/update/password").put(verifyToken, resetPassword);
 router.route("/upload/avatar").put(verifyToken, uploadAvatar.single("avatar"), uploadProfilePicture);
 router.route("/update/profile").put(verifyToken, updateProfileDetails);
+router.route("/exportusers").get(getUsersInExcelSheet);
 
 export default router;

@@ -1,9 +1,30 @@
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/user_context";
+import axios from "axios";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const userContext = useUser();
+
+  const downloadExcelSpreadSheet = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/users/exportusers`,
+        {
+          responseType: "blob",
+        }
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Users.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error while downloading excel spreadsheet: ", error);
+    }
+  };
 
   return (
     <div className="w-full flex justify-between items-center md:pr-10 md:pl-10 pl-8 pr-8 mt-6 text-white ">
@@ -20,11 +41,9 @@ const Navbar = () => {
           <button
             type="button"
             className="bg-white text-black px-2 py-1 rounded-md font-originTech"
-            onClick={() => {
-                navigate(`/passes/${userContext?.user?._id}`);
-            }}
+            onClick={downloadExcelSpreadSheet}
           >
-            Your Pass
+            Export Users
           </button>
         </div>
         <div className="px-2">

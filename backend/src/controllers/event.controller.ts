@@ -7,6 +7,7 @@ import ErrorHandler from '../utils/errorHandler.js';
 import path from 'path';
 import fs from "fs";
 import { addEmailToQueue } from '../utils/emailQueue.js';
+import { title } from 'process';
 
 export const getAllEvents = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -450,6 +451,7 @@ export const enrollEvent = async (req: CustomRequest, res: Response, next: NextF
 
         const eventObject: any = {
             eventId: event._id,
+            title: event.title,
             paymentRequired: event.paymentRequired,
             eligible,
             isGroup,
