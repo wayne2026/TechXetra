@@ -4,6 +4,8 @@ import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { RxCross2 } from "react-icons/rx";
 import { Button } from "@/components/ui/button";
+import * as XLSX from "xlsx";
+import { saveAs } from 'file-saver';
 
 interface UserData {
     leader?: {
@@ -64,8 +66,10 @@ interface UserDataResponse {
 }
 
 const UsersInEvents = () => {
-    const [search] = useSearchParams();
-    const id = search.get('id');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const id = searchParams.get('id');
+    const paymentStatus = searchParams.get('paymentStatus');
+    const physicalVerification = searchParams.get('physicalVerification');
     const [users, setUsers] = useState<UserData[]>();
     const [currentUser, setCurrentUser] = useState<UserData | null>();
     const [loading, setLoading] = useState(false);
@@ -91,6 +95,90 @@ const UsersInEvents = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const exportData = users?.map(user => {
+        const isGroup = user.leader && user.members;
+
+        if (isGroup) {
+            const leader = user.leader;
+            const members = user.members || [];
+
+            const memberNames = members.map(member => `${member.firstName} ${member.lastName}`).join(', ');
+            const memberEmails = members.map(member => member.email).join(', ');
+            const memberPhones = members.map(member => member.phoneNumber).join(', ');
+            const memberSchools = members.map(member => member.schoolName || '').join(', ');
+            const memberClasses = members.map(member => member.schoolClass || member.collegeClass || '').join(', ');
+            const memberColleges = members.map(member => member.collegeName || '').join(', ');
+
+            return {
+                Type: "Group",
+                LeaderFirstName: leader?.firstName,
+                LeaderLastName: leader?.lastName,
+                LeaderEmail: leader?.email,
+                LeaderPhoneNumber: leader?.phoneNumber,
+                LeaderSchoolOrCollege: leader?.schoolOrCollege,
+                LeaderSchoolName: leader?.schoolName || '',
+                LeaderCollegeName: leader?.collegeName || '',
+                LeaderClass: leader?.schoolClass || leader?.collegeClass || '',
+                MemberNames: memberNames,
+                MemberEmails: memberEmails,
+                MemberPhones: memberPhones,
+                MemberSchools: memberSchools,
+                MemberClasses: memberClasses,
+                MemberColleges: memberColleges,
+                PaymentStatus: user.payment.status,
+                TransactionId: user.payment.transactionId || '',
+                PaymentAmount: user.payment.amount,
+                PhysicalVerificationStatus: user.physicalVerification.status ? "Verified" : "Unverified",
+                EventId: user.eventId,
+                EventTitle: user.eventTitle,
+            };
+        } else {
+            return {
+                Type: "Individual",
+                FirstName: user.firstName,
+                LastName: user.lastName,
+                Email: user.email,
+                PhoneNumber: user.phoneNumber,
+                SchoolOrCollege: user.schoolOrCollege,
+                SchoolName: user.schoolName || '',
+                CollegeName: user.collegeName || '',
+                Class: user.schoolClass || user.collegeClass || '',
+                PaymentStatus: user.payment.status,
+                TransactionId: user.payment.transactionId || '',
+                PaymentAmount: user.payment.amount,
+                PhysicalVerificationStatus: user.physicalVerification.status ? "Verified" : "Unverified",
+                EventId: user.eventId,
+                EventTitle: user.eventTitle,
+            };
+        }
+    });
+
+    const exportToXlsx = () => {
+        if (!users) {
+            toast.error("No users found to export.");
+            return;
+        }
+        const ws = XLSX.utils.json_to_sheet(exportData!);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'UserEvents');
+
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `user_events_${id}.xlsx`);
+    };
+
+    useEffect(() => {
+        setFilter({
+            ...filter,
+            paymentStatus: paymentStatus || "",
+            physicalVerification: physicalVerification || "",
+        });
+    }, [searchParams]);
+
+    const updateParams = (newParams: any) => {
+        const params = { ...Object.fromEntries(searchParams.entries()), ...newParams };
+        setSearchParams(params, { replace: true });
     };
 
     useEffect(() => {
@@ -153,13 +241,19 @@ const UsersInEvents = () => {
         <div className="w-full md:w-[60%] mx-auto mt-24 mb-16 bg-white p-6 rounded-lg shadow-sm">
             <div className="flex flex-col items-center justify-center">
                 <h1 className="text-3xl font-semibold text-indigo-600 mb-4 underline">Event: {event || id}</h1>
+                <div>
+                    <Button onClick={exportToXlsx}>Export Data</Button>
+                </div>
                 <h3 className="text-xl font-medium">Registered Users: {count}</h3>
                 <div className="flex flex-wrap justify-evenly items-center gap-5 space-y-4 py-6 px-4 md:px-6 xl:px-7.5">
                     <div className="inline-flex items-center cursor-pointer gap-4">
                         <select
                             className="text-black px-2 py-1 rounded-md border-2"
                             value={filter.paymentStatus}
-                            onChange={(e) => setFilter({ ...filter, paymentStatus: e.target.value })}
+                            onChange={(e) => {
+                                setFilter({ ...filter, paymentStatus: e.target.value });
+                                updateParams({ paymentStatus: e.target.value });
+                            }}
                         >
                             <option value="">ALL</option>
                             <option value="PENDING">PENDING</option>
@@ -172,7 +266,10 @@ const UsersInEvents = () => {
                         <select
                             className="text-black px-2 py-1 rounded-md border-2"
                             value={filter.physicalVerification}
-                            onChange={(e) => setFilter({ ...filter, physicalVerification: e.target.value })}
+                            onChange={(e) => {
+                                setFilter({ ...filter, physicalVerification: e.target.value });
+                                updateParams({ physicalVerification: e.target.value });
+                            }}
                         >
                             <option value="">ALL</option>
                             <option value="true">TRUE</option>
@@ -184,82 +281,82 @@ const UsersInEvents = () => {
 
                 {open && (
                     <>
-                    {!currentUser ? (
-                        <div>
-                            <p>Something went wrong fetching data...</p>
-                        </div>
-                    ) : (
-                        <div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
-                            <div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[40%]">
-                                <div className='flex justify-between items-center'>
-                                    <h1 className='text-xl md:text-2xl font-semibold'>Event Actions</h1>
-                                    <button
-                                        className='border-2 rounded-lg px-2 py-1 text-lg'
-                                        onClick={() => {
-                                            setOpen(false);
-                                            if (selectedOption) {
-                                                setSelectedOption("");
-                                            }
-                                            setCurrentUser(null);
-                                        }}
-                                    >
-                                        <RxCross2 size={20} />
-                                    </button>
-                                </div>
-                                <div className="mt-6 flex flex-col items-start space-y-2 gap-2">
-                                    <div className="flex gap-2">
-                                        <p className="text-lg font-semibold">Physical Verification:</p>
-                                        <Button
-                                            className="py-1"
-                                            disabled={currentUser.physicalVerification.status}
+                        {!currentUser ? (
+                            <div>
+                                <p>Something went wrong fetching data...</p>
+                            </div>
+                        ) : (
+                            <div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
+                                <div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[40%]">
+                                    <div className='flex justify-between items-center'>
+                                        <h1 className='text-xl md:text-2xl font-semibold'>Event Actions</h1>
+                                        <button
+                                            className='border-2 rounded-lg px-2 py-1 text-lg'
                                             onClick={() => {
-                                                const userId = (currentUser?.members && currentUser?.members?.length > 0) ? currentUser.leader?._id : currentUser.userId;
-                                                handleUpdatePhysicalVerfication(currentUser.eventId, userId!)
+                                                setOpen(false);
+                                                if (selectedOption) {
+                                                    setSelectedOption("");
+                                                }
+                                                setCurrentUser(null);
                                             }}
                                         >
-                                            Verify User Physically
-                                        </Button>
+                                            <RxCross2 size={20} />
+                                        </button>
                                     </div>
-                                    <div className="flex gap-2">
-                                        <p className="text-lg font-semibold">Paymnet Verification:</p>
-                                        <select
-                                            className="text-black px-2 py-1 rounded-md border-2"
-                                            value={selectedOption}
-                                            onChange={(e) => setSelectedOption(e.target.value)}
-                                        >
-                                            <option value="" disabled>Select an Option</option>
-                                            <option value="PENDING">PENDING</option>
-                                            <option value="SUBMITTED">SUBMITTED</option>
-                                            <option value="VERIFIED">VERIFIED</option>
-                                        </select>
-                                        <Button
-                                            className="py-1"
-                                            disabled={currentUser.payment.status === "VERIFIED" || selectedOption === ""}
-                                            onClick={() => {
-                                                const userId = (currentUser?.members && currentUser?.members?.length > 0) ? currentUser.leader?._id : currentUser.userId;
-                                                handleUpdatePaymentVerfication(currentUser.eventId, userId!)
-                                            }}
-                                        >
-                                            Verify User Physically
-                                        </Button>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <p className="text-lg font-semibold">Delete UserEvent:</p>
-                                        <Button
-                                            className="py-1"
-                                            variant="destructive"
-                                            onClick={() => {
-                                                const userId = (currentUser?.members && currentUser?.members?.length > 0) ? currentUser.leader?._id : currentUser.userId;
-                                                handleDeleteUserEvent(currentUser.eventId, userId!)
-                                            }}
-                                        >
-                                            Delete
-                                        </Button>
+                                    <div className="mt-6 flex flex-col items-start space-y-2 gap-2">
+                                        <div className="flex gap-2">
+                                            <p className="text-lg font-semibold">Physical Verification:</p>
+                                            <Button
+                                                className="py-1"
+                                                disabled={currentUser.physicalVerification.status}
+                                                onClick={() => {
+                                                    const userId = (currentUser?.members && currentUser?.members?.length > 0) ? currentUser.leader?._id : currentUser.userId;
+                                                    handleUpdatePhysicalVerfication(currentUser.eventId, userId!)
+                                                }}
+                                            >
+                                                Verify User Physically
+                                            </Button>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <p className="text-lg font-semibold">Paymnet Verification:</p>
+                                            <select
+                                                className="text-black px-2 py-1 rounded-md border-2"
+                                                value={selectedOption}
+                                                onChange={(e) => setSelectedOption(e.target.value)}
+                                            >
+                                                <option value="" disabled>Select an Option</option>
+                                                <option value="PENDING">PENDING</option>
+                                                <option value="SUBMITTED">SUBMITTED</option>
+                                                <option value="VERIFIED">VERIFIED</option>
+                                            </select>
+                                            <Button
+                                                className="py-1"
+                                                disabled={currentUser.payment.status === "VERIFIED" || selectedOption === ""}
+                                                onClick={() => {
+                                                    const userId = (currentUser?.members && currentUser?.members?.length > 0) ? currentUser.leader?._id : currentUser.userId;
+                                                    handleUpdatePaymentVerfication(currentUser.eventId, userId!)
+                                                }}
+                                            >
+                                                Verify User Physically
+                                            </Button>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <p className="text-lg font-semibold">Delete UserEvent:</p>
+                                            <Button
+                                                className="py-1"
+                                                variant="destructive"
+                                                onClick={() => {
+                                                    const userId = (currentUser?.members && currentUser?.members?.length > 0) ? currentUser.leader?._id : currentUser.userId;
+                                                    handleDeleteUserEvent(currentUser.eventId, userId!)
+                                                }}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
                     </>
                 )}
 

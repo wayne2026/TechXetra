@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
     ColumnDef,
     flexRender,
@@ -104,6 +104,11 @@ export const columns: ColumnDef<EventDetails>[] = [
 const EventsPage = () => {
 
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const page = searchParams.get("page");
+    const keyword = searchParams.get("keyword");
+    const participation = searchParams.get("participation");
+    const category = searchParams.get("category");
     const [events, setEvents] = useState<EventDetails[]>([]);
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState({
@@ -133,6 +138,21 @@ const EventsPage = () => {
             setEvents([]);
         }
     }
+
+    useEffect(() => {
+        setFilter({
+            ...filter,
+            keyword: keyword || "",
+            participation: participation || "",
+            category: category || "",
+        });
+        setCounts({ ...counts, currentPage: Number(page) || 1 });
+    }, [searchParams]);
+
+    const updateParams = (newParams: any) => {
+        const params = { ...Object.fromEntries(searchParams.entries()), ...newParams };
+        setSearchParams(params, { replace: true });
+    };
 
     useEffect(() => {
         const queryParams = [
@@ -170,11 +190,12 @@ const EventsPage = () => {
             </div>
             <div className="flex flex-col md:flex-row justify-between items-center py-4 gap-4">
                 <Input
-                    placeholder="Search User Email"
+                    placeholder="Search Event Title"
                     value={filter.keyword}
                     onChange={(e) => {
                         setFilter({ ...filter, keyword: e.target.value });
                         setCounts({ ...counts, currentPage: 1 });
+                        updateParams({ page: "1", keyword: e.target.value });
                     }}
                     className="max-w-sm"
                 />
@@ -182,7 +203,10 @@ const EventsPage = () => {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCounts({ ...counts, currentPage: counts.currentPage - 1 })}
+                        onClick={() => {
+                            setCounts({ ...counts, currentPage: counts.currentPage - 1 });
+                            updateParams({ page: `${(Number(page) || 1) - 1}` });
+                        }}
                         disabled={counts.currentPage === 1}
                     >
                         Prev
@@ -193,7 +217,10 @@ const EventsPage = () => {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCounts({ ...counts, currentPage: counts.currentPage + 1 })}
+                        onClick={() => {
+                            setCounts({ ...counts, currentPage: counts.currentPage + 1 });
+                            updateParams({ page: `${(Number(page) || 1) + 1}` });
+                        }}
                         disabled={counts.currentPage === Math.ceil(counts.filteredEvents / counts.resultPerPage)}
                     >
                         Next
@@ -209,6 +236,7 @@ const EventsPage = () => {
                         onChange={(e) => {
                             setFilter({ ...filter, participation: e.target.value });
                             setCounts({ ...counts, currentPage: 1 });
+                            updateParams({ page: "1", participation: e.target.value });
                         }}
                     >
                         <option value="">ALL</option>
@@ -225,6 +253,7 @@ const EventsPage = () => {
                         onChange={(e) => {
                             setFilter({ ...filter, category: e.target.value });
                             setCounts({ ...counts, currentPage: 1 });
+                            updateParams({ page: "1", category: e.target.value });
                         }}
                     >
                         <option value="">ALL</option>

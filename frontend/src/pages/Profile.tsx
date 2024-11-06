@@ -254,6 +254,15 @@ const Profile = () => {
 
 	return (
 		<div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b] text-white">
+			{id && userContext?.user && ["ADMIN", "MODERATOR"].includes(userContext?.user?.role) && (
+					<Link
+						to={`${import.meta.env.VITE_ADMIN_URL}/users/user?id=${id}`}
+						target="blank"
+						className="text-sm md:text-md lg:text-lg px-4 py-3 rounded-full bg-green-500"
+					>
+						Naviagte to {id}
+					</Link>
+				)}
 			<div className="bg-gray-900 rounded-lg shadow-lg p-8 my-6 border border-gray-400">
 				<div className="flex justify-center items-center gap-6">
 					<h1 className="sm:text-5xl max-sm:pt-12 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:text-5xl font-extrabold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#FD8444] to-[#7527ED]">
@@ -266,16 +275,6 @@ const Profile = () => {
 						</p>
 					</button>
 				</div>
-
-				{id && userContext?.user && ["ADMIN", "MODERATOR"].includes(userContext?.user?.role) && (
-					<Link
-						to={`${import.meta.env.VITE_ADMIN_URL}/users/user?id=${id}`}
-						target="blank"
-						className="px-4 py-3 rounded-full bg-green-500"
-					>
-						Naviagte to {id}
-					</Link>
-				)}
 
 				<div className="flex flex-col lg:flex-row items-center justify-center md:space-x-8 gap-5">
 					<div className="flex flex-col md:flex-row items-center md:space-x-8 gap-5">

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
     ColumnDef,
     flexRender,
@@ -30,16 +30,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import * as XLSX from "xlsx";
-import { saveAs } from 'file-saver';
-import moment from 'moment-timezone';
-
-// const exportToExcel = (data: any, filename = 'data.xlsx') => {
-//     const workbook = XLSX.utils.book_new();
-//     const worksheet = XLSX.utils.json_to_sheet(data);
-//     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-//     XLSX.writeFile(workbook, filename);
-// };
 
 export const columns: ColumnDef<User>[] = [
     {
@@ -159,6 +149,12 @@ export const columns: ColumnDef<User>[] = [
 const UsersPage = () => {
     const navigate = useNavigate();
     const [users, setUsers] = useState<User[]>([]);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const page = searchParams.get("page");
+    const keyword = searchParams.get("keyword");
+    const role = searchParams.get("role");
+    const verified = searchParams.get("verified");
+    const blocked = searchParams.get("blocked");
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState({
         keyword: "",
@@ -190,6 +186,22 @@ const UsersPage = () => {
     }
 
     useEffect(() => {
+        setFilter({
+            ...filter,
+            keyword: keyword || "",
+            role: role || "",
+            verified: verified ? JSON.parse(verified) : true,
+            blocked: blocked ? JSON.parse(blocked) : false,
+        });
+        setCounts({ ...counts, currentPage: Number(page) || 1 });
+    }, [searchParams]);
+
+    const updateParams = (newParams: any) => {
+        const params = { ...Object.fromEntries(searchParams.entries()), ...newParams };
+        setSearchParams(params, { replace: true });
+    };
+
+    useEffect(() => {
         const queryParams = [
             `keyword=${filter.keyword}`,
             `page=${counts.currentPage}`,
@@ -218,38 +230,10 @@ const UsersPage = () => {
         getFilteredRowModel: getFilteredRowModel(),
     });
 
-    const exportToXlsx = () => {
-
-        const exportData = users.map(user => ({
-            FirstName: user.firstName,
-            LastName: user.lastName,
-            Email: user.email,
-            Role: user.role,
-            SchoolOrCollege: user.schoolOrCollege,
-            SchoolName: user.schoolName,
-            CollegeName: user.collegeName,
-            CollegeClass: user.collegeClass,
-            SchoolClass: user.schoolClass,
-            PhoneNumber: user.phoneNumber,
-            IsVerified: user.isVerified,
-            Joined: moment.utc(user.createdAt).format('DD/MM/yyyy hh:mm A')
-        }));
-
-        const ws = XLSX.utils.json_to_sheet(exportData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Users');
-
-        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        saveAs(new Blob([wbout], { type: 'application/octet-stream' }), 'all_users_data.xlsx');
-    };
-
     return (
         <div className="w-full md:w-[90%] mx-auto mt-24 mb-16 bg-white p-6 rounded-lg shadow-sm">
             <div className="flex items-center py-4 px-2">
                 <p className="text-2xl font-semibold">All Users ( {filter ? counts.filteredUsers : counts.totalUsers} )</p>
-            </div>
-            <div>
-                <Button onClick={exportToXlsx}>Export Data</Button>
             </div>
             <div className="flex flex-col md:flex-row justify-between items-center py-4 gap-4">
                 <Input
@@ -258,6 +242,7 @@ const UsersPage = () => {
                     onChange={(e) => {
                         setFilter({ ...filter, keyword: e.target.value });
                         setCounts({ ...counts, currentPage: 1 });
+                        updateParams({ page: "1", keyword: e.target.value });
                     }}
                     className="max-w-sm"
                 />
@@ -265,7 +250,10 @@ const UsersPage = () => {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCounts({ ...counts, currentPage: counts.currentPage - 1 })}
+                        onClick={() => {
+                            setCounts({ ...counts, currentPage: counts.currentPage - 1 });
+                            updateParams({ page: `${(Number(page) || 1) - 1}` });
+                        }}
                         disabled={counts.currentPage === 1}
                     >
                         Prev
@@ -276,7 +264,10 @@ const UsersPage = () => {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCounts({ ...counts, currentPage: counts.currentPage + 1 })}
+                        onClick={() => {
+                            setCounts({ ...counts, currentPage: counts.currentPage + 1 });
+                            updateParams({ page: `${(Number(page) || 1) + 1}` });
+                        }}
                         disabled={counts.currentPage === Math.ceil(counts.filteredUsers / counts.resultPerPage)}
                     >
                         Next
@@ -292,6 +283,7 @@ const UsersPage = () => {
                         onChange={(e) => {
                             setFilter({ ...filter, role: e.target.value });
                             setCounts({ ...counts, currentPage: 1 });
+                            updateParams({ page: "1", role: e.target.value });
                         }}
                     >
                         <option value="">ALL</option>
@@ -313,6 +305,7 @@ const UsersPage = () => {
                                     verified: !prev.verified
                                 }));
                                 setCounts({ ...counts, currentPage: 1 });
+                                updateParams({ page: "1", verified: `${!filter.verified}` });
                             }}
                         />
                         <div className="relative border-2 w-12 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
@@ -331,6 +324,7 @@ const UsersPage = () => {
                                     blocked: !prev.blocked
                                 }));
                                 setCounts({ ...counts, currentPage: 1 });
+                                updateParams({ page: "1", blocked: `${!filter.blocked}` });
                             }}
                         />
                         <div className="relative border-2 w-12 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
