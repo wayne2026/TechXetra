@@ -127,10 +127,11 @@ const UsersInEvents = () => {
                 MemberSchools: memberSchools,
                 MemberClasses: memberClasses,
                 MemberColleges: memberColleges,
-                PaymentStatus: user.payment.status,
-                TransactionId: user.payment.transactionId || '',
-                PaymentAmount: user.payment.amount,
-                PhysicalVerificationStatus: user.physicalVerification.status ? "Verified" : "Unverified",
+                PaymentStatus: user?.payment?.status,
+                TransactionId: user?.payment?.transactionId || '',
+                paymentImage: user?.payment?.paymentImage || '',
+                PaymentAmount: user?.payment?.amount,
+                PhysicalVerificationStatus: user?.physicalVerification?.status ? "Verified" : "Unverified",
                 EventId: user.eventId,
                 EventTitle: user.eventTitle,
             };
@@ -145,10 +146,11 @@ const UsersInEvents = () => {
                 SchoolName: user.schoolName || '',
                 CollegeName: user.collegeName || '',
                 Class: user.schoolClass || user.collegeClass || '',
-                PaymentStatus: user.payment.status,
-                TransactionId: user.payment.transactionId || '',
-                PaymentAmount: user.payment.amount,
-                PhysicalVerificationStatus: user.physicalVerification.status ? "Verified" : "Unverified",
+                PaymentStatus: user?.payment.status,
+                TransactionId: user?.payment?.transactionId || '',
+                paymentImage: user?.payment?.paymentImage || '',
+                PaymentAmount: user?.payment?.amount,
+                PhysicalVerificationStatus: user?.physicalVerification?.status ? "Verified" : "Unverified",
                 EventId: user.eventId,
                 EventTitle: user.eventTitle,
             };
@@ -308,7 +310,7 @@ const UsersInEvents = () => {
                                             <p className="text-lg font-semibold">Physical Verification:</p>
                                             <Button
                                                 className="py-1"
-                                                disabled={currentUser.physicalVerification.status}
+                                                disabled={currentUser?.physicalVerification?.status}
                                                 onClick={() => {
                                                     const userId = (currentUser?.members && currentUser?.members?.length > 0) ? currentUser.leader?._id : currentUser.userId;
                                                     handleUpdatePhysicalVerfication(currentUser.eventId, userId!)
@@ -331,7 +333,7 @@ const UsersInEvents = () => {
                                             </select>
                                             <Button
                                                 className="py-1"
-                                                disabled={currentUser.payment.status === "VERIFIED" || selectedOption === ""}
+                                                disabled={currentUser?.payment?.status === "VERIFIED" || selectedOption === ""}
                                                 onClick={() => {
                                                     const userId = (currentUser?.members && currentUser?.members?.length > 0) ? currentUser.leader?._id : currentUser.userId;
                                                     handleUpdatePaymentVerfication(currentUser.eventId, userId!)
@@ -369,7 +371,7 @@ const UsersInEvents = () => {
                         <div
                             onClick={() => {
                                 setOpen(true);
-                                setSelectedOption(event.payment.status);
+                                setSelectedOption(event?.payment?.status);
                                 setCurrentUser(event);
                             }}
                             className="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200 cursor-pointer hover:bg-gray-200"
