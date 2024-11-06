@@ -268,9 +268,13 @@ const Profile = () => {
 				</div>
 
 				{id && userContext?.user && ["ADMIN", "MODERATOR"].includes(userContext?.user?.role) && (
-					<div>
-						{id}
-					</div>
+					<Link
+						to={`${import.meta.env.VITE_ADMIN_URL}/users/user?id=${id}`}
+						target="blank"
+						className="px-4 py-3 rounded-full bg-green-500"
+					>
+						Naviagte to {id}
+					</Link>
 				)}
 
 				<div className="flex flex-col lg:flex-row items-center justify-center md:space-x-8 gap-5">

@@ -1,3 +1,10 @@
+interface UserEventPopulatedData {
+	_id: string;
+	firstName: string;
+	lastName: string;
+	email: string;
+}
+
 interface UserEvent {
 	eventId: {
 		_id: string;
@@ -47,6 +54,7 @@ interface User {
 	isBlocked: boolean;
 	events: UserEvent[] | [];
 	googleId: string;
+	createdAt: Date;
 }
 
 interface UserResponse {

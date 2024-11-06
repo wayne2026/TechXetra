@@ -30,6 +30,16 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
+import { saveAs } from 'file-saver';
+import moment from 'moment-timezone';
+
+// const exportToExcel = (data: any, filename = 'data.xlsx') => {
+//     const workbook = XLSX.utils.book_new();
+//     const worksheet = XLSX.utils.json_to_sheet(data);
+//     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+//     XLSX.writeFile(workbook, filename);
+// };
 
 export const columns: ColumnDef<User>[] = [
     {
@@ -208,10 +218,38 @@ const UsersPage = () => {
         getFilteredRowModel: getFilteredRowModel(),
     });
 
+    const exportToXlsx = () => {
+
+        const exportData = users.map(user => ({
+            FirstName: user.firstName,
+            LastName: user.lastName,
+            Email: user.email,
+            Role: user.role,
+            SchoolOrCollege: user.schoolOrCollege,
+            SchoolName: user.schoolName,
+            CollegeName: user.collegeName,
+            CollegeClass: user.collegeClass,
+            SchoolClass: user.schoolClass,
+            PhoneNumber: user.phoneNumber,
+            IsVerified: user.isVerified,
+            Joined: moment.utc(user.createdAt).format('DD/MM/yyyy hh:mm A')
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Users');
+
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        saveAs(new Blob([wbout], { type: 'application/octet-stream' }), 'all_users_data.xlsx');
+    };
+
     return (
         <div className="w-full md:w-[90%] mx-auto mt-24 mb-16 bg-white p-6 rounded-lg shadow-sm">
             <div className="flex items-center py-4 px-2">
                 <p className="text-2xl font-semibold">All Users ( {filter ? counts.filteredUsers : counts.totalUsers} )</p>
+            </div>
+            <div>
+                <Button onClick={exportToXlsx}>Export Data</Button>
             </div>
             <div className="flex flex-col md:flex-row justify-between items-center py-4 gap-4">
                 <Input
@@ -337,7 +375,7 @@ const UsersPage = () => {
                                     data-state={
                                         row.getIsSelected() && "selected"
                                     }
-                                    onClick={() =>navigate(`/users/user?id=${row.original._id}`)}
+                                    onClick={() => navigate(`/users/user?id=${row.original._id}`)}
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>

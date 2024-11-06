@@ -3,6 +3,7 @@ import { authorizeRoles, isUserVerified, verifyToken } from "../middlewares/auth
 import {
     checkPaymentStatus,
     checkPhysicalVerification,
+    deleteEventById,
     deleteUser,
     deleteUserEvents,
     getAllEvents,
@@ -33,7 +34,7 @@ router.route("/events/all").get(verifyToken, isUserVerified, authorizeRoles(role
 router.route("/events/regi").get(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN, roleEnum.MODERATOR), getEventsRegistered);
 router.route("/events/migrate").get(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), migrateEligibilityFields);
 
-
+router.route("/events/byId/:id").delete(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), deleteEventById);
 router.route("/events/delete/:user/:id").delete(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), deleteUserEvents);
 
 router.route("/events/check/physical/:user/:id").get(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN, roleEnum.MODERATOR), checkPhysicalVerification);
