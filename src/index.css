@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+body.no-scroll {
+  overflow: hidden;
+}
+
+@font-face {
+    font-family: 'originTech';
+    src: url('/OriginTech personal use.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'techno';
+    src: url('/techno_hideo.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'autoTechno';
+    src: url('/auto-techno.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'lemonMilk';
+    src: url('/LEMONMILK-Regular.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'technoHideo';
+    src: url('/techno_hideo.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'technomania';
+    src: url('/CFTechnoMania-Slanted.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  .brands-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Adjust the number of columns */
+    gap: 2rem; /* Add space between items */
+    justify-items: center;
+    align-items: center;
+    margin: 0 auto;
+    padding: 2rem;
+    max-width: 1200px;
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(10px); 
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1); 
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(10px) scale(0.95); 
+    }
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn 0.35s ease-in-out forwards;
+  }
+  
+  .animate-fadeOut {
+    animation: fadeOut 0.5s ease-in-out forwards;
+  }
+  
