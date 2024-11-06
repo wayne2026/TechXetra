@@ -32,7 +32,6 @@ const HomePage = () => {
                         <Button variant={"outline"} onClick={() => navigate("/events")}>All Events</Button>
                         <Button variant={"outline"} onClick={() => navigate("/events/create")}>Create New Event</Button>
                         <Button variant={"outline"} onClick={() => navigate("/events/registered")}>Registered Events</Button>
-                        <Button variant={"outline"} onClick={() => navigate("/login")}>Payment Verify Pending</Button>
                     </div>
                     <hr className="w-[90%] md:w-[50%] border border-gray-400" />
                     <Button onClick={logout}>Logout</Button>

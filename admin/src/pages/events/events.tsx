@@ -20,6 +20,15 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
 
 export const columns: ColumnDef<EventDetails>[] = [
     {
@@ -54,6 +63,41 @@ export const columns: ColumnDef<EventDetails>[] = [
         cell: ({ row }) => (
             <div className="font-normal">{row.getValue("registered")}</div>
         ),
+    },
+    {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+            const event = row.original;
+            const navigate = useNavigate();
+            return (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(event?._id);
+                            }}
+                        >
+                            Copy Event ID
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => navigate(`/events/event?id=${event?._id}`)}
+                        >
+                            View Details
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            );
+        },
     },
 ];
 

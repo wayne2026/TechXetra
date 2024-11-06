@@ -127,7 +127,10 @@ export const columns: ColumnDef<User>[] = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(user?._id)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(user?._id);
+                            }}
                         >
                             Copy User ID
                         </DropdownMenuItem>

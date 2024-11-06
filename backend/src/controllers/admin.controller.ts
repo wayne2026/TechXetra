@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from "http-status-codes";
-import User, { roleEnum } from '../models/user.model.js';
+import User, { paymentStatusEnum, roleEnum } from '../models/user.model.js';
 import { CustomRequest } from '../middlewares/auth.middleware.js';
 import Event from '../models/event.model.js';
 import ErrorHandler from '../utils/errorHandler.js';
@@ -190,9 +190,21 @@ export const getEventsEnrolledByUser = async (req: Request, res: Response, next:
 
 export const getUsersInEvents = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const { paymentStatus, physicalVerification } = req.query;
+
         const event = await Event.findById(req.params.id);
         if (!event) {
             return next(new ErrorHandler("Event not found", 404));
+        }
+
+        const matchFilters: any = {
+            "events.eventId": new mongoose.Types.ObjectId(req.params.id)
+        };
+        if (paymentStatus) {
+            matchFilters["events.payment.status"] = paymentStatus;
+        }
+        if (physicalVerification) {
+            matchFilters["events.physicalVerification.status"] = physicalVerification === "true";
         }
 
         const users = await User.aggregate([
@@ -211,39 +223,67 @@ export const getUsersInEvents = async (req: Request, res: Response, next: NextFu
                     schoolOrCollege: 1,
                     schoolName: 1,
                     collegeName: 1,
-                    "events": {
+                    events: {
                         $filter: {
                             input: "$events",
                             as: "event",
-                            cond: { $eq: ["$$event.eventId", new mongoose.Types.ObjectId(req.params.id)] }
+                            cond: {
+                                $and: [
+                                    { $eq: ["$$event.eventId", new mongoose.Types.ObjectId(req.params.id)] },
+                                    paymentStatus ? { $eq: ["$$event.payment.status", paymentStatus] } : {},
+                                    physicalVerification !== undefined ? { $eq: ["$$event.physicalVerification.status", physicalVerification === "true"] } : {}
+                                ]
+                            }
                         }
                     }
                 }
             },
-            {
-                $unwind: "$events"
-            },
+            { $unwind: "$events" },
             {
                 $lookup: {
                     from: "users",
                     let: { leaderId: "$events.group.leader" },
                     pipeline: [
                         { $match: { $expr: { $eq: ["$_id", "$$leaderId"] } } },
-                        { $project: { firstName: 1, lastName: 1, email: 1, phoneNumber: 1, schoolOrCollege: 1, schoolName: 1, collegeName: 1, schoolClass: 1, collegeClass: 1 } }
+                        {
+                            $project: {
+                                _id: 1,
+                                firstName: 1,
+                                lastName: 1,
+                                email: 1,
+                                phoneNumber: 1,
+                                schoolOrCollege: 1,
+                                schoolName: 1,
+                                collegeName: 1,
+                                schoolClass: 1,
+                                collegeClass: 1
+                            }
+                        }
                     ],
                     as: "groupLeader"
                 }
             },
-            {
-                $unwind: { path: "$groupLeader", preserveNullAndEmptyArrays: true }
-            },
+            { $unwind: { path: "$groupLeader", preserveNullAndEmptyArrays: true } },
             {
                 $lookup: {
                     from: "users",
                     let: { memberIds: "$events.group.members.user" },
                     pipeline: [
                         { $match: { $expr: { $in: ["$_id", "$$memberIds"] } } },
-                        { $project: { firstName: 1, lastName: 1, email: 1, phoneNumber: 1, schoolOrCollege: 1, schoolName: 1, collegeName: 1, schoolClass: 1, collegeClass: 1 } }
+                        {
+                            $project: {
+                                _id: 1,
+                                firstName: 1,
+                                lastName: 1,
+                                email: 1,
+                                phoneNumber: 1,
+                                schoolOrCollege: 1,
+                                schoolName: 1,
+                                collegeName: 1,
+                                schoolClass: 1,
+                                collegeClass: 1
+                            }
+                        }
                     ],
                     as: "groupMembers"
                 }
@@ -289,18 +329,26 @@ export const getUsersInEvents = async (req: Request, res: Response, next: NextFu
                         ]
                     }
                 }
+            },
+            {
+                $addFields: {
+                    eventId: event._id,
+                    eventTitle: event.title
+                }
             }
         ]);
 
         res.status(StatusCodes.OK).json({
             success: true,
             users,
-            count: users.length
+            count: users.length,
+            eventId: event._id,
+            eventTitle: event.title
         });
     } catch (error) {
-        next();
+        next(error);
     }
-}
+};
 
 export const getEventsRegistered = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -358,19 +406,23 @@ export const getEventsRegistered = async (req: Request, res: Response, next: Nex
     }
 }
 
-export const verifyUsersEvent = async (req: Request, res: Response, next: NextFunction) => {
+export const checkPhysicalVerification = async (req: CustomRequest, res: Response, next: NextFunction) => {
     try {
-        const user = await User.findById(req.params.id);
+        const verifier = await User.findById(req.user?._id);
+        if (!verifier) {
+            return next(new ErrorHandler("Verifier not found", 404));
+        }
+        const user = await User.findById(req.params.user);
         if (!user) {
             return next(new ErrorHandler("User not found", 404));
         }
 
-        const event = await Event.findById(req.query.id);
+        const event = await Event.findById(req.params.id);
         if (!event) {
             return next(new ErrorHandler("Event not found", 404));
         }
 
-        const userEvent = user.events.find(event => event.eventId === req.query.id as any);
+        const userEvent = user.events.find(event => event.eventId.toString() === req.params.id as any);
         if (!userEvent) {
             return next(new ErrorHandler("User is not enrolled in this event", 400));
         }
@@ -384,17 +436,109 @@ export const verifyUsersEvent = async (req: Request, res: Response, next: NextFu
                 $set: {
                     "events.$.physicalVerification": {
                         status: true,
-                        verifierId: user._id
+                        verifierId: verifier._id
                     }
                 }
             },
             { new: true, runValidators: true }
         );
 
+        if (!updatedUser) {
+            return next(new ErrorHandler("Failed to update user", StatusCodes.BAD_REQUEST));
+        }
+
+        const members = userEvent.group?.members?.map(member => member.user);
+
+        if (members && members?.length > 0) {
+            await User.updateMany(
+                { _id: { $in: members }, 'events.eventId': event._id },
+                {
+                    $set: {
+                        "events.$.physicalVerification": {
+                            status: true,
+                            verifierId: verifier._id
+                        }
+                    }
+                },
+                { new: true, runValidators: true, useFindAndModify: false }
+            );
+        }
+
         res.status(200).json({
             success: true,
-            message: "Event updated successfully",
-            updatedUser
+            message: "Physical Verification done successfully",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const checkPaymentStatus = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+        const verifier = await User.findById(req.user?._id);
+        if (!verifier) {
+            return next(new ErrorHandler("Verifier not found", 404));
+        }
+        const user = await User.findById(req.params.user);
+        if (!user) {
+            return next(new ErrorHandler("User not found", 404));
+        }
+
+        const event = await Event.findById(req.params.id);
+        if (!event) {
+            return next(new ErrorHandler("Event not found", 404));
+        }
+
+        const userEvent = user.events.find(event => event.eventId.toString() === req.params.id as any);
+        if (!userEvent) {
+            return next(new ErrorHandler("User is not enrolled in this event", StatusCodes.NOT_FOUND));
+        }
+
+        const { paymentStatus } = req.body;
+        if (!paymentStatus) {
+            return next(new ErrorHandler("Payment status is required", StatusCodes.NOT_FOUND));
+        }
+        if (!Object.values(paymentStatusEnum).includes(paymentStatus)) {
+            return next(new ErrorHandler("Payment status is not valid", StatusCodes.NOT_ACCEPTABLE));
+        }
+
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: user._id, "events.eventId": event._id },
+            {
+                $set: {
+                    "events.$.payment": {
+                        status: paymentStatus,
+                        verifierId: verifier._id
+                    }
+                }
+            },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedUser) {
+            return next(new ErrorHandler("Failed to update user", StatusCodes.BAD_REQUEST));
+        }
+
+        const members = userEvent.group?.members?.map(member => member.user);
+
+        if (members && members?.length > 0) {
+            await User.updateMany(
+                { _id: { $in: members }, 'events.eventId': event._id },
+                {
+                    $set: {
+                        "events.$.payment": {
+                            status: paymentStatus,
+                            verifierId: verifier._id
+                        }
+                    }
+                },
+                { new: true, runValidators: true, useFindAndModify: false }
+            );
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Physical Verification done successfully",
         });
     } catch (error) {
         next(error);
@@ -463,7 +607,6 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
 
         res.status(200).json({
             success: true,
-            user,
             message: "User deleted successfully"
         });
     } catch (error) {
@@ -527,6 +670,22 @@ export const deleteUserEvents = async (req: Request, res: Response, next: NextFu
             return next(new ErrorHandler("Failed to update user", StatusCodes.BAD_REQUEST));
         }
 
+        const members = userEvent.group?.members?.map(member => member.user);
+
+        if (members && members?.length > 0) {
+            await User.updateMany(
+                { _id: { $in: members }, 'events.eventId': event._id },
+                {
+                    $pull: {
+                        events: {
+                            eventId
+                        },
+                    },
+                },
+                { new: true, runValidators: true, useFindAndModify: false }
+            );
+        }
+
         res.status(200).json({
             success: true,
             message: "Deleted UserEvent successfully"
@@ -555,6 +714,24 @@ export const getAllEvents = async (req: Request, res: Response, next: NextFuncti
             resultPerPage,
             events: filteredEvents,
             filteredEventsCount
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const deleteEventById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const event = await Event.findById(req.params.id);
+        if (!event) {
+            return next(new ErrorHandler("Event not found", 404));
+        }
+
+        await Event.findByIdAndDelete(req.params.id);
+
+        res.status(200).json({
+            success: true,
+            message: "Event deleted successfully"
         });
     } catch (error) {
         next(error);

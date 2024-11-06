@@ -287,7 +287,7 @@ const CreateEvent = () => {
                         <Input name="image" type="file" accept="image/*" onChange={(e) => setFormData((prev) => ({ ...prev, image: e.target.files ? e.target.files[0] : null }))} />
                     </div>
                     <div className="w-full md:w-1/2">
-                        <label className="block text-sm font-medium">Background Image</label>
+                        <Label className="block text-sm font-medium">Background Image</Label>
                         <Input name="backgroundImage" type="file" accept="image/*" onChange={(e) => setFormData((prev) => ({ ...prev, backgroundImage: e.target.files ? e.target.files[0] : null }))} />
                     </div>
                 </div>
@@ -295,11 +295,11 @@ const CreateEvent = () => {
                 <div className="w-full flex flex-col md:flex-row items-center gap-4">
                     <div className="w-full md:w-1/2">
                         <Label className="block text-sm font-medium">Event Date</Label>
-                        <input name="eventDate" type="datetime-local" value={formData.eventDate} onChange={handleInputChange} placeholder="Enter event date" />
+                        <Input name="eventDate" type="datetime-local" value={formData.eventDate} onChange={handleInputChange} placeholder="Enter event date" />
                     </div>
                     <div className="w-full md:w-1/2">
-                        <label className="block text-sm font-medium">Event Deadline</label>
-                        <input name="deadline" type="datetime-local" value={formData.deadline} onChange={handleInputChange} placeholder="Enter event deadline" />
+                        <Label className="block text-sm font-medium">Event Deadline</Label>
+                        <Input name="deadline" type="datetime-local" value={formData.deadline} onChange={handleInputChange} placeholder="Enter event deadline" />
                     </div>
                 </div>
 
