@@ -74,14 +74,14 @@ const Profile = () => {
 	const from = location.state?.from?.pathname + location.state?.from?.search || "/verify";
 
 	useEffect(() => {
-        if (!userContext?.user?.isVerified) {
-            const timer = setTimeout(() => {
-                navigate(from, { replace: true });
-            }, 2000);
+		if (!userContext?.user?.isVerified) {
+			const timer = setTimeout(() => {
+				navigate(from, { replace: true });
+			}, 2000);
 
-            return () => clearTimeout(timer);
-        }
-    }, [userContext?.user, from, navigate]);
+			return () => clearTimeout(timer);
+		}
+	}, [userContext?.user, from, navigate]);
 
 	const handleLogOut = async () => {
 		try {
@@ -204,16 +204,16 @@ const Profile = () => {
 
 	const handleCheckoutInvitation = async (choice: string, userId: string, eventId: string) => {
 		try {
-            await axios.put(`${import.meta.env.VITE_BASE_URL}/events/invite/${userId}/${eventId}`, { choice }, { withCredentials: true });
-            // setEvents(data.user.events);
+			await axios.put(`${import.meta.env.VITE_BASE_URL}/events/invite/${userId}/${eventId}`, { choice }, { withCredentials: true });
+			// setEvents(data.user.events);
 			// setInvites(data.user.invites);
 			fetchEvents();
 			fetchInvites();
-            toast.success("Invite checked out successfully");
-        } catch (error: any) {
+			toast.success("Invite checked out successfully");
+		} catch (error: any) {
 			toast.error(error.response.data.message);
-        } finally {
-            setOpenInvites(false);
+		} finally {
+			setOpenInvites(false);
 		}
 	}
 
@@ -227,13 +227,13 @@ const Profile = () => {
 
 	const handleDelteUserEvent = async (eventId: string) => {
 		try {
-            await axios.delete(`${import.meta.env.VITE_BASE_URL}/events/user/${eventId}`, { withCredentials: true });
-            fetchEvents();
-            toast.success("Event deleted successfully");
-            setOpenEventDetails(false);
-        } catch (error: any) {
-            toast.error(error.response.data.message);
-        }
+			await axios.delete(`${import.meta.env.VITE_BASE_URL}/events/user/${eventId}`, { withCredentials: true });
+			fetchEvents();
+			toast.success("Event deleted successfully");
+			setOpenEventDetails(false);
+		} catch (error: any) {
+			toast.error(error.response.data.message);
+		}
 	}
 
 	const handleDeleteMember = async (eventId: string, memberId: string) => {
@@ -241,20 +241,21 @@ const Profile = () => {
 			axios.put(`${import.meta.env.VITE_BASE_URL}/events/member/del/${eventId}`, { memberId }, { withCredentials: true });
 			// setEvents(data.user.events);
 			fetchEvents();
-            toast.success("Member Removed successfully");
-            setOpenEventDetails(false);
+			toast.success("Member Removed successfully");
+			setOpenEventDetails(false);
 		} catch (error: any) {
 			toast.error(error.response.data.message);
 		}
 	}
 
 	if (userContext?.user && !userContext?.user?.isVerified) {
-        return <div className="text-center mt-8">You are not verified. Redirecting to verify...</div>
-    }
+		return <div className="text-center mt-8">You are not verified. Redirecting to verify...</div>
+	}
 
 	return (
 		<div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-[#1f021c] via-[#190341] to-[#22071b] text-white">
-			{id && userContext?.user && ["ADMIN", "MODERATOR"].includes(userContext?.user?.role) && (
+			<div className="bg-gray-900 rounded-lg shadow-lg p-8 my-6 border border-gray-400">
+				{id && userContext?.user && ["ADMIN", "MODERATOR"].includes(userContext?.user?.role) && (
 					<Link
 						to={`${import.meta.env.VITE_ADMIN_URL}/users/user?id=${id}`}
 						target="blank"
@@ -263,7 +264,6 @@ const Profile = () => {
 						Naviagte to {id}
 					</Link>
 				)}
-			<div className="bg-gray-900 rounded-lg shadow-lg p-8 my-6 border border-gray-400">
 				<div className="flex justify-center items-center gap-6">
 					<h1 className="sm:text-5xl max-sm:pt-12 max-sm:flex max-sm:flex-col max-sm:items-center max-sm:text-5xl font-extrabold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-[#FD8444] to-[#7527ED]">
 						Profile
@@ -420,11 +420,11 @@ const Profile = () => {
 														<div>
 															{currentEvent.group?.members?.map((member, index) => (
 																<div key={index} className="pl-6">{member.user.email} - {member?.status}
-																{userContext?.user?._id === currentEvent.group?.leader?._id && (
-																	<button className="bg-slate-200 text-red-500 m-1 p-1 rounded-lg" onClick={() => handleDeleteMember(currentEvent.eventId._id, member.user._id)}>
-																		<MdDelete />
-																	</button>
-																)}
+																	{userContext?.user?._id === currentEvent.group?.leader?._id && (
+																		<button className="bg-slate-200 text-red-500 m-1 p-1 rounded-lg" onClick={() => handleDeleteMember(currentEvent.eventId._id, member.user._id)}>
+																			<MdDelete />
+																		</button>
+																	)}
 																</div>
 															))}
 														</div>
@@ -535,7 +535,7 @@ const Profile = () => {
 										</div>
 										{userContext?.user?.role === "ADMIN" && (
 											<div>
-												<button 
+												<button
 													onClick={(e) => {
 														handleDelteUserEvent(event.eventId._id);
 														e.stopPropagation();
