@@ -101,7 +101,9 @@ const Sponsors: React.FC = () => {
 const BrandCard: React.FC<{ brand: Brand; isFirst?: boolean }> = ({ brand, isFirst = false }) => {
   return (
     <div
-      className={`relative flex items-center justify-center py-6 gap-4`}
+      className={`relative flex items-center justify-center py-6 gap-4 ${
+        isFirst ? "w-[150px]" : "w-[100px]"
+      }`}
     >
       <div>
         <img
