@@ -5,57 +5,59 @@ interface Brand {
   imageSrc: string;
 }
 
+const baseUrl = "https://api.techxetra.in";
+
 const brandsData: Brand[] = [
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/oilindia.png`,
+    imageSrc: `${baseUrl}/assets/oilindia.png`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/krafton.webp`,
+    imageSrc: `${baseUrl}/assets/krafton.webp`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/easemytrip.png`,
+    imageSrc: `${baseUrl}/assets/easemytrip.png`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/mylearningcurve.jpeg`,
+    imageSrc: `${baseUrl}/assets/mylearningcurve.jpeg`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/ashima.jpg`,
+    imageSrc: `${baseUrl}/assets/ashima.jpg`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/unstop.png`,
+    imageSrc: `${baseUrl}/assets/unstop.png`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/linkedin.jpeg`,
+    imageSrc: `${baseUrl}/assets/linkedin.jpeg`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/eastmojo.png`,
+    imageSrc: `${baseUrl}/assets/eastmojo.png`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/jiosavan.png`,
+    imageSrc: `${baseUrl}/assets/jiosavan.png`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/lipy.png`,
+    imageSrc: `${baseUrl}/assets/lipy.png`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/Beytech.png`,
+    imageSrc: `${baseUrl}/assets/Beytech.png`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/nenews.jpeg`,
+    imageSrc: `${baseUrl}/assets/nenews.jpeg`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/krc.jpeg`,
+    imageSrc: `${baseUrl}/assets/krc.jpeg`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/dynaroof.png`,
+    imageSrc: `${baseUrl}/assets/dynaroof.png`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/tezpurbuzz.png`,
+    imageSrc: `${baseUrl}/assets/tezpurbuzz.png`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/CanaraBank.png`,
+    imageSrc: `${baseUrl}/assets/CanaraBank.png`,
   },
   {
-    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/dynasolar.png`,
+    imageSrc: `${baseUrl}/assets/dynasolar.png`,
   }
 
 ];
