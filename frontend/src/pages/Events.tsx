@@ -142,7 +142,7 @@ const Events: React.FC = () => {
                     <Link target='blank' to="https://docs.google.com/forms/d/e/1FAIpQLSdg0gxRRlAeKIS1TYcMc-C-Fa3-BGliCM4ldjAYgC7i4Z29hw/viewform" className='py-4 text-red-700 cursor-pointer font-bold  text-2xl'>Accomodation</Link>
                 </div>
 
-                <div className='w-full md:w-[90%] mx-auto pt-20 pb-20'>
+                <div className='w-full md:w-[90%] mx-auto pt-32 md:pt-20 pb-20'>
                     {loading ? (
                         <div className='flex justify-center items-center'>
                             <h1 className='text-xl font-semibold'>Loading...</h1>
