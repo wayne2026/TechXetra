@@ -2,6 +2,7 @@ import About from "./About";
 import Events from "./Events";
 import FooterBar from "./Footer";
 import Hero from "./Hero";
+import Sponsors from "./Sponsors";
 
 const Landing = () => {
   return (
@@ -10,6 +11,7 @@ const Landing = () => {
         <Hero />
       </div>
       <About />
+      <Sponsors />
       <Events />
       <FooterBar />
     </div>

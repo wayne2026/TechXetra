@@ -1,9 +1,3 @@
-import React, { useState } from "react";
-// import {
-//   Avatar,
-//   AvatarFallback,
-//   AvatarImage,
-// } from "../../components/avatar";
 import { ShootingStars } from "../../components/ShootingStars";
 import { StarsBackground } from '../../components/StarBackground';
 
@@ -19,185 +13,87 @@ interface Brand {
 
 const brandsData: Brand[] = [
   {
-    imageSrc: "./Asus_Logo.png",
-    lightImageSrc: "/Asus_Logo.png",
-    altText: "graygrids",
-    link: "#",
-    heading: "Asus",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
-    footertext: "Visit Website",
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/oilindia.png`,
   },
   {
-    imageSrc: "/Ktm_logo.png",
-    lightImageSrc: "./Ktm_logo.png",
-    altText: "graygrids",
-    link: "#",
-    heading: "KTM",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
-    footertext: "Visit Website",
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/krafton.webp`,
   },
   {
-    imageSrc: "/Tata_logo.png",
-    lightImageSrc: "/Tata_logo.png",
-    altText: "graygrids",
-    link: "#",
-    heading: "Tata",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
-    footertext: "Visit Website",
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/easemytrip.png`,
   },
   {
-    imageSrc: "/Gnrc_Logo.png",
-    lightImageSrc: "/Gnrc_Logo.png",
-    altText: "graygrids",
-    link: "#",
-    heading: "GNRC",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
-    footertext: "Visit Website",
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/mylearningcurve.jpeg`,
   },
   {
-    imageSrc: "/IndianOil_Logo.png",
-    lightImageSrc: "/IndianOil_Logo.png",
-    altText: "graygrids",
-    link: "#",
-    heading: "Indian Oil",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
-    footertext: "Visit Website",
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/ashima.jpg`,
   },
   {
-    imageSrc: "/Lic_Logo.png",
-    lightImageSrc: "/Lic_Logo.png",
-    altText: "graygrids",
-    link: "#",
-    heading: "LIC",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
-    footertext: "Visit Website",
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/unstop.png`,
   },
   {
-    imageSrc: "/Pnb_Logo.png",
-    lightImageSrc: "/Pnb_Logo.png",
-    altText: "graygrids",
-    link: "#",
-    heading: "PNB",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
-    footertext: "Visit Website",
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/linkedin.jpeg`,
   },
   {
-    imageSrc: "/Sbi_Logo.png",
-    lightImageSrc: "/Sbi_Logo.png",
-    altText: "graygrids",
-    link: "#",
-    heading: "SBI",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
-    footertext: "Visit Website",
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/eastmojo.png`,
   },
   {
-    imageSrc: "/Sbi_Logo.png",
-    lightImageSrc: "/Sbi_Logo.png",
-    altText: "graygrids",
-    link: "#",
-    heading: "SBI",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
-    footertext: "Visit Website",
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/jiosavan.png`,
   },
   {
-    imageSrc: "/Tata_logo.png",
-    lightImageSrc: "/Tata_logo.png",
-    altText: "graygrids",
-    link: "#",
-    heading: "Tata",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
-    footertext: "Visit Website",
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/lipy.png`,
   },
   {
-    imageSrc: "/Tata_logo.png",
-    lightImageSrc: "/Tata_logo.png",
-    altText: "graygrids",
-    link: "#",
-    heading: "Tata",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
-    footertext: "Visit Website",
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/Beytech.png`,
   },
   {
-    imageSrc: "/Tata_logo.png",
-    lightImageSrc: "/Tata_logo.png",
-    altText: "graygrids",
-    link: "#",
-    heading: "Tata",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
-    footertext: "Visit Website",
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/nenews.jpeg`,
   },
   {
-    imageSrc: "/Tata_logo.png",
-    lightImageSrc: "/Tata_logo.png",
-    altText: "graygrids",
-    link: "#",
-    heading: "Tata",
-    description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim dolores officia ipsum optio iste nemo quasi, adipisci sequi facere molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!",
-    footertext: "Visit Website",
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/krc.jpeg`,
   },
+  {
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/dynaroof.png`,
+  },
+  {
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/tezpurbuzz.png`,
+  },
+  {
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/CanaraBank.png`,
+  },
+  {
+    imageSrc: `${import.meta.env.VITE_BASE_URL}/assets/dynasolar.png`,
+  }
 
 ];
 
 const Sponsors: React.FC = () => {
-  // Function to split brandsData into levels for pyramid
-  const createPyramidLevels = (data: Brand[]) => {
-    const levels: Brand[][] = [];
-    let level = 1;
-    let index = 0;
-
-    while (index < data.length) {
-      if (level ==1) {
-        levels.push(data.slice(index, index + level));
-        index += level;
-        level++;
-      } else {
-        // For rows after the 4th row, limited the number of items to 4 per row
-        levels.push(data.slice(index, index + 4));
-        index += 4;
-      }
-    }
-
-    return levels;
-  };
-
-  const pyramidLevels = createPyramidLevels(brandsData);
+  const firstBrand = brandsData[0];
+  const remainingBrands = brandsData.slice(1);
 
   return (
     <section className="bg-gradient-to-b from-[#1f021c] to-[#1f021c] relative overflow-x-hidden">
       <StarsBackground className="absolute"/>
       <ShootingStars />
 
+      {/* <h1 className="text-center md:text-left md:pl-20 font-semibold font-technoHideo text-4xl md:text-7xl text-transparent bg-clip-text bg-gradient-radial from-[#FD8444] to-[#7527ED]">
+        Sponsors
+      </h1> */}
+
       <div className="container mx-auto">
-        {/* Sponsor heading */}
-        <h2 className="text-5xl font-bold text-center mb-8 font-manrope text-red-400 my-28">
+        <h2 className="text-4xl md:text-7xl text-center mb-8 font-technoHideo font-semibold text-transparent bg-clip-text bg-gradient-radial from-[#FD8444] to-[#7527ED] my-28">
           Sponsors
         </h2>
-        {/* Intro paragraph */}
-        <p className="text-red-400 px-10 text-justify">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero, enim``
-          dolores officia ipsum optio iste nemo quasi, adipisci sequi facere
-          molestias ipsa dicta quaerat, amet sint! Quidem dolor debitis nisi!
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto sunt
-          temporibus totam deleniti sequi impedit voluptatem atque ducimus
-          reprehenderit magni harum deserunt error necessitatibus tenetur,
-          soluta voluptate aspernatur dolor quis!
-        </p>
-        {/* just an example remove this if u want or modify */}
-        <h1 className="text-white text-center mt-">Title Sponsor</h1>
-        {/* Pyramid structure */}
-        <div className="flex flex-col justify-items-stretch space-y-3">
-          {pyramidLevels.map((level, levelIndex) => (
-            <div
-            key={levelIndex}
-            className="grid gap-10"
-            style={{
-              gridTemplateColumns: `repeat(${levelIndex < 4 ? level.length : 4}, minmax(100px, 1fr))`,
-              maxWidth: "100%", // Adjust this as needed
-            }}
-          >
-              {level.map((brand, i) => (
-                <HoverCard key={i} brand={brand} index={i} />
-              ))}
+        
+        <h1 className="text-transparent bg-clip-text bg-gradient-radial from-[#FD8444] to-[#7527ED] font-bold text-3xl text-center mt-4">Title Sponsor</h1>
+
+        <div className="flex justify-center mt-10">
+          <BrandCard brand={firstBrand} isFirst />
+        </div>
+
+        <div className="flex flex-wrap justify-center space-x-6 mt-10">
+          {remainingBrands.map((brand, index) => (
+            <div key={index} className="flex w-[200px] justify-center mb-6">
+              <BrandCard brand={brand} />
             </div>
           ))}
         </div>
@@ -206,60 +102,20 @@ const Sponsors: React.FC = () => {
   );
 };
 
-
-
-
-const HoverCard: React.FC<{ brand: Brand; index: number }> = ({ brand}) => {
-  const [isHovered, setIsHovered] = useState(false);
-  
-  
-
+const BrandCard: React.FC<{ brand: Brand; isFirst?: boolean }> = ({ brand, isFirst = false }) => {
   return (
     <div
-      className="relative mx-auto my-6 flex w-[200px] items-center justify-center py-6 2xl:w-[220px] transition-transform duration-500 ease-in-out"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{ zIndex: isHovered ? 1000 : "auto" }}  
+      className={`relative flex items-center justify-center py-6 ${
+        isFirst ? "w-[250px]" : "w-[200px]"
+      }`}
     >
-      <a href={brand.link}>
+      <div>
         <img
           src={brand.imageSrc}
-          alt={brand.altText}
-          className="h-28 w-full dark:hidden"
-        />
-        <img
-          src={brand.lightImageSrc}
-          alt={brand.altText}
-          className="hidden h-28 w-full dark:block"
+          alt="sponsor-img"
+          className={`h-${isFirst ? "36" : "28"} w-full rounded-lg dark:hidden`}
         />
       </a>
-      {isHovered && (
-        <div
-          className={`
-            absolute top-full mt-2 w-80 p-4 bg-[rgba(70,0,50,0.95)] shadow-lg rounded-lg z-10 hover-card-content
-            ${isHovered ? "animate-fadeIn" : "animate-fadeOut"}
-          `}
-        >
-          <div className="flex justify-between space-x-4">
-            {/* logo may look repetative if added to again the pop up box, so kept it optional with the below code */}
-            {/* <Avatar>
-              <AvatarImage src={brand.imageSrc} className="h-full w-full object-cover" />
-              <AvatarFallback>Logo</AvatarFallback>
-            </Avatar> */}
-            <div className="space-y-2">
-              <h4 className="text-md font-bold text-white text-center">{brand.heading}</h4>
-              <p className="text-sm text-red-400">
-                {brand.description}
-              </p>
-              <div className="flex items-center pt-2">
-                <span className="text-xs text-muted-foreground text-white">
-                  {brand.footertext}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
