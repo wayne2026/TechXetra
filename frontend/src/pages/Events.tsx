@@ -7,7 +7,7 @@ import { ShootingStars } from '../../components/ShootingStars';
 import { BackgroundGradient } from "../components/ui/background-gradeint";
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function NextArrow(props: any) {
     const { className, style, onClick } = props;
@@ -138,7 +138,8 @@ const Events: React.FC = () => {
                     <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'SPORTS' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => handleCategory('SPORTS')}>Sports</li>
                     <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'ESPORTS' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => handleCategory('ESPORTS')}>E-Sports</li>
                     <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'CULTURAL' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => handleCategory('CULTURAL')}>Cultural</li>
-                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'MISCELLANEOUS' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => handleCategory('MISCELLANEOUS')}>Miscellaneous</li>
+                    <li className={`py-4 pr-7 cursor-pointer ${selectedCategory === 'MISCELLANEOUS' ? 'text-[#FD8444]' : 'text-slate-400 hover:text-[#FD8444]'}`} onClick={() => handleCategory('MISCELLANEOUS')}>Miscellaneous</li>\
+                    <Link target='blank' to="https://docs.google.com/forms/d/e/1FAIpQLSdg0gxRRlAeKIS1TYcMc-C-Fa3-BGliCM4ldjAYgC7i4Z29hw/viewform" className='py-4  text-red-700 cursor-pointer font-bold  text-2xl'>Accomodation</Link>
                 </div>
 
                 <div className='w-full md:w-[90%] mx-auto pt-20 pb-20'>
