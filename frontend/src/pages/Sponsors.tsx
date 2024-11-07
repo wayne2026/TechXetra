@@ -115,7 +115,7 @@ const BrandCard: React.FC<{ brand: Brand; isFirst?: boolean }> = ({ brand, isFir
           alt="sponsor-img"
           className={`h-${isFirst ? "36" : "28"} w-full rounded-lg dark:hidden`}
         />
-      </a>
+      </div>
     </div>
   );
 };
