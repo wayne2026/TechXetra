@@ -146,7 +146,7 @@ const UsersInEvents = () => {
                 SchoolName: user.schoolName || '',
                 CollegeName: user.collegeName || '',
                 Class: user.schoolClass || user.collegeClass || '',
-                PaymentStatus: user?.payment.status,
+                PaymentStatus: user?.payment?.status,
                 TransactionId: user?.payment?.transactionId || '',
                 paymentImage: user?.payment?.paymentImage || '',
                 PaymentAmount: user?.payment?.amount,
