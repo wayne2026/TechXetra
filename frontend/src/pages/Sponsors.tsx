@@ -3,12 +3,6 @@ import { StarsBackground } from '../../components/StarBackground';
 
 interface Brand {
   imageSrc: string;
-  lightImageSrc: string;
-  altText: string;
-  link: string;
-  heading: string;
-  description: string;
-  footertext: string;
 }
 
 const brandsData: Brand[] = [
