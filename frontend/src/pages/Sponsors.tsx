@@ -58,6 +58,9 @@ const brandsData: Brand[] = [
   },
   {
     imageSrc: `${baseUrl}/assets/dynasolar.png`,
+  },
+  {
+    imageSrc: `${baseUrl}/assets/sbi.png`,
   }
 
 ];
