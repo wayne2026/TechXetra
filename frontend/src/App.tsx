@@ -1,8 +1,8 @@
-import { Link, Route, Routes, useLocation } from "react-router-dom";
+import { Link, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import ErrorBoundary from "../components/better/error-boundary";
 import ProtectedRoute from "../components/better/protected-routes";
 import { useUser } from "./context/user_context";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 // import { Suspense } from "react";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -14,12 +14,25 @@ import NotFound from "./pages/not-found";
 import Landing from "./pages/Landing";
 import Profile from "./pages/Profile";
 import ResetPassword from "./pages/reset";
+import axios from "axios";
 
 // const ChatAssistant = lazy(() => import("../components/better/assitant"));
 
 function App() {
 	const userContext = useUser();
 	const location = useLocation();
+	const navigate = useNavigate();
+
+	const handleLogOut = async () => {
+		try {
+			await axios.get(`${import.meta.env.VITE_BASE_URL}/users/logout`, { withCredentials: true });
+			userContext?.setUser(null);
+			navigate("/login");
+			toast.success("Logged Out");
+		} catch (error: any) {
+			toast.error(error.response.data.message);
+		}
+	}
 
 	return userContext?.loading ? (
 		<div className="bg-black h-screen flex justify-center items-center">
@@ -45,6 +58,9 @@ function App() {
 						<div className='flex flex-col justify-center items-center text-xl'>
 							<p>Please verify your email to access resources.</p>
 							<Link className="underline italic text-blue-500" to="/verify">Verify Here</Link>
+							<button onClick={handleLogOut} className="px-3 py-2 bg-red-500 rounded-lg">Logout</button>
+							<Link className="underline italic text-blue-500" to="/register">Go To Regsiter</Link>
+							<Link className="underline italic text-blue-500" to="/login">Go To Login</Link>
 						</div>
 					</div>
 				</div>
