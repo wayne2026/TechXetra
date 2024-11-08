@@ -15,6 +15,7 @@ import Landing from "./pages/Landing";
 import Profile from "./pages/Profile";
 import ResetPassword from "./pages/reset";
 import axios from "axios";
+import { useState } from "react";
 
 // const ChatAssistant = lazy(() => import("../components/better/assitant"));
 
@@ -22,8 +23,10 @@ function App() {
 	const userContext = useUser();
 	const location = useLocation();
 	const navigate = useNavigate();
+	const [loading, setLoading] = useState(false);
 
 	const handleLogOut = async () => {
+		setLoading(true);
 		try {
 			await axios.get(`${import.meta.env.VITE_BASE_URL}/users/logout`, { withCredentials: true });
 			userContext?.setUser(null);
@@ -31,6 +34,8 @@ function App() {
 			toast.success("Logged Out");
 		} catch (error: any) {
 			toast.error(error.response.data.message);
+		} finally {
+			setLoading(false);
 		}
 	}
 
@@ -55,10 +60,10 @@ function App() {
 			{!["/login", "/register", "/verify"].includes(location.pathname) && userContext?.user && !userContext?.user?.isVerified && (
 				<div className="text-black fixed inset-0 bg-opacity-30 backdrop-blur flex justify-center items-center z-20">
 					<div className="bg-white p-8 rounded-lg shadow-lg w-full md:w-[60%] lg:w-[40%]">
-						<div className='flex flex-col justify-center items-center text-xl'>
-							<p>Please verify your email to access resources.</p>
+						<div className='flex flex-col justify-center space-y-4 items-center text-xl'>
+							<p className="text-lg font-semibold">Please verify your email to access resources.</p>
 							<Link className="underline italic text-blue-500" to="/verify">Verify Here</Link>
-							<button onClick={handleLogOut} className="px-3 py-2 bg-red-500 rounded-lg">Logout</button>
+							<button disabled={loading} onClick={handleLogOut} className="px-3 py-2 bg-red-500 text-white rounded-lg">{loading ? "Hold on..." : "Logout"}</button>
 							<Link className="underline italic text-blue-500" to="/register">Go To Regsiter</Link>
 							<Link className="underline italic text-blue-500" to="/login">Go To Login</Link>
 						</div>
