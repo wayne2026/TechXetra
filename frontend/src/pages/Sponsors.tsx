@@ -30,8 +30,8 @@ const brandsData: Brand[] = [
 	{ imageSrc: `${baseUrl}/assets/xt.png`, title: "Hackathon Event Sponsor" },
 	{ imageSrc: `${baseUrl}/assets/cubelelo.png`, title: "Rubiks Cube Event Sponsor" },
 	{ imageSrc: `${baseUrl}/assets/cogneo.png`, title: "Code Class Event Sponsor" },
-	{ imageSrc: `${baseUrl}/assets/SERVE14.png`, title: "Food Delivery Partner" },
-	{ imageSrc: `${baseUrl}/assets/bento.webp`, title: "Cakery Partner" },
+	{ imageSrc: `${baseUrl}/assets/server14.png`, title: "Food Delivery Partner" },
+	{ imageSrc: `${baseUrl}/assets/bento.jpg`, title: "Cakery Partner" },
 	{ imageSrc: `${baseUrl}/assets/ITC.jpg`, title: "Gifting Partner" },
 	{ imageSrc: `${baseUrl}/assets/edona.jpeg`, title: "Beauty Partner" }
 ];
@@ -68,9 +68,9 @@ const Sponsors: React.FC = () => {
 				</div>
 
 				{/* Grid layout for remaining sponsors */}
-				<div className="mt-24 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 text-center gap-4 justify-center">
+				<div className="mt-24 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 text-center gap-4">
 					{brandsData.map((brand, index) => (
-						<div key={index} className="flex flex-col items-center py-4 gap-2 w-full transition-transform transform hover:scale-105 duration-300 ease-in-out">
+						<div key={index} className="flex flex-col items-center py-4 gap-2 w-full transition-transform transform hover:scale-105 duration-300 ease-in-out col-span-2">
 							<h3 className="text-center font-bold text-white text-md">{brand.title}</h3>
 							<img
 								src={brand.imageSrc}
