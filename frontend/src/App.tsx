@@ -3,7 +3,7 @@ import ErrorBoundary from "../components/better/error-boundary";
 import ProtectedRoute from "../components/better/protected-routes";
 import { useUser } from "./context/user_context";
 import { toast, ToastContainer } from "react-toastify";
-// import { Suspense } from "react";
+import { lazy, Suspense } from "react";
 import "react-toastify/dist/ReactToastify.css";
 
 import Events_Page from './pages/Events_Page'
@@ -17,7 +17,7 @@ import ResetPassword from "./pages/reset";
 import axios from "axios";
 import { useState } from "react";
 
-// const ChatAssistant = lazy(() => import("../components/better/assitant"));
+const ChatAssistant = lazy(() => import("../components/better/assitant"));
 
 function App() {
 	const userContext = useUser();
@@ -71,29 +71,29 @@ function App() {
 				</div>
 			)}
 			<ErrorBoundary>
-				{/* <Suspense fallback={null}> */}
-					{/* <div
+				<Suspense fallback={null}>
+					<div
 						className="z-[60] fixed bottom-8 right-8 bg-gray-900 text-white p-2 rounded-md"
 					>
 						<ChatAssistant />
-					</div> */}
-					<Routes>
-						<Route path="/" element={<Landing />} />
-						<Route path="/login" element={<Login />} />
-						<Route path="/register" element={<Register />} />
-						<Route path="/reset" element={<ResetPassword />} />
+					</div>
+				</Suspense>
+				<Routes>
+					<Route path="/" element={<Landing />} />
+					<Route path="/login" element={<Login />} />
+					<Route path="/register" element={<Register />} />
+					<Route path="/reset" element={<ResetPassword />} />
 
-						<Route
-							element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}
-						>
-							<Route path="/verify" element={<Verify />} />
-							<Route path="/event" element={<Events_Page />} />
-							<Route path="/profile" element={<Profile />} />
-						</Route>
-						
-						<Route path="*" element={<NotFound />} />
-					</Routes>
-				{/* </Suspense> */}
+					<Route
+						element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}
+					>
+						<Route path="/verify" element={<Verify />} />
+						<Route path="/event" element={<Events_Page />} />
+						<Route path="/profile" element={<Profile />} />
+					</Route>
+
+					<Route path="*" element={<NotFound />} />
+				</Routes>
 			</ErrorBoundary>
 		</div>
 	);
