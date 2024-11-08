@@ -6,8 +6,8 @@ interface Brand {
 	title: string;
 }
 
-// const baseUrl = "https://api.techxetra.in";
-const baseUrl = "http://localhost:8000";
+const baseUrl = "https://api.techxetra.in";
+// const baseUrl = "http://localhost:8000";
 
 const brandsData: Brand[] = [
 	{ imageSrc: `${baseUrl}/assets/krafton.webp`, title: "Mobile Gaming Partner" },
