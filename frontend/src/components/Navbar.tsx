@@ -21,7 +21,7 @@ const Navbar = () => {
                         }
                     }}
                 >
-                    <h1 className="font-originTech sm:text-2xl hover:text-transparent bg-clip-text bg-gradient-radial from-[#FD8444] to-[#7527ED] ">
+                    <h1 className="font-originTech sm:text-2xl hover:text-transparent bg-clip-text bg-gradient-radial from-[#FD8444] to-[#7527ED]">
                         {userContext?.user ? `${userContext?.user?.firstName}` : "Login"}
                     </h1>
                 </button>

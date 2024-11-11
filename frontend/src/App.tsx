@@ -16,6 +16,7 @@ import Profile from "./pages/Profile";
 import ResetPassword from "./pages/reset";
 import axios from "axios";
 import { useState } from "react";
+import Krafton from "./pages/kraft";
 
 const ChatAssistant = lazy(() => import("../components/better/assitant"));
 
@@ -71,18 +72,21 @@ function App() {
 				</div>
 			)}
 			<ErrorBoundary>
-				<Suspense fallback={null}>
-					<div
-						className="z-[60] fixed bottom-8 right-8 bg-gray-900 text-white p-2 rounded-md"
-					>
-						<ChatAssistant />
-					</div>
-				</Suspense>
+				{!["/sponsor/krafton"].includes(location.pathname) && (
+					<Suspense fallback={<div>Loading Chat Assistant...</div>}>
+						<div
+							className="z-[60] fixed bottom-8 right-8 bg-gray-900 text-white p-2 rounded-md"
+						>
+							<ChatAssistant />
+						</div>
+					</Suspense>
+				)}
 				<Routes>
 					<Route path="/" element={<Landing />} />
 					<Route path="/login" element={<Login />} />
 					<Route path="/register" element={<Register />} />
 					<Route path="/reset" element={<ResetPassword />} />
+					<Route path="/sponsor/krafton" element={<Krafton />} />
 
 					<Route
 						element={<ProtectedRoute isAuthenticated={userContext?.user ? true : false} redirect="/login" />}

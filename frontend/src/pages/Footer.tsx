@@ -21,7 +21,7 @@ const FooterBar: React.FC = () => {
       <ShootingStars />
 
       {/* Main content grid layout */}
-      <div className="flex  justify-around max-sm:hidden">
+      <div className="flex justify-around max-sm:hidden">
         {/* Left section: TechXetra logo and character */}
         <div className="flex flex-col items-center">
           <img src="/TechXetraLogo1.png" alt="TechXetra Logo" className="rounded-full h-[150px] w-[150px]" /> {/* TechXetra Logo */}

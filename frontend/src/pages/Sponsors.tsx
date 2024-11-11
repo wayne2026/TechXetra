@@ -1,16 +1,18 @@
+import { useNavigate } from "react-router-dom";
 import { ShootingStars } from "../../components/ShootingStars";
 import { StarsBackground } from '../../components/StarBackground';
 
 interface Brand {
 	imageSrc: string;
 	title: string;
+	link?: string;
 }
 
 const baseUrl = "https://api.techxetra.in";
 // const baseUrl = "http://localhost:8000";
 
 const brandsData: Brand[] = [
-	{ imageSrc: `${baseUrl}/assets/krafton.webp`, title: "Mobile Gaming Partner" },
+	{ imageSrc: `${baseUrl}/assets/k2.jpg`, title: "Mobile Gaming Partner", link: "/sponsor/krafton" },
 	{ imageSrc: `${baseUrl}/assets/mylearningcurve.jpeg`, title: "Career Guidance Partner" },
 	{ imageSrc: `${baseUrl}/assets/ashima.jpg`, title: "Residency Partner" },
 	{ imageSrc: `${baseUrl}/assets/unstop.png`, title: "Platform Partner" },
@@ -37,6 +39,9 @@ const brandsData: Brand[] = [
 ];
 
 const Sponsors: React.FC = () => {
+
+	const navigate = useNavigate();
+
 	return (
 		<section className="bg-gradient-to-b from-[#1f021c] to-[#1f021c] relative overflow-x-hidden">
 			<StarsBackground className="absolute" />
@@ -70,7 +75,14 @@ const Sponsors: React.FC = () => {
 				{/* Grid layout for remaining sponsors */}
 				<div className="mt-24 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 text-center gap-4">
 					{brandsData.map((brand, index) => (
-						<div key={index} className="flex flex-col items-center py-4 gap-2 w-full transition-transform transform hover:scale-105 duration-300 ease-in-out col-span-2">
+						<div 
+							key={index} onClick={() => {
+								if (brand.link) {
+									navigate(brand.link);
+								}
+							}} 
+							className="flex flex-col items-center py-4 gap-2 w-full transition-transform transform hover:scale-105 duration-300 ease-in-out col-span-2"
+						>
 							<h3 className="text-center font-bold text-white text-md">{brand.title}</h3>
 							<img
 								src={brand.imageSrc}

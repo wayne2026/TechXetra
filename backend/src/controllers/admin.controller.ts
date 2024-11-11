@@ -596,6 +596,26 @@ export const toggleAllIsVisible = async (req: CustomRequest, res: Response, next
     }
 }
 
+export const toggleAllCanRegister = async (req: CustomRequest, res: Response, next: NextFunction) => {
+    try {
+        const { canRegister } = req.body;
+
+        if (typeof canRegister !== 'boolean') {
+            return next(new ErrorHandler("'canRegister' is required and should be a boolean", StatusCodes.BAD_REQUEST));
+        }
+
+        const result = await Event.updateMany({}, { canRegister });
+
+        res.status(StatusCodes.OK).json({
+            success: true,
+            result,
+            message: `All events have been updated to canRegister = ${canRegister}`,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user = await User.findById(req.params.id);

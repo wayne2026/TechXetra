@@ -13,6 +13,7 @@ import {
     getUsersInEvents,
     loginUser,
     migrateEligibilityFields,
+    toggleAllCanRegister,
     toggleAllIsVisible,
     toggleBlockUser,
     updatedUserRole
@@ -28,7 +29,10 @@ router.route("/users/byId/:id")
     .delete(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), deleteUser);
 router.route("/users/block/:id").put(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), toggleBlockUser);
 router.route("/users/role/:id").put(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), updatedUserRole);
+
 router.route("/events/isVisible/all").put(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), toggleAllIsVisible);
+router.route("/events/canRegister/all").put(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN), toggleAllCanRegister);
+
 router.route("/users/event/:id").get(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN, roleEnum.MODERATOR), getUsersInEvents);
 router.route("/events/all").get(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN, roleEnum.MODERATOR), getAllEvents);
 router.route("/events/regi").get(verifyToken, isUserVerified, authorizeRoles(roleEnum.ADMIN, roleEnum.MODERATOR), getEventsRegistered);
